@@ -17,7 +17,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex flex-grow items-center justify-center w-full min-h-[calc(100vh-6rem)]">
+    <div className="flex flex-grow items-center justify-center w-full min-h-[calc(100vh-10rem)] my-4">
       <div
         className="relative w-full max-w-md p-8
                    bg-gradient-to-b

@@ -53,24 +53,38 @@ export default function Navbar() {
                 </button>
 
 
-                <Link to="/" className="btn btn-ghost hidden lg:flex hover:bg-transparent">
+                <a 
+                    href="/"
+                    className="
+                        btn btn-ghost hidden lg:flex
+                        hover:bg-transparent 
+                        hover:shadow-none
+                    ">
                     <img
                         src={logo}
                         alt="logo"
                         className="h-10 w-auto transition-transform duration-200 hover:scale-110"
                     />
-                </Link>
-                </div>
+                </a>
+            </div>
 
                 <div className="navbar-center">
 
-                    <Link to="/" onClick={handleLinkClick} className="btn btn-ghost lg:hidden hover:bg-transparent">
+                    <a 
+                        href="/"
+                        onClick={handleLinkClick} 
+                        className="
+                            btn btn-ghost lg:hidden 
+                            hover:bg-transparent
+                            hover:shadow-none
+                        "
+                    >
                         <img
                             src={logo}
                             alt="logo"
                             className="h-10 w-auto transition-transform duration-200 hover:scale-110"
                         />
-                    </Link>
+                    </a>
 
                     <ul className="menu menu-horizontal hidden lg:flex px-1">
                     <li>
@@ -80,13 +94,13 @@ export default function Navbar() {
                         <Link to="/about">About</Link>
                     </li>
                     <li>
-                        <Link to="/projects">Projects</Link>
+                        <Link to="/projects">CGU</Link>
                     </li>
                     </ul>
                 </div>
 
                 <div className="navbar-end">
-                    <Link to="/Login" onClick={handleLinkClick} className="btn">
+                    <Link to="/Login" onClick={handleLinkClick} className="btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7]">
                     Login
                     </Link>
                 </div>
@@ -102,7 +116,7 @@ export default function Navbar() {
                             <Link to="/projects" onClick={handleLinkClick} className={dropdownLinkClass}>Projects</Link>
                         </li>
                     </ul>
-            )}
+                )}
         </div>
     );
 }

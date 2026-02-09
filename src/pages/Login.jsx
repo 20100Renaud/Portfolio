@@ -1,6 +1,5 @@
 import { useState } from "react";
 import logo from "../assets/Logo.webp"
-import Tab from "daisyui/components/tab";
 
 export default function Login() {
   const [email, setEmail] = useState("");

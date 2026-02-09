@@ -1,3 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-default {
+  -ms-overflow-style: auto;
+  scrollbar-width: auto;
+}
+.scrollbar-default::-webkit-scrollbar {
+  display: block;
+}
+
+/* default: hide scrollbar */
+body {
+  overflow-y: auto;
+  @apply scrollbar-hide;
+}
+
+/* lg and up: show scrollbar */
+@media (min-width: 1024px) {
+  body {
+    @apply scrollbar-default;
+  }
+}
