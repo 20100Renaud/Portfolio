@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom"
-import logo from "../assets/Logo.webp"
+import logo from "../assets/Logo_512x341.webp"
 
 export default function Navbar() {
     const [dropdownOpen, setDropdownOpen] = useState(false);

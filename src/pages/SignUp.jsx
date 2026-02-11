@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../assets/Logo.webp";
+import logo from "../assets/Logo_512x512.webp";
 
 export default function SignUp() {
   const [username, setUsername] = useState("");
