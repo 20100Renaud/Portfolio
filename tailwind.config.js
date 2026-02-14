@@ -56,6 +56,14 @@ export default {
                 },
                 "100%": { transform: "scale(1) rotate(180deg)" },
             },
+            arrows_flat_animation_infinite:{
+                "0%": { transform: "rotate(0deg)"},
+                "100%": { transform: "rotate(180deg)"},
+            },
+            arrows_flat_animation:{
+                "0%": { transform: "rotate(0deg)"},
+                "100%": { transform: "rotate(180deg)"},
+            }
         },
 
         animation: {
@@ -63,6 +71,8 @@ export default {
             text_animation_xs: "text_animation_xs 1.2s forwards",
             arrows_animation_sm: "arrows_animation_sm 1.2s forwards",
             arrows_animation_xs: "arrows_animation_xs 1.2s forwards",
+            arrows_flat_animation_infinite: "arrows_flat_animation_infinite 1s infinite linear",
+            arrows_flat_animation: "arrows_flat_animation 1s ease-in-out",
         },
         },
     },
