@@ -5,6 +5,10 @@
 @tailwind components;
 @tailwind utilities;
 
+[data-theme="light"] {
+  --bc: 0 0% 0%;
+}
+
 html {
   overflow-y: scroll;
   scrollbar-gutter: stable;

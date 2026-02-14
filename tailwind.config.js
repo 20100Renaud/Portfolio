@@ -1,5 +1,4 @@
 import daisyui from "daisyui"
-import themes from "daisyui/src/colors/themes"
 
 export default {
     content: [
@@ -79,13 +78,6 @@ export default {
     },
     plugins: [daisyui],
     daisyui: {
-        themes: [
-            {
-                light: {
-                    ...themes("daisyui/src/colors/themes")["[data-theme=light]"],
-                    "base-content": "#000000",
-                }
-            }
-        ],
-    },
+        themes: ["light"],
+    }
 }
