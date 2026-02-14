@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
 
 export default function SignUp() {
@@ -89,13 +90,16 @@ export default function SignUp() {
             </button>
             </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?
-          <a href="/Login" className="text-primary font-medium hover:underline ml-2">
-            Login
-          </a>
-        </p>
-      </div>
+            <p className="mt-4 text-center text-sm text-gray-600">
+                Already have an account?
+                <Link
+                    to="/Login"
+                    className="text-primary font-medium hover:underline ml-2"
+                >
+                    Login
+                </Link>
+            </p>
+        </div>
     </div>
   );
 }
