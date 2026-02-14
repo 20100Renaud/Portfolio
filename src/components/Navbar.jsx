@@ -82,7 +82,7 @@ export default function Navbar() {
         >
               <AnimatedFlatLogo size={70} />
         </Link>
-        
+
       </div>
 
       <div className="navbar-center">
@@ -130,7 +130,7 @@ export default function Navbar() {
             <Link to="/" onClick={handleLinkClick} className={dropdownLinkClass}>
               Home
             </Link>
-          </li>group-hover:
+          </li>
           <li>
             <Link to="/about" onClick={handleLinkClick} className={dropdownLinkClass}>
               About
