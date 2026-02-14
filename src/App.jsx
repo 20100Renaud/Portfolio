@@ -13,9 +13,9 @@ export default function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/CGU" element={<CGU />} />
+          <Route path="/cgu" element={<CGU />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/signup" element={<SignUp />} />
         </Route>
       </Routes>
     </BrowserRouter>
