@@ -5,31 +5,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
-.scrollbar-default {
-  -ms-overflow-style: auto;
-  scrollbar-width: auto;
-}
-.scrollbar-default::-webkit-scrollbar {
-  display: block;
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
 }
 
-/* default: hide scrollbar */
+html,
 body {
-  overflow-y: auto;
-  @apply scrollbar-hide;
-}
-
-/* lg and up: show scrollbar */
-@media (min-width: 1024px) {
-  body {
-    @apply scrollbar-default;
-  }
+  scrollbar-width: none;
 }

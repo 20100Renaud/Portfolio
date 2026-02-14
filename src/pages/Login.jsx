@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logo from "../assets/Logo_512x512.webp"
+import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -13,15 +13,19 @@ export default function Login() {
   return (
 
     <div className=" flex flex-grow items-center justify-center w-full">
-        <div className="relative w-full max-w-md p-8
-                        bg-gradient-to-b
-                        from-white from-[30%] to-[#a5d6a7]/40
-                        rounded-xl shadow-lg flex flex-col items-center">
-            <img
-                src={logo}
-                alt="logo"
-                className="h-40 w-auto transition-transform duration-200 hover:scale-110 mb-10"
-            />
+        <div className="
+                relative w-full max-w-md p-8
+                bg-gradient-to-b
+                from-white from-[30%] to-[#a5d6a7]
+                rounded-xl shadow-lg flex flex-col items-center
+            ">
+            <div className="
+                transition-transform duration-200
+                hover:scale-110 mb-10
+            ">
+              <AnimatedFlatLogoInfinite size={120} />
+            </div>
+
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
             Login
             </h2>

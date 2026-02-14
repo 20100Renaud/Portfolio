@@ -2,19 +2,24 @@ import Animated_logo from "../components/Animated_logo";
 
 export default function About() {
   return (
-     <div className="flex flex-col flex-grow items-center text-center w-full">
-        <h1 className="text-3xl font-bold">
+     <div className="flex flex-col flex-grow items-center text-center w-full relative">
+        <h1 className="text-2xl sm:text-3xl font-bold">
             What did inspire this project ?
         </h1>
 
-        <div className="mt-14">
+        <div className="mt-20">
         </div>
 
-        <div className="min-h-[300px] flex items-center justify-center">
+        <div className="min-h-[300px] flex items-center justify-center"
+            style={{
+                textShadow:
+                    "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(50,255,255,0.9)"
+                }}
+        >
             <div className="flex flex-col items-center text-sm sm:text-xl">
             
                 <h2 className="leading-relaxed">
-                    My garden friends did.
+                    My gardener friends did it.
                     <br />
                     We often talk about what we can give up.
                     <br />
