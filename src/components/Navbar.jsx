@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import logo from "../assets/Logo_512x341.webp";
+import logo from "../assets/Logo_512x353.webp";
 import AnimatedFlatLogo from "../components/AnimatedFlatLogo";
 
 const NavItem = ({ to, end = false, children }) => {
@@ -101,9 +101,7 @@ export default function Navbar() {
 
         <ul className="hidden lg:flex px-1 gap-6">
           <li>
-            <NavItem to="/" end>
-              Home
-            </NavItem>
+            <NavItem to="/" end>Home</NavItem>
           </li>
           <li>
             <NavItem to="/about">About</NavItem>
@@ -128,7 +126,7 @@ export default function Navbar() {
         <ul className="menu menu-sm absolute top-16 left-4 right-4 bg-base-100 rounded-box shadow p-2 z-20 lg:hidden">
           <li>
             <Link to="/" onClick={handleLinkClick} className={dropdownLinkClass}>
-              Home
+              Homes
             </Link>
           </li>
           <li>
