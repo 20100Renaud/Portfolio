@@ -43,7 +43,7 @@ export default function Home() {
             })}
         </div>
         
-        <div className="flex flex-col items-center text-sm sm:text-xl p-6 relative"
+        <div className="flex flex-col items-center text-xs sm:text-xl py-6 relative"
             style={{
                 textShadow:
                     "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(50,255,255,0.9)"

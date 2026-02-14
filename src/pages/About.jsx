@@ -16,7 +16,7 @@ export default function About() {
                     "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(50,255,255,0.9)"
                 }}
         >
-            <div className="flex flex-col items-center text-sm sm:text-xl">
+            <div className="flex flex-col items-center text-xs sm:text-xl">
             
                 <h2 className="leading-relaxed">
                     My gardener friends did it.

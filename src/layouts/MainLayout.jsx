@@ -27,7 +27,7 @@ export default function MainLayout() {
         />
         <div className="relative z-10 flex flex-col min-h-screen">
             <Navbar />
-                <main className="flex flex-grow mx-[5%] my-[3%]">
+                <main className="flex flex-grow my-[5%]">
                     <Outlet />
                 </main>
             <Footer />

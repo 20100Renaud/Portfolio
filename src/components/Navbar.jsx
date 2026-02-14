@@ -40,7 +40,7 @@ export default function Navbar() {
     <div className="navbar bg-[#e5f2eb] shadow-lg px-4">
       <div className="navbar-start">
         <button
-          className="btn btn-ghost lg:hidden"
+          className="btn btn-ghost lg:hidden text-black"
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
           {dropdownOpen ? (
@@ -116,7 +116,7 @@ export default function Navbar() {
         <Link
           to="/Login"
           onClick={handleLinkClick}
-          className="btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg"
+          className="text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg"
         >
           Login
         </Link>
