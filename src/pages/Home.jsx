@@ -6,7 +6,7 @@ const shareItems = [
     { name: "Leaves", icon: FaLeaf },
     { name: "Branches", icon: FaTree },
     { name: "Fruits", icon: FaAppleAlt },
-    { name: "Vegetables", icon: FaCarrot },
+    { name: "Vegies", icon: FaCarrot },
     { name: "Eggs", icon: FaEgg },
     { name: "Plants", icon: FaSeedling },
     { name: "More", icon: FaEllipsisH },
@@ -18,35 +18,40 @@ export default function Home() {
         <h1 className="text-2xl sm:text-3xl font-bold">
             Share what others want !
         </h1>
-        <h2 className="text-sm sm:text-xl">
+        <h2 className="text-xs sm:text-xl">
             Let your friends know that you have something to give up.
         </h2>
 
-        <div className="mt-5 flex flex-wrap gap-6 justify-center lg:justify-start relative">
+        <div className="mt-5 flex flex-wrap gap-4 sm:gap-6 justify-center lg:justify-start relative">
             {shareItems.map((item) => {
                 const Icon = item.icon;
                 return (
                 <div
                     key={item.name}
-                    className="flex flex-col items-center text-center w-24 p-4
-                                border-t-4 border-l-4 border-b-2 border-r-2
-                                border border-green-500/60 rounded-3xl shadow-lg 
-                                bg-green-200 transition-colors duration-200"
+                    className="
+                        flex flex-col items-center text-center
+                        w-16 sm:w-24
+                        p-2 sm:p-4
+                        border-2 sm:border-4
+                        border-green-500/60 rounded-2xl sm:rounded-3xl
+                        shadow-md sm:shadow-lg 
+                        bg-green-200
+                        transition-colors duration-200"
 
                 >
-                    <div className="text-green-600 text-4xl">
+                    <div className="text-green-600 text-2xl sm:text-4xl">
                     <Icon />
                     </div>
-                    <span className="text-sm font-medium">{item.name}</span>
+                    <span className="text-xs sm:text-sm font-medium">{item.name}</span>
                 </div>
                 );
             })}
         </div>
-        
+
         <div className="flex flex-col items-center text-xs sm:text-xl py-6 relative"
             style={{
                 textShadow:
-                    "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(50,255,255,0.9)"
+                    "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(0,0,0,0.9)"
                 }}
         >
         

@@ -3,25 +3,29 @@ import { Link, NavLink } from "react-router-dom";
 import logo from "../assets/Logo_512x353.webp";
 import AnimatedFlatLogo from "../components/AnimatedFlatLogo";
 
-const NavItem = ({ to, end = false, children }) => {
+const NavItem = ({ to, end = false, children, className = "", onClick }) => {
   return (
     <NavLink
         to={to}
         end={end}
-        className="relative inline-block font-bold transition-colors duration-300 group group pb-1"
+        onClick={onClick}
+        className={`relative inline-block font-bold transition-colors duration-300 group pb-1 ${className}`}
     >    
         {({ isActive }) => (
             <>
                 <span
-                    className={`relative z-10 transition-colors duration-300 ${
-                    isActive ? "text-green-600" : "text-black"
+                    className={`relative z-10 ${
+                        isActive ? "text-green-600" : "text-black"
                     }`}
                 >
                     {children}
                 </span>
+
                 <span
                     className={`absolute left-0 bottom-0 h-0.5 transition-all duration-300 ${
-                    isActive ? "w-full bg-green-600" : "w-0 bg-black group-hover:w-full"
+                        isActive
+                            ? "w-full bg-green-600"
+                            : "w-0 bg-black group-hover:w-full"
                     }`}
                 />
             </>
@@ -29,6 +33,7 @@ const NavItem = ({ to, end = false, children }) => {
     </NavLink>
   );
 };
+
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -122,25 +127,25 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {dropdownOpen && (
-        <ul className="menu menu-sm absolute top-16 left-4 right-4 bg-base-100 rounded-box shadow p-2 z-20 lg:hidden">
-          <li>
-            <Link to="/" onClick={handleLinkClick} className={dropdownLinkClass}>
-              Homes
-            </Link>
-          </li>
-          <li>
-            <Link to="/about" onClick={handleLinkClick} className={dropdownLinkClass}>
-              About
-            </Link>
-          </li>
-          <li>
-            <Link to="/CGU" onClick={handleLinkClick} className={dropdownLinkClass}>
-              CGU
-            </Link>
-          </li>
-        </ul>
-      )}
+        {dropdownOpen && (
+            <ul className="menu menu-sm absolute top-16 left-4 right-4 bg-base-100 rounded-box shadow p-2 z-20 lg:hidden">
+            <li>
+                <NavItem to="/" onClick={handleLinkClick} className={dropdownLinkClass}>
+                Home
+                </NavItem>
+            </li>
+            <li>
+                <NavItem to="/about" onClick={handleLinkClick} className={dropdownLinkClass}>
+                About
+                </NavItem>
+            </li>
+            <li>
+                <NavItem to="/CGU" onClick={handleLinkClick} className={dropdownLinkClass}>
+                CGU
+                </NavItem>
+            </li>
+            </ul>
+        )}
     </div>
   );
 }
