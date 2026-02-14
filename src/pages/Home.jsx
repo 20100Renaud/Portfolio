@@ -14,7 +14,7 @@ const shareItems = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-grow items-center text-center w-full relative text-black">
+    <div className="flex flex-col flex-grow items-center text-center w-full relative">
         <h1 className="text-2xl sm:text-3xl font-bold">
             Share what others want !
         </h1>
