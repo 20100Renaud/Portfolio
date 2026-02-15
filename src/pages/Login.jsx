@@ -58,7 +58,7 @@ export default function Login() {
 
             <button
                 type="submit"
-                className="btn btn-primary w-full mt-2"
+                className="btn btn-primary w-full mt-2 bg-[#a5d6a7] hover:font-bold"
             >
                 Sign In
             </button>

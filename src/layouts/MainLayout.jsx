@@ -17,7 +17,8 @@ export default function MainLayout() {
             alt="Dessin de jardin"
             className="
                 absolute top-1/2 left-1/2
-                h-[900px] w-full max-w-[1900px]
+                h-[600px] sm:h-[900px]
+                w-full max-w-[1900px]
                 -translate-x-1/2 -translate-y-1/2
                 object left object-cover
                 opacity-70

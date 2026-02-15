@@ -33,7 +33,7 @@ export default function SignUp() {
             </div>
 
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-            Sign Up
+            Create an account
             </h2>
 
             <form onSubmit={handleSubmit} className="w-full space-y-4">
@@ -85,7 +85,7 @@ export default function SignUp() {
                 />
             </div>
 
-            <button type="submit" className="btn btn-primary w-full mt-2">
+            <button type="submit" className="btn btn-primary w-full mt-2 bg-[#a5d6a7] hover:font-bold">
                 Sign Up
             </button>
             </form>
@@ -94,7 +94,7 @@ export default function SignUp() {
                 Already have an account?
                 <Link
                     to="/Login"
-                    className="text-primary font-medium hover:underline ml-2"
+                    className="text-primary font-medium hover:underline ml-2 "
                 >
                     Login
                 </Link>

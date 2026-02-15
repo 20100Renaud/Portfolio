@@ -13,7 +13,7 @@ export default function About() {
         <div className="min-h-[300px] flex items-center justify-center"
             style={{
                 textShadow:
-                    "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(50,255,255,0.9)"
+                    "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(0,255,0,0.9)"
                 }}
         >
             <div className="flex flex-col items-center text-xs sm:text-xl">
