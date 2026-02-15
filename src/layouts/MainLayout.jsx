@@ -20,7 +20,7 @@ export default function MainLayout() {
                 h-[600px] sm:h-[900px]
                 w-full max-w-[1900px]
                 -translate-x-1/2 -translate-y-1/2
-                object left object-cover
+                object-left object-cover
                 opacity-70
                 pointer-events-none
                 z-0
