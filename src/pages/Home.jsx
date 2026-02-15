@@ -48,7 +48,7 @@ export default function Home() {
             })}
         </div>
 
-        <div className="flex flex-col items-center text-xs sm:text-xl py-6 relative"
+        <div className="sm:flex flex-col items-center text-xs sm:text-xl py-6 relative hidden "
             style={{
                 textShadow:
                     "2px 2px 6px rgba(0,0,0,0.5), 0 0 40px rgba(0,255,0,0.9)"
@@ -81,6 +81,32 @@ export default function Home() {
                 It’s an easy way to connect with
                 <br />
                 people around us.
+            </h2>
+        </div>
+
+        <div className="m-3 p-3  rounded-3xl bg-white/50 sm:hidden"
+            style={{
+                textShadow:
+                    "2px 2px 6px rgba(0,0,0,0.5)"
+                }}
+        >
+            <h2 className="leading-relaxed">
+                Hello nature lovers.
+                <br />
+                From our gardens come many treasures:
+                leaves, branches, fruits, vegetables, eggs, plants ...
+                If you have extras, this app is a great and responsive way to:
+            </h2>
+
+            <div className="-my-4">
+                <Animated_logo size={120} />
+            </div>
+
+            <h2 className="leading-relaxed">
+                With this app you can let people know
+                what, when and how many you have to share.
+                It’s an easy way to connect around us.
+                Give locally is a way to reduce waste and grow stronger communities.
             </h2>
         </div>
     </div>
