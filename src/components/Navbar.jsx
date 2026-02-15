@@ -9,13 +9,13 @@ const NavItem = ({ to, end = false, children, className = "", onClick }) => {
         to={to}
         end={end}
         onClick={onClick}
-        className={`relative inline-block font-bold transition-colors duration-300 group pb-1 ${className}`}
+        className={`relative inline-block transition-colors duration-300 group pb-1 ${className}`}
     >    
         {({ isActive }) => (
             <>
                 <span
                     className={`relative z-10 ${
-                        isActive ? "text-green-600" : "text-black"
+                        isActive ? "text-green-600 font-bold" : "text-black"
                     }`}
                 >
                     {children}
@@ -118,7 +118,7 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-end">
-        <Link
+        <Link     
           to="/Login"
           onClick={handleLinkClick}
           className="text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg"
