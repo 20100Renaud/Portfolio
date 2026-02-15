@@ -100,7 +100,7 @@ export default function Navbar() {
           <img
             src={logo}
             alt="logo"
-            className="h-10 w-auto transition-transform duration-200 hover:scale-110"
+            className="h-14 w-auto "
           />
         </Link>
 
