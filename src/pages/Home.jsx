@@ -94,7 +94,7 @@ export default function Home() {
                 Hello nature lovers.
                 <br />
                 From our gardens come many treasures:
-                leaves, branches, fruits, vegetables, eggs, plants ...
+                leaves, locallybranches, fruits, vegetables, eggs, plants ...
                 If you have extras, this app is a great and responsive way to:
             </h2>
 
@@ -104,7 +104,7 @@ export default function Home() {
 
             <h2 className="leading-relaxed">
                 With this app you can let people know
-                what, when and how many you have to share.
+                what, when and how many you have to share or need.
                 It’s an easy way to connect around us.
                 Give locally is a way to reduce waste and grow stronger communities.
             </h2>
