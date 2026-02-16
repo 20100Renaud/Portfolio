@@ -71,7 +71,7 @@ export default {
             text_animation_xs: "text_animation_xs 1.2s forwards",
             arrows_animation_sm: "arrows_animation_sm 1.2s forwards",
             arrows_animation_xs: "arrows_animation_xs 1.2s forwards",
-            arrows_flat_animation_infinite: "arrows_flat_animation_infinite 1s infinite linear",
+            arrows_flat_animation_infinite: "arrows_flat_animation_infinite 3s infinite linear",
             arrows_flat_animation: "arrows_flat_animation 1s ease-in-out",
         },
         },

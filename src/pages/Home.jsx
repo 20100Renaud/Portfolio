@@ -94,7 +94,7 @@ export default function Home() {
                 Hello nature lovers.
                 <br />
                 From our gardens come many treasures:
-                leaves, locallybranches, fruits, vegetables, eggs, plants ...
+                leaves, branches, fruits, vegetables, eggs, plants ...
                 If you have extras, this app is a great and responsive way to:
             </h2>
 
