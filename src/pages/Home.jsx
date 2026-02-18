@@ -1,15 +1,37 @@
-import { FaLeaf, FaAppleAlt, FaCarrot, FaEgg, FaSeedling, FaEllipsisH, FaTree } from "react-icons/fa";
+import { FaLeaf, FaAppleAlt, FaCarrot, FaEgg, FaSeedling, FaTree, FaPoop } from "react-icons/fa";
+import {
+    GiStrawberry,
+    GiBeet,
+    GiTomato,
+    GiPumpkin,
+    GiMushroom,
+    GiHerbsBundle,
+    GiHoneyJar,
+    GiPlantSeed,
+    GiBasket,
+} from "react-icons/gi";
+import { MdCompost } from "react-icons/md";
 import Animated_logo from "../components/Animated_logo";
 
 
 const shareItems = [
     { name: "Leaves", icon: FaLeaf },
     { name: "Branches", icon: FaTree },
-    { name: "Fruits", icon: FaAppleAlt },
-    { name: "Vegies", icon: FaCarrot },
+    { name: "Apple", icon: FaAppleAlt },
+    { name: "Carott", icon: FaCarrot },
+    { name: "Tomato", icon: GiTomato },
     { name: "Eggs", icon: FaEgg },
     { name: "Plants", icon: FaSeedling },
-    { name: "More", icon: FaEllipsisH },
+    { name: "Compost", icon: MdCompost },
+    { name: "Manure", icon: FaPoop },
+    { name: "Strawberries", icon: GiStrawberry },
+    { name: "Beets", icon: GiBeet },
+    { name: "Pumpkin", icon: GiPumpkin },
+    { name: "Mushrooms", icon: GiMushroom },
+    { name: "Herbs", icon: GiHerbsBundle },
+    { name: "Honey", icon: GiHoneyJar },
+    { name: "Seeds", icon: GiPlantSeed },
+    { name: "Basket", icon: GiBasket },
 ];
 
 export default function Home() {
@@ -22,31 +44,46 @@ export default function Home() {
             Let your friends know that you have something to give up.
         </h2>
 
-        <div className="mt-5 flex flex-wrap gap-4 sm:gap-6 justify-center lg:justify-start relative">
-            {shareItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                <div
-                    key={item.name}
-                    className="
-                        flex flex-col items-center text-center
-                        w-16 sm:w-24
-                        p-2 sm:p-4
-                        border-2 sm:border-4
-                        border-green-500/60 rounded-2xl sm:rounded-3xl
-                        shadow-md sm:shadow-lg 
-                        bg-green-200
-                        transition-colors duration-200"
+                <div className="mt-5 relative border-y-2 border-green-600/50 w-full">
+                    <div className="marquee">
+                        <div
+                            className="marquee-track"
+                            style={{ ['--marquee-duration']: '18s' }}
+                        >
+                            {shareItems.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <div
+                                        key={item.name}
+                                        className="flex flex-col items-center text-center w-16 sm:w-24 p-2 sm:p-4"
+                                    >
+                                        <div className="text-green-600 text-2xl sm:text-4xl">
+                                            <Icon />
+                                        </div>
+                                        <span className="text-xs sm:text-sm font-medium">{item.name}</span>
+                                    </div>
+                                );
+                            })}
 
-                >
-                    <div className="text-green-600 text-2xl sm:text-4xl">
-                    <Icon />
+                            {/* duplicate for seamless loop */}
+                            {shareItems.map((item, i) => {
+                                const Icon = item.icon;
+                                return (
+                                    <div
+                                        key={"dup-" + item.name + i}
+                                        aria-hidden
+                                        className="flex flex-col items-center text-center w-16 sm:w-24 p-2 sm:p-4"
+                                    >
+                                        <div className="text-green-600 text-2xl sm:text-4xl">
+                                            <Icon />
+                                        </div>
+                                        <span className="text-xs sm:text-sm font-medium">{item.name}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
-                    <span className="text-xs sm:text-sm font-medium">{item.name}</span>
                 </div>
-                );
-            })}
-        </div>
 
         <div className="sm:flex flex-col items-center text-xs sm:text-xl py-6 relative hidden "
             style={{

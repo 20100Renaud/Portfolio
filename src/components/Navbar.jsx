@@ -37,8 +37,26 @@ const NavItem = ({ to, end = false, children, className = "", onClick }) => {
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const animationDuration = 220; // ms — keep in sync with CSS
 
-  const handleLinkClick = () => setDropdownOpen(false);
+  const openDropdown = () => {
+    setIsClosing(false);
+    setDropdownOpen(true);
+  };
+
+  const closeDropdown = () => {
+    // start exit animation, keep element mounted until animation completes
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      setDropdownOpen(false);
+    }, animationDuration);
+  };
+
+  const handleLinkClick = () => {
+    if (dropdownOpen) closeDropdown();
+  };
   const dropdownLinkClass = "text-lg py-2 px-4";
 
   return (
@@ -46,7 +64,10 @@ export default function Navbar() {
       <div className="navbar-start">
         <button
           className="btn btn-ghost lg:hidden text-black"
-          onClick={() => setDropdownOpen(!dropdownOpen)}
+          onClick={() => {
+            if (dropdownOpen) closeDropdown();
+            else openDropdown();
+          }}
         >
           {dropdownOpen ? (
             <svg
@@ -127,8 +148,10 @@ export default function Navbar() {
         </Link>
       </div>
 
-        {dropdownOpen && (
-            <ul className="menu menu-sm absolute top-16 left-4 right-4 bg-base-100 rounded-box shadow p-2 z-20 lg:hidden">
+        {(dropdownOpen || isClosing) && (
+            <ul className={`menu menu-sm menu-horizontal absolute top-16 left-0 right-4 bg-base-100 rounded-none rounded-br-lg shadow pt-2 pb-4 px-8 z-20 lg:hidden justify-center gap-6 ${
+              isClosing ? "dropdown-out" : "dropdown-in"
+            }`}>
             <li>
                 <NavItem to="/" onClick={handleLinkClick} className={dropdownLinkClass}>
                 Home

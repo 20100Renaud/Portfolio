@@ -24,3 +24,59 @@ html,
 body {
   scrollbar-width: none;
 }
+
+/* Dropdown open animation */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translate(-0.75rem, -0.75rem) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.dropdown-in {
+  transform-origin: top left;
+  animation: dropdown-in 220ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+@keyframes dropdown-out {
+  from {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-0.75rem, -0.75rem) scale(0.95);
+  }
+}
+
+.dropdown-out {
+  transform-origin: top left;
+  animation: dropdown-out 220ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+
+/* Infinite marquee for icons */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee {
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  min-width: max-content;
+  will-change: transform;
+  animation: marquee var(--marquee-duration, 18s) linear infinite;
+}

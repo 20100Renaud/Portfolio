@@ -20,15 +20,12 @@ export default function Login() {
                 from-white from-[30%] to-[#a5d6a7]
                 rounded-xl shadow-lg flex flex-col items-center
             ">
-            <div className="
-                transition-transform duration-200
-                hover:scale-110 mb-10
-            ">
-              <AnimatedFlatLogoInfinite size={120} />
+            <div className="transition-transform duration-200 mb-10">
+                <AnimatedFlatLogoInfinite size={120} />
             </div>
 
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-            Login
+                Login
             </h2>
 
             <form onSubmit={handleSubmit} className="w-full space-y-4">
