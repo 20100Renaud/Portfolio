@@ -149,7 +149,7 @@ export default function Navbar() {
       </div>
 
         {(dropdownOpen || isClosing) && (
-            <ul className={`menu menu-sm menu-horizontal absolute top-16 left-0 right-4 bg-base-100 rounded-none rounded-br-lg shadow pt-2 pb-4 px-8 z-20 lg:hidden justify-center gap-6 ${
+            <ul className={`menu menu-sm menu-horizontal absolute top-16 left-0 right-4 bg-base-100 rounded-none rounded-br-lg shadow pt-2 pb-4 px-8 z-20 lg:hidden justify-center gap-4 ${
               isClosing ? "dropdown-out" : "dropdown-in"
             }`}>
             <li>
