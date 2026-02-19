@@ -78,5 +78,5 @@ body {
   align-items: center;
   min-width: max-content;
   will-change: transform;
-  animation: marquee var(--marquee-duration, 18s) linear infinite;
+  animation: marquee var(--marquee-duration) linear infinite;
 }

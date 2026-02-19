@@ -48,7 +48,7 @@ export default function Home() {
                     <div className="marquee">
                         <div
                             className="marquee-track"
-                            style={{ ['--marquee-duration']: '18s' }}
+                            style={{ ['--marquee-duration']: '40s' }}
                         >
                             {shareItems.map((item) => {
                                 const Icon = item.icon;
