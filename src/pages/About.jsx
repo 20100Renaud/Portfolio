@@ -4,10 +4,10 @@ export default function About() {
   return (
      <div className="flex flex-col flex-grow items-center text-center w-full relative">
         <h1 className="text-2xl sm:text-3xl font-bold">
-            What did inspire this project ?
+            What did inspire this idea ?
         </h1>
 
-        <div className="mt-20">
+        <div className="mt-6">
         </div>
 
         <div className="min-h-[300px] flex items-center justify-center"

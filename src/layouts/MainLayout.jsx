@@ -1,7 +1,7 @@
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import { Outlet } from "react-router-dom"
-import dessin from "../assets/dessin_jardin.webp";
+import dessin from "../assets/dessin_jardin.png";
 
 
 export default function MainLayout() {
@@ -26,9 +26,9 @@ export default function MainLayout() {
                 z-0
             "
         />
-        <div className="relative z-10 flex flex-col min-h-screen">
+        <div className="relative z-10 flex flex-col min-h-screen pt-16 pb-16">
             <Navbar />
-                <main className="flex flex-grow my-[5%]">
+                <main className="flex flex-grow mt-6">
                     <Outlet />
                 </main>
             <Footer />

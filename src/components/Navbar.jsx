@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import logo from "../assets/Logo_512x353.webp";
 import AnimatedFlatLogo from "../components/AnimatedFlatLogo";
 
-const NavItem = ({ to, end = false, children, className = "", onClick }) => {
+const NavItem = ({ to, end, children, className = "", onClick }) => {
   return (
     <NavLink
         to={to}
@@ -22,9 +22,9 @@ const NavItem = ({ to, end = false, children, className = "", onClick }) => {
                 </span>
 
                 <span
-                    className={`absolute left-0 bottom-0 h-0.5 transition-all duration-300 ${
+                    className={`absolute left-0 bottom-0 h-0.5 transition-all duration-300${
                         isActive
-                            ? "w-full bg-green-600"
+                            ? "w-0 sm:w-full bg-green-600"
                             : "w-0 bg-black group-hover:w-full"
                     }`}
                 />
@@ -37,42 +37,21 @@ const NavItem = ({ to, end = false, children, className = "", onClick }) => {
 
 export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const animationDuration = 220; // ms — keep in sync with CSS
 
-  const openDropdown = () => {
-    setIsClosing(false);
-    setDropdownOpen(true);
-  };
-
-  const closeDropdown = () => {
-    // start exit animation, keep element mounted until animation completes
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsClosing(false);
-      setDropdownOpen(false);
-    }, animationDuration);
-  };
-
-  const handleLinkClick = () => {
-    if (dropdownOpen) closeDropdown();
-  };
+  const handleLinkClick = () => { setDropdownOpen(false); };
   const dropdownLinkClass = "text-lg py-2 px-4";
 
   return (
-    <div className="navbar bg-[#e5f2eb] shadow-lg px-4">
+    <div className="navbar bg-[#e5f2eb] shadow-lg px-4 fixed top-0 left-0 right-0 z-50 h-16">
       <div className="navbar-start">
         <button
           className="btn btn-ghost lg:hidden text-black"
-          onClick={() => {
-            if (dropdownOpen) closeDropdown();
-            else openDropdown();
-          }}
+          onClick={() => setDropdownOpen(prev => !prev)}
         >
-          {dropdownOpen ? (
+        {dropdownOpen ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 transition-transform duration-200"
+              className="h-5 w-5 duration-200"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -84,29 +63,29 @@ export default function Navbar() {
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
-          ) : (
+        ) : (
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 transition-transform duration-200"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h8m-8 6h16"
-              />
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h8m-8 6h16"
+                />
             </svg>
-          )}
+        )}
         </button>
         
         <Link
           to="/"
           className="group btn btn-ghost hidden lg:flex hover:bg-transparent hover:shadow-none"
         >
-              <AnimatedFlatLogo size={70} />
+            <AnimatedFlatLogo size={70} />
         </Link>
 
       </div>
@@ -126,49 +105,58 @@ export default function Navbar() {
         </Link>
 
         <ul className="hidden lg:flex px-1 gap-6">
-          <li>
-            <NavItem to="/" end>Home</NavItem>
-          </li>
-          <li>
-            <NavItem to="/about">About</NavItem>
-          </li>
-          <li>
-            <NavItem to="/CGU">CGU</NavItem>
-          </li>
+            <li>
+                <NavItem to="/" end>Home</NavItem>
+            </li>
+                <li>
+                <NavItem to="/concept">Concept</NavItem>
+            </li>
+            <li>
+                <NavItem to="/about">About</NavItem>
+            </li>
         </ul>
       </div>
 
       <div className="navbar-end">
         <Link     
-          to="/Login"
-          onClick={handleLinkClick}
-          className="text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg"
+            to="/Login"
+            onClick={handleLinkClick}
+            className="text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg"
         >
-          Login
+            Login
         </Link>
       </div>
 
-        {(dropdownOpen || isClosing) && (
-            <ul className={`menu menu-sm menu-horizontal absolute top-16 left-0 right-4 bg-base-100 rounded-none rounded-br-lg shadow pt-2 pb-4 px-8 z-20 lg:hidden justify-center gap-4 ${
-              isClosing ? "dropdown-out" : "dropdown-in"
-            }`}>
-            <li>
-                <NavItem to="/" onClick={handleLinkClick} className={dropdownLinkClass}>
-                Home
-                </NavItem>
-            </li>
-            <li>
-                <NavItem to="/about" onClick={handleLinkClick} className={dropdownLinkClass}>
-                About
-                </NavItem>
-            </li>
-            <li>
-                <NavItem to="/CGU" onClick={handleLinkClick} className={dropdownLinkClass}>
-                CGU
-                </NavItem>
-            </li>
-            </ul>
-        )}
+        <ul className={`
+            fixed top-16 left-[20px] right-[20px]
+            bg-base-100
+            shadow-xl
+            rounded-br-lg rounded-bl-lg
+            z-10 lg:hidden
+            flex justify-center gap-4
+            whitespace-nowrap
+            transform origin-top
+            transition-all duration-700 
+            ${dropdownOpen 
+                ? "scale-y-100 opacity-100 py-4" 
+                : "scale-y-0 opacity-0 py-0 pointer-events-none"}
+        `}>
+        <li>
+            <NavItem to="/" onClick={handleLinkClick} className={dropdownLinkClass}>
+            Home
+            </NavItem>
+        </li>
+        <li>
+            <NavItem to="/concept" onClick={handleLinkClick} className={dropdownLinkClass}>
+            Concept
+            </NavItem>
+        </li>
+        <li>
+            <NavItem to="/about" onClick={handleLinkClick} className={dropdownLinkClass}>
+            About
+            </NavItem>
+        </li>
+        </ul>
     </div>
   );
 }
