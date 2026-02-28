@@ -79,12 +79,12 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="relative z-10 px-6 w-full">
+      <div className="relative z-10 px-4 w-full">
         <div className="
           backdrop-blur-xs bg-white/60
           border border-white/40
           shadow-xl rounded-2xl
-          p-8 sm:p-12 sm:pb-6 max-w-2xl mx-auto mb-10"
+          p-8 sm:p-12 sm:pb-6 max-w-xl mx-auto mb-10"
         >
           <h1 className="text-3xl sm:text-5xl font-bold mb-4">
             Share what others want <span className="animate-pulse">🌿</span>
@@ -93,10 +93,16 @@ export default function Home() {
             Let your friends know that you have something to give.
           </p>
 
-          <div className="mt-4 z-20">
+          <div className=" z-20">
             <Animated_logo size={120} />
           </div>
-          <div className="flex flex-col sm:flex-row justify-around italic sm:font-semibold">
+          <div className="
+            flex flex-col sm:flex-row justify-around
+            italic font-semibold px-6 py-3
+            bg-green-700 text-white
+            rounded-full
+            shadow-md"
+          >
             <p className="basis-1/3">Share locally</p>
             <p className="basis-1/3">Grow community</p>
             <p className="basis-1/3">Reduce waste</p>
@@ -104,10 +110,10 @@ export default function Home() {
         </div>
 
         <div className="flex flex-wrap gap-10 justify-center pb-20">
-          <div className="backdrop-blur-sm bg-white/60 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
+          <div className="backdrop-blur-xs bg-white/90 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
             <h2 className="text-2xl font-bold mb-6">Welcome nature lovers</h2>
             <p className="text-green-800 leading-relaxed">
-              From our gardens come many treasures: leaves, fruits,
+              From our gardens come many treasures like leaves, fruits,
               vegetables, eggs, plants…
               <br /><br />
               When you have extras or needs,
@@ -116,7 +122,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="backdrop-blur-sm bg-white/60 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
+          <div className="backdrop-blur-xs bg-white/90 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
             <h2 className="text-2xl font-bold mb-6">Concept</h2>
             <p className="text-green-800 leading-relaxed">
               This app is free. No ads. No tracking.
@@ -128,7 +134,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="backdrop-blur-sm bg-white/60 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
+          <div className="backdrop-blur-xs bg-white/90 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
             <h2 className="text-2xl font-bold mb-6">What inspired it?</h2>
             <p className="text-green-800 leading-relaxed">
               Gardeners often say:

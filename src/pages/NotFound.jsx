@@ -6,8 +6,9 @@ export default function NotFound() {
     <div className="
             items-center text-center
             relative flex flex-col min-h-screen
-            bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] w-full
-            overflow-hidden"
+            bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7]
+            overflow-hidden w-full
+            justify-center sm:justify-start"
     >
       <img
         src={dessin}
@@ -22,9 +23,9 @@ export default function NotFound() {
           pointer-events-none
           z-0"
       />
-      <div className="mt-[15vh] px-6">
+      <div className="sm:mt-[15vh] px-6 z-10">
         <div className="
-          backdrop-blur-md bg-white/60
+          backdrop-blur-xs bg-white/60
           border border-white/40
           shadow-xl rounded-2xl
           p-10 max-w-xl mx-auto"
