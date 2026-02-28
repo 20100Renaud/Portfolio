@@ -4,18 +4,18 @@ import arrows from "../assets/Arrows_512x512.webp";
 
 const LogoWithArrows = ({ size = 120 }) => {
   return (
-    <div 
-        className="relative mx-auto"
-        style={{width: `${size}px`, height: `${size}px` }}
+    <div
+      className="relative mx-auto z-20"
+      style={{ width: `${size}px`, height: `${size}px` }}
     >
+
       <img
         src={text}
         alt="ShareUp"
         className="
             absolute inset-0 w-full h-full
             animate-text_animation_xs
-            sm:animate-text_animation_sm
-        "
+            sm:animate-text_animation_sm"
       />
 
       <img
@@ -24,8 +24,7 @@ const LogoWithArrows = ({ size = 120 }) => {
         className="
             absolute inset-0 w-full h-full
             animate-arrows_animation_xs
-            sm:animate-arrows_animation_sm
-        "
+            sm:animate-arrows_animation_sm"
       />
     </div>
   );
