@@ -112,6 +112,9 @@ export default function Navbar() {
                     <li>
                         <NavItem to="/about">About</NavItem>
                     </li>
+                    <li>
+                        <NavItem to="/404">404</NavItem>
+                    </li>
                 </ul>
             </div>
 
@@ -131,7 +134,7 @@ export default function Navbar() {
             shadow-xl
             rounded-br-lg rounded-bl-lg
             z-10 lg:hidden
-            flex justify-center gap-4
+            flex justify-center gap-0
             whitespace-nowrap
             transform origin-top
             transition-all duration-700 
@@ -152,6 +155,11 @@ export default function Navbar() {
                 <li>
                     <NavItem to="/about" onClick={handleLinkClick} className={dropdownLinkClass}>
                         About
+                    </NavItem>
+                </li>
+                                <li>
+                    <NavItem to="/404" onClick={handleLinkClick} className={dropdownLinkClass}>
+                        404
                     </NavItem>
                 </li>
             </ul>
