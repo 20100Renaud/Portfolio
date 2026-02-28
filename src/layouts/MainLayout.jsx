@@ -5,17 +5,17 @@ import dessin from "../assets/dessin_jardin.png";
 
 
 export default function MainLayout() {
-  return (
-    <div className="
+    return (
+        <div className="
         relative flex flex-col min-h-screen
         bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7]
         overflow-hidden w-full
         "
-    >
-        <img
-            src={dessin}
-            alt="Dessin de jardin"
-            className="
+        >
+            <img
+                src={dessin}
+                alt="Dessin de jardin"
+                className="
                 absolute top-1/2 left-1/2
                 h-[600px] sm:h-[900px]
                 w-full max-w-[1900px]
@@ -25,14 +25,14 @@ export default function MainLayout() {
                 pointer-events-none
                 z-0
             "
-        />
-        <div className="relative z-10 flex flex-col min-h-screen pt-16 pb-16">
-            <Navbar />
+            />
+            <div className="relative z-10 flex flex-col min-h-screen pt-16 pb-16">
+                <Navbar />
                 <main className="flex flex-grow mt-6">
                     <Outlet />
                 </main>
-            <Footer />
+                <Footer />
+            </div>
         </div>
-    </div>
-  )
+    )
 }

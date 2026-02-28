@@ -6,58 +6,59 @@
 @tailwind utilities;
 
 [data-theme="light"] {
-  --bc: 0 0% 0%;
+	--bc: 0 0% 0%;
 }
 
 html {
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
+	overflow-y: scroll;
+	scrollbar-gutter: stable;
 }
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+	width: 0px;
+	height: 0px;
 }
 
 html,
 body {
-  scrollbar-width: none;
+	scrollbar-width: none;
 }
 
 /* Dropdown open animation */
 .dropdown-in {
-  transition: height 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms;
-  opacity: 1;
-  overflow: hidden;
+	transition: height 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms;
+	opacity: 1;
+	overflow: hidden;
 }
 
 .dropdown-out {
-  transition: height 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms;
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
+	transition: height 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms;
+	height: 0;
+	opacity: 0;
+	overflow: hidden;
 }
 
 /* Infinite marquee for icons */
 @keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+	from {
+		transform: translateX(0);
+	}
+
+	to {
+		transform: translateX(-50%);
+	}
 }
 
 .marquee {
-  overflow: hidden;
+	overflow: hidden;
 }
 
 .marquee-track {
-  display: flex;
-  gap: 1.25rem;
-  align-items: center;
-  min-width: max-content;
-  will-change: transform;
-  animation: marquee var(--marquee-duration) linear infinite;
+	display: flex;
+	gap: 1.25rem;
+	align-items: center;
+	min-width: max-content;
+	will-change: transform;
+	animation: marquee var(--marquee-duration) linear infinite;
 }
