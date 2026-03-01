@@ -4,6 +4,7 @@ import Home from "./pages/Home"
 import Login from "./pages/Login"
 import SignUp from "./pages/SignUp"
 import NotFound from "./pages/NotFound"
+import Dashbord from "./pages/Dashbord"
 
 export default function App() {
     return (
@@ -13,6 +14,7 @@ export default function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<SignUp />} />
+                    <Route path="/dashbord" element={<Dashbord />} />
                 </Route >
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />

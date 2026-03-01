@@ -1,4 +1,4 @@
-import { FaLeaf, FaAppleAlt, FaCarrot, FaEgg, FaSeedling, FaTree, FaPoop } from "react-icons/fa";
+import { FaLeaf, FaAppleAlt, FaCarrot, FaEgg, FaSeedling, FaTree, FaPoop, FaQuestion  } from "react-icons/fa";
 import {
   GiStrawberry,
   GiBeet,
@@ -9,6 +9,7 @@ import {
   GiHoneyJar,
   GiPlantSeed,
   GiBasket,
+  GiNotebook,
 } from "react-icons/gi";
 import { MdCompost } from "react-icons/md";
 import Animated_logo from "../components/Animated_logo";
@@ -39,7 +40,7 @@ export default function Home() {
       relative flex flex-col items-center text-center
       text-green-900 overflow-hidden"
     >
-      <div className="mb-5 relative border-y-2 border-green-600/50 w-full">
+      <div className="m-5 relative border-y-2 border-green-600/50 w-full">
         <div className="marquee">
           <div
             className="marquee-track"
@@ -115,7 +116,7 @@ export default function Home() {
             <p className="text-green-800 leading-relaxed">
               From our gardens come many treasures like leaves, fruits,
               vegetables, eggs, plants…
-              <br /><br />
+              <div className="flex justify-center my-2"><GiBasket size={32} /></div>
               When you have extras or needs,
               this app makes sharing simple and local.
               Giving nearby is a beautiful way to reduce waste.
@@ -127,7 +128,7 @@ export default function Home() {
             <p className="text-green-800 leading-relaxed">
               This app is free. No ads. No tracking.
               Only your email is required to connect with others.
-              <br /><br />
+              <div className="flex justify-center my-2"><GiNotebook size={32} /></div>
               Our goal is a simple, intuitive interface
               that anyone can use.
               A growing community around sharing and sustainability.
@@ -136,15 +137,17 @@ export default function Home() {
 
           <div className="backdrop-blur-xs bg-white/90 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
             <h2 className="text-2xl font-bold mb-6">What inspired it?</h2>
-            <p className="text-green-800 leading-relaxed">
-              Gardeners often say:
+            <div className="text-green-800 leading-relaxed">
+              <p>
+                Gardeners often say:
+              </p>
               <p className="italic">“Tell me what you have.” or</p>
               <p className="italic">“Tell me what you need.”</p>
-              <br />
+              <div className="flex justify-center my-2"><FaQuestion  size={32} /></div>
               <p>So we built a way to connect people around that idea.
                 Simple, local and Friendly.
               </p>
-            </p>
+            </div>
           </div>
 
         </div>

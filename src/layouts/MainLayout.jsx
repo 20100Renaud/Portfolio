@@ -18,7 +18,7 @@ export default function MainLayout() {
         alt="Dessin de jardin"
         className="
           absolute top-1/2 left-1/2
-          h-[900px] sm:h-[900px]
+          h-[600px] sm:h-[900px]
           w-full max-w-[1900px]
           -translate-x-1/2 -translate-y-1/2
           object-left object-cover
@@ -26,9 +26,9 @@ export default function MainLayout() {
           pointer-events-none
           z-0"
       />
-      <div className="relative z-10 flex flex-col min-h-screen pt-16 pb-16">
+      <div className="relative z-50 flex flex-col min-h-screen pt-16 pb-16">
         <Navbar />
-        <main className="flex flex-grow mt-6">
+        <main className="flex flex-grow z-10">
           <Outlet />
         </main>
         <Footer />
