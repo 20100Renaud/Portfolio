@@ -13,7 +13,7 @@ export default function Login() {
 
   return (
 
-    <div className=" flex flex-grow items-center justify-center w-full px-6 mt-4">
+    <div className=" flex flex-grow items-center justify-center w-full px-6">
       <div className="
         relative w-full max-w-md p-8
         bg-gradient-to-b

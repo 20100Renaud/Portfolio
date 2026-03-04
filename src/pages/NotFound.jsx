@@ -30,6 +30,10 @@ export default function NotFound() {
           shadow-xl rounded-2xl
           p-10 max-w-xl mx-auto"
         >
+          <aside>
+            <p className="text-xs italic">#404</p>
+          </aside>
+
           <h1 className="text-5xl font-bold mb-4 text-green-900">
             It seems you got lost
           </h1>

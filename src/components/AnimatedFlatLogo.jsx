@@ -17,7 +17,7 @@ const AnimatedFlatLogo = ({ size = 120 }) => {
       <img
         src={arrows}
         alt="Arrows"
-        className="absolute inset-0 w-full h-full group-hover:animate-arrows_flat_animation"
+        className="absolute inset-0 w-full h-full group-hover:animate-arrows_flat_animation group-focus:animate-arrows_flat_animation"
       />
     </div>
   );

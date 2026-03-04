@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
+import Dock from "../components/Dock"
 import { Outlet } from "react-router-dom"
 import dessin from "../assets/dessin_jardin.png";
 
@@ -26,12 +27,13 @@ export default function MainLayout() {
           pointer-events-none
           z-0"
       />
-      <div className="relative z-50 flex flex-col min-h-screen pt-16 pb-16">
+      <div className="relative z-50 flex flex-col flex-1">
         <Navbar />
-        <main className="flex flex-grow z-10">
+        <main className="flex-1 flex flex-col sm:pt-16 pb-16">
           <Outlet />
         </main>
         <Footer />
+        <Dock />
       </div>
     </div>
   )

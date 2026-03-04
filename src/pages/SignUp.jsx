@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
 
 export default function SignUp() {
   const [username, setUsername] = useState("");
@@ -18,7 +17,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex flex-grow items-center justify-center w-full px-6 mt-4">
+    <div className="flex flex-grow items-center justify-center w-full px-6">
       <div
         className="
           relative w-full max-w-md p-8

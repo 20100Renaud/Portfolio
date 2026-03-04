@@ -1,86 +1,64 @@
-import { FaLeaf, FaAppleAlt, FaCarrot, FaEgg, FaSeedling, FaTree, FaPoop, FaQuestion  } from "react-icons/fa";
-import {
-  GiStrawberry,
-  GiBeet,
-  GiTomato,
-  GiPumpkin,
-  GiMushroom,
-  GiHerbsBundle,
-  GiHoneyJar,
-  GiPlantSeed,
-  GiBasket,
-  GiNotebook,
-} from "react-icons/gi";
-import { MdCompost } from "react-icons/md";
+import { useRef } from "react";
+import { Link } from "react-router-dom";
+import { FaQuestion } from "react-icons/fa";
+import { GiBasket, GiNotebook, } from "react-icons/gi";
 import Animated_logo from "../components/Animated_logo";
+import { shareItems } from "../constants/shareItems";
+import { useScrollScale } from "../hooks/useInView";
 
-const shareItems = [
-  { name: "Leaves", icon: FaLeaf },
-  { name: "Branches", icon: FaTree },
-  { name: "Apple", icon: FaAppleAlt },
-  { name: "Carrot", icon: FaCarrot },
-  { name: "Tomato", icon: GiTomato },
-  { name: "Eggs", icon: FaEgg },
-  { name: "Plants", icon: FaSeedling },
-  { name: "Compost", icon: MdCompost },
-  { name: "Manure", icon: FaPoop },
-  { name: "Strawberries", icon: GiStrawberry },
-  { name: "Beets", icon: GiBeet },
-  { name: "Pumpkin", icon: GiPumpkin },
-  { name: "Mushrooms", icon: GiMushroom },
-  { name: "Herbs", icon: GiHerbsBundle },
-  { name: "Honey", icon: GiHoneyJar },
-  { name: "Seeds", icon: GiPlantSeed },
-  { name: "Basket", icon: GiBasket },
-];
 
 export default function Home() {
+  const basketRef = useRef(null);
+  const notebookRef = useRef(null);
+  const questionRef = useRef(null);
+
+  const basketScale = useScrollScale(basketRef);
+  const notebookScale = useScrollScale(notebookRef);
+  const questionScale = useScrollScale(questionRef);
   return (
     <div className="
-      relative flex flex-col items-center text-center
+      relative flex flex-col
+      items-center text-center
       text-green-900 overflow-hidden"
     >
-      <div className="m-5 relative border-y-2 border-green-600/50 w-full">
-        <div className="marquee">
-          <div
-            className="marquee-track"
-            style={{ ['--marquee-duration']: '40s' }}
-          >
-            {shareItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.name}
-                  className="flex flex-col items-center text-center w-16 sm:w-24 p-2 sm:p-4"
-                >
-                  <div className="text-green-600 text-2xl sm:text-4xl">
-                    <Icon />
-                  </div>
-                  <span className="text-xs sm:text-sm font-medium">{item.name}</span>
-                </div>
-              );
-            })}
 
-            {shareItems.map((item, i) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={"dup-" + item.name + i}
-                  aria-hidden
-                  className="flex flex-col items-center text-center w-16 sm:w-24 p-2 sm:p-4"
-                >
-                  <div className="text-green-600 text-2xl sm:text-4xl">
-                    <Icon />
-                  </div>
-                  <span className="text-xs sm:text-sm font-medium">{item.name}</span>
+      <section className=" relative border-y-2 border-green-600/80 backdrop-blur-xs bg-white/60 w-full m-4  shadow-md overflow-hidden py-3 sm:py-4">
+        <div className="flex w-max animate-marquee will-change-transform gap-4">
+
+          {shareItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.name}
+                className="flex flex-col items-center justify-center text-center shrink-0 w-20 sm:w-28"
+              >
+                <div className="text-green-600/80 text-2xl sm:text-4xl">
+                  <Icon />
                 </div>
-              );
-            })}
-          </div>
+                <span className="text-xs sm:text-sm font-medium">{item.name}</span>
+              </div>
+            );
+          })}
+
+          {shareItems.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={"dup-" + item.name + i}
+                aria-hidden
+                className="flex flex-col items-center justify-center text-center shrink-0 w-20 sm:w-28"
+              >
+                <div className="text-green-600 text-2xl sm:text-4xl">
+                  <Icon />
+                </div>
+                <span className="text-xs sm:text-sm font-medium">{item.name}</span>
+              </div>
+            );
+          })}
         </div>
-      </div>
+      </section>
 
-      <div className="relative z-10 px-4 w-full">
+      <section className="relative z-10 px-4 w-full">
         <div className="
           backdrop-blur-xs bg-white/60
           border border-white/40
@@ -99,7 +77,7 @@ export default function Home() {
           </div>
           <div className="
             flex flex-col sm:flex-row justify-around
-            italic font-semibold px-6 py-3
+            italic font-semibold px-6 py-1
             bg-green-700 text-white
             rounded-full
             shadow-md"
@@ -110,13 +88,17 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-10 justify-center pb-20">
+        <asside className="flex flex-wrap gap-10 justify-center pb-20">
           <div className="backdrop-blur-xs bg-white/90 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
             <h2 className="text-2xl font-bold mb-6">Welcome nature lovers</h2>
             <p className="text-green-800 leading-relaxed">
               From our gardens come many treasures like leaves, fruits,
               vegetables, eggs, plants…
-              <div className="flex justify-center my-2"><GiBasket size={32} /></div>
+              <div ref={basketRef} className="flex justify-center my-2">
+                <GiBasket
+                  size={32}
+                  style={{ transform: `scale(${basketScale})` }} />
+              </div>
               When you have extras or needs,
               this app makes sharing simple and local.
               Giving nearby is a beautiful way to reduce waste.
@@ -128,7 +110,11 @@ export default function Home() {
             <p className="text-green-800 leading-relaxed">
               This app is free. No ads. No tracking.
               Only your email is required to connect with others.
-              <div className="flex justify-center my-2"><GiNotebook size={32} /></div>
+              <div ref={notebookRef} className="flex justify-center my-2">
+                <GiNotebook
+                  size={32}
+                  style={{ transform: `scale(${notebookScale})` }} />
+              </div>
               Our goal is a simple, intuitive interface
               that anyone can use.
               A growing community around sharing and sustainability.
@@ -143,15 +129,20 @@ export default function Home() {
               </p>
               <p className="italic">“Tell me what you have.” or</p>
               <p className="italic">“Tell me what you need.”</p>
-              <div className="flex justify-center my-2"><FaQuestion  size={32} /></div>
-              <p>So we built a way to connect people around that idea.
-                Simple, local and Friendly.
+              <div ref={questionRef} className="flex justify-center my-2">
+                <FaQuestion
+                  size={32}
+                  style={{ transform: `scale(${questionScale})` }} />
+              </div>
+              <p>
+                So we built a way to connect people around that idea.
+                Please help us improve it here in the <Link to="/faq" className="underline text-blue-500">FAQ</Link>.
               </p>
             </div>
           </div>
 
-        </div>
-      </div>
+        </asside>
+      </section>
     </div>
   );
 }
