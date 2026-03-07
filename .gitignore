@@ -1,3 +1,9 @@
+# dependencies
+node_modules/
+
+# environment variables
+.env
+
 # Logs
 logs
 *.log
@@ -7,10 +13,18 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+
 node_modules
 dist
 dist-ssr
 *.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Prisma
+prisma/dev.db
 
 # Editor directories and files
 .vscode/*
@@ -23,4 +37,5 @@ dist-ssr
 *.sln
 *.sw?
 
-tmp.jsx
+tmp.*
+/generated/prisma
