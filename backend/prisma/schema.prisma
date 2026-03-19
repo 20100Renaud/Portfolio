@@ -4,39 +4,41 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("postgresql://postgres:rEiTNJISJmbUVGRhBZhojrmqKGtqqWZC@postgres.railway.internal:5432/railway")
 }
 
-model Client {
-  ID_Client      String    @id @default(uuid())
-  Login_Client   String    @unique
-  Mail_Client    String    @unique
-  Password_Client String
-  Date_Client    DateTime  @default(now())
+model T_Clients {
+  ID_Client        String    @id @default(uuid())
+  Login_Client     String    @unique
+  Mail_Client      String    @unique
+  Password_Client  String
+  PC_Client        String
+  Date_Client      DateTime  @default(now())
 
-  posts          Post[]
-  comments       Comment[]
+  Posts_Client     T_Posts[]
+  Comments_Client  T_Comments[]
 }
 
-model Post {
-  ID_Post        String   @id @default(uuid())
-  Title_Post     String
+model T_Posts {
+  ID_Post          String   @id @default(uuid())
+  Title_Post       String
   Description_Post String
-  Date_Post      DateTime @default(now())
+  Date_Post        DateTime @default(now())
 
-  ID_Client_Post String
-  client         Client   @relation(fields: [ID_Client_Post], references: [ID_Client])
+  ID_Client_Post   String
+  Client_Post      T_Clients   @relation(fields: [ID_Client_Post], references: [ID_Client])
 
-  comments       Comment[]
+  Comments_Post    T_Comments[]
 }
 
-model Comment {
-  ID_Com         String   @id @default(uuid())
-  Description_Com String
-  Date_Com       DateTime @default(now())
+model T_Comments {
+  ID_Com           String   @id @default(uuid())
+  Description_Com  String
+  Date_Com         DateTime @default(now())
 
-  ID_Post        String
-  post           Post     @relation(fields: [ID_Post], references: [ID_Post])
+  ID_Post_Com      String
+  Post_Comments    T_Posts     @relation(fields: [ID_Post_Com], references: [ID_Post])
 
-  ID_Client_Com  String
-  client         Client   @relation(fields: [ID_Client_Com], references: [ID_Client])
+  ID_Client_Com    String
+  Client_Comments  T_Clients   @relation(fields: [ID_Client_Com], references: [ID_Client])
 }
