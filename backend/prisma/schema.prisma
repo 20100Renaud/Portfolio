@@ -10,6 +10,7 @@ model T_Clients {
   ID_Client        String    @id @default(uuid())
   Login_Client     String    @unique
   Mail_Client      String    @unique
+  Mail_Hash_Client String    @unique
   Password_Client  String
   PC_Client        String
   Date_Client      DateTime  @default(now())

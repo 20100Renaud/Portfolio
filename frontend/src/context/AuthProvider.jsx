@@ -1,26 +1,50 @@
-import { useState, useContext } from "react";
+import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
-  const [username, setUsername] = useState(() => localStorage.getItem("username"));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = ({ token: newToken, username: newUsername }) => {
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("username", newUsername);
-    setToken(newToken);
-    setUsername(newUsername);
+  useEffect(() => {
+    fetch("/api/auth/me", {
+      credentials: "include",
+    })
+      .then(res => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then(data => {
+        setIsAuthenticated(true);
+        setUsername(data.username);
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+        setUsername(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const login = (username) => {
+    setIsAuthenticated(true);
+    setUsername(username);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    setToken(null);
+  const logout = async () => {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    setIsAuthenticated(false);
     setUsername(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, username, login, logout, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -4,32 +4,26 @@ import { useAuth } from "../context/useAuth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { username, logout, token } = useAuth();
+  const { username, logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
     const fetchProtectedData = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
       try {
         const res = await fetch("/api/auth/protected-data", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          credentials: "include",
         });
 
         if (!res.ok) {
           navigate("/login");
-          return;
         }
 
         const data = await res.json();
         console.log(data);
-
       } catch (err) {
         console.error(err);
         navigate("/login");
@@ -37,7 +31,7 @@ export default function Dashboard() {
     };
 
     fetchProtectedData();
-  }, [navigate, token]);
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="relative text-center text-green-900 overflow-hidden justify-center my-10 mx-auto">

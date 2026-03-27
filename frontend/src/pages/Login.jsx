@@ -47,6 +47,7 @@ export default function Login() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -61,7 +62,7 @@ export default function Login() {
           </div>
         );
         console.log("Login result:", data);
-        login({ token: data.token, username: data.username });
+        login(data.username);
         navigate("/dashboard");
       } else {
         setToast(
