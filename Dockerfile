@@ -1,13 +1,11 @@
 FROM node:20
-
 WORKDIR /app
-
-COPY package*.json ./
-
+COPY backend/package*.json ./backend/
+WORKDIR /app/backend
 RUN npm install
-
-COPY . .
-
+WORKDIR /app
+COPY backend ./backend
+COPY frontend ./frontend
+COPY prisma ./prisma
 EXPOSE 5000
-
-CMD ["npm", "run", "dev"]
+CMD ["node", "backend/src/server.js"]

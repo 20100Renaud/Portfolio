@@ -1,6 +1,12 @@
 import { Link, NavLink } from "react-router-dom";
 import AnimatedFlatLogo from "../components/AnimatedFlatLogo";
 
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "/";
+};
+
 const NavItem = ({ to, end, children, className = "" }) => {
   return (
     <NavLink
@@ -33,9 +39,7 @@ export default function Navbar() {
       </section>
 
       <section className="navbar bg-green-700 shadow-lg px-4 hidden sm:flex fixed top-0 left-0 right-0 z-50 h-16">
-
         <div className="navbar-start">
-
           <Link
             to="/"
             className="group btn btn-ghost  hover:bg-transparent hover:shadow-none"
@@ -65,6 +69,13 @@ export default function Navbar() {
           >
             Login
           </Link>
+
+          <button
+            onClick={handleLogout}
+            className="text-sm font-bold text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg hidden sm:flex mx-6 px-4"
+          >
+            Logout
+          </button>
         </div>
       </section>
     </>

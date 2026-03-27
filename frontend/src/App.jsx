@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound"
 import Dashboard from "./pages/Dashboard"
 import Faq from "./pages/Faq"
 import Market from "./pages/Market"
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -16,7 +17,12 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/faq" element={<Faq />} />
           <Route path="/market" element={<Market />} />
         </Route >

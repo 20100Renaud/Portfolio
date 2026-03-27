@@ -10,19 +10,24 @@ export const register = async (req, res) => {
 
     const user = await prisma.client.create({
       data: {
-        Login_Client: data.login,
+        Login_Client: data.username,
         Mail_Client: data.email,
         Password_Client: hashedPassword
       }
     })
-    res.status(201).json(user)
+    const token = jwt.sign(
+      { clientId: user.ID_Client },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.status(201).json({ token, user })
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: "Server error"})
+    res.status(500).json({ error: "Server error" })
   }
 }
 
-export const login = async (req, res) => {
+export const connect = async (req, res) => {
   try {
     const { email, password } = req.body
 

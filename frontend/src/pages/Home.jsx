@@ -22,7 +22,7 @@ export default function Home() {
       text-green-900 overflow-hidden"
     >
 
-      <section className=" relative border-y-2 border-green-600/80 backdrop-blur-xs bg-white/60 w-full m-4  shadow-md overflow-hidden py-3 sm:py-4">
+      <section className="relative border-y-2 border-green-600/80 backdrop-blur-xs bg-white/60 w-full m-4  shadow-md overflow-hidden py-3 sm:py-4">
         <div className="flex w-max animate-marquee will-change-transform gap-4">
 
           {shareItems.map((item) => {

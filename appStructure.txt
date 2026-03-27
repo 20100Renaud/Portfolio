@@ -1,0 +1,103 @@
+portfolio/
+├─ backend/
+│  ├─ src/
+│  │  ├─ config/
+│  │  ├─ controllers/
+│  │  │  └─ auth.controller.js
+│  │  ├─ middleware/
+│  │  │  └─ auth.middleware.js
+│  │  ├─ routes/
+│  │  │  └─ auth.routes.js
+│  │  ├─ validators/
+│  │  │  └─ auth.schema.js
+│  │  ├─ prismaClient.js
+│  │  └─ server.js
+│  ├─ prisma/
+│  │  ├─ schema.prisma
+│  │  ├─ schema.prisma:7
+│  │  └─ migrations/
+│  │     ├─ 20260319060205_init/
+│  │     │  └─ migration.sql
+│  │     └─ migration_lock.toml
+│  ├─ .env
+│  ├─ .gitignore
+│  ├─ package.json
+│  ├─ package-lock.json
+│  ├─ prisma.config.js
+│  └─ README.md
+├─ frontend/
+│  ├─ node_modules/
+│  ├─ public/
+│  │  ├─ favicon.ico
+│  │  ├─ fonts/
+│  │  │  ├─ Zain-Black.woff2
+│  │  │  ├─ Zain-Bold.woff2
+│  │  │  ├─ Zain-ExtraBold.woff2
+│  │  │  ├─ Zain-ExtraLight.woff2
+│  │  │  ├─ Zain-Italic.woff2
+│  │  │  ├─ Zain-Light.woff2
+│  │  │  └─ Zain-LightItalic.woff2
+│  │  ├─ icons/
+│  │  │  ├─ Logo_16x16.png
+│  │  │  ├─ Logo_180x180.png
+│  │  │  ├─ Logo_192x192_bg.png
+│  │  │  ├─ Logo_192x192.webp
+│  │  │  ├─ Logo_32x32.png
+│  │  │  ├─ Logo_512x512.webp
+│  │  │  └─ Logo_512x512_bg.png
+│  │  ├─ manifest.json
+│  │  └─ _redirects
+│  ├─ src/
+│  │  ├─ App.jsx
+│  │  ├─ daisyui.d.ts
+│  │  ├─ index.css
+│  │  ├─ main.jsx
+│  │  ├─ style.js
+│  │  ├─ assets/
+│  │  │  ├─ Arrows_512x512.webp
+│  │  │  ├─ Coupe+Saint+Leu+copy.webp
+│  │  │  ├─ dessin_jardin.png
+│  │  │  ├─ dessin_jardin.webp
+│  │  │  ├─ Logo_512x353.webp
+│  │  │  └─ ShareUp_512x512.webp
+│  │  ├─ components/
+│  │  │  ├─ AnimatedFlatLogo.jsx
+│  │  │  ├─ AnimatedFlatLogo_infinite.jsx
+│  │  │  ├─ Animated_logo.jsx
+│  │  │  ├─ Dock.jsx
+│  │  │  ├─ Footer.jsx
+│  │  │  ├─ Navbar.jsx
+│  │  │  └─ 'Navbar copy.jsx'
+│  │  ├─ constants/
+│  │  │  └─ shareItems.js
+│  │  ├─ context/
+│  │  │  └─ auth.controller.js
+│  │  ├─ hooks/
+│  │  │  └─ useInView.js
+│  │  ├─ layouts/
+│  │  │  └─ MainLayout.jsx
+│  │  └─ pages/
+│  │     ├─ Dashboard.jsx
+│  │     ├─ Faq.jsx
+│  │     ├─ Home.jsx
+│  │     ├─ Login.jsx
+│  │     ├─ Market.jsx
+│  │     ├─ NotFound.jsx
+│  │     └─ SignUp.jsx
+│  ├─ package.json
+│  ├─ package-lock.json
+│  ├─ vite.config.js
+│  ├─ tailwind.config.js
+│  ├─ postcss.config.js
+│  ├─ eslint.config.js
+│  ├─ .stylelintrc.json
+│  └─ README.md
+├─ docker-compose.yml
+├─ Dockerfile
+├─ .git/
+├─ .gitignore
+├─ README.md
+├─ Production.png
+├─ Technos.png
+├─ tmp.txt
+└─ appStructure.txt

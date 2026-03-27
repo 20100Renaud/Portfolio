@@ -8,18 +8,18 @@ import dessin from "../assets/dessin_jardin.png";
 export default function MainLayout() {
   return (
     <div
-      // style={{ backgroundImage: `url(${dessin})` }}
       className="
         relative flex flex-col min-h-screen
         overflow-hidden w-full
-        bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7]"
+        bg-[#e3f1e9]"
     >
+      <div className="absolute top-0 left-0 w-full h-[600px] sm:h-[900px] bg-gradient-to-br from-[#a5d6a7] via-[#e6f2ec] to-transparent z-0" />
       <img
         src={dessin}
         alt="Dessin de jardin"
         className="
-          absolute top-1/2 left-1/2
-          h-[600px] sm:h-[900px]
+          fixed top-1/2 left-1/2
+          h-[550px] sm:h-[900px]
           w-full max-w-[1900px]
           -translate-x-1/2 -translate-y-1/2
           object-left object-cover
@@ -27,13 +27,16 @@ export default function MainLayout() {
           pointer-events-none
           z-0"
       />
-      <div className="relative z-50 flex flex-col flex-1">
+      <div className="relative flex flex-col">
         <Navbar />
-        <main className="flex-1 flex flex-col sm:pt-16 pb-16">
+
+        <main className="flex-1 sm:pt-16 pb-16">
           <Outlet />
         </main>
+
         <Footer />
         <Dock />
+
       </div>
     </div>
   )

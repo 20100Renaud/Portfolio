@@ -1,19 +1,92 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
+import { useAuth } from "../context/useAuth";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = (e) => {
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false,
+  });
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isValidPassword = (password) => {
+    return password.length >= 4;
+  };
+  const isFormValid =
+    isValidEmail(email) && isValidPassword(password);
+
+  const [toast, setToast] = useState(null);
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const { login } = useAuth();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Email: ${email}\nPassword: ${password}`);
+
+    if (!isFormValid) return;
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setToast(
+          <div className="flex flex-col p-4">
+            <span className="font-bold text-lg text-white">
+              Login successful!
+            </span>
+          </div>
+        );
+        console.log("Login result:", data);
+        login({ token: data.token, username: data.username });
+        navigate("/dashboard");
+      } else {
+        setToast(
+          <div className="flex flex-col p-4">
+            <span className="font-bold text-lg text-white">
+              {data.message || "Login failed"}
+            </span>
+          </div>
+        );
+      }
+    } catch (err) {
+      console.error("Error logging in:", err);
+      setToast(
+        <div className="flex flex-col p-4">
+          <span className="font-bold text-lg text-white">
+            Server error, try again later
+          </span>
+        </div>
+      );
+      console.error(err);
+    }
   };
 
   return (
-
-    <div className=" flex flex-grow items-center justify-center w-full px-6">
+    <div className="mt-6 flex flex-grow items-center justify-center w-full px-6">
       <div className="
         relative w-full max-w-md p-8
         bg-gradient-to-b
@@ -24,51 +97,91 @@ export default function Login() {
           <AnimatedFlatLogoInfinite size={120} />
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
           Login
         </h2>
 
-        <form onSubmit={handleSubmit} className="w-full space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="w-full space-y-4">
           <div>
-            <label className="block text-gray-700 mb-1">Email</label>
+            <label className="block text-gray-700">Email</label>
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="
+              onChange={(e) => {
+                const value = e.target.value.toLowerCase();
+                setEmail(value);
+                setErrors((prev) => ({
+                  ...prev,
+                  email: isValidEmail(value) ? "" : "Invalid email address",
+                }));
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, email: true }));
+              }}
+              className={`
                 input input-bordered w-full bg-white pl-4
                 focus:placeholder-transparent
                 focus:outline-none
-                focus:ring-2 focus:ring-green-700"
+                focus:ring-2 focus:ring-green-700
+                ${touched.email && errors.email ? "border-red-500" : ""}
+                `}
               placeholder="you@example.com"
               required
             />
+            <div className="h-2">
+              {touched.email && errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
+            </div>
           </div>
 
           <div>
-            <label className="block text-gray-700 mb-1">Password</label>
+            <label className="block text-gray-700">Password</label>
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="
-                input input-bordered w-full bg-white pl-4 
+              onChange={(e) => {
+                const value = e.target.value;
+                setPassword(value);
+                setErrors((prev) => ({
+                  ...prev,
+                  password: isValidPassword(value)
+                    ? ""
+                    : "Password must be at least 4 characters",
+                }));
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, password: true }));
+              }}
+              className={`
+                input input-bordered w-full bg-white pl-4
                 focus:placeholder-transparent
                 focus:outline-none
-                focus:ring-2 focus:ring-green-700"
+                focus:ring-2 focus:ring-green-700
+                ${touched.password && errors.password ? "border-red-500" : ""}
+              `}
               placeholder="********"
               required
             />
+            <div className="h-2">
+              {touched.password && errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
+            </div>
           </div>
 
           <button
             type="submit"
-            className="px-6 py-3 w-full
-              bg-green-700 text-white
-              rounded-full
-              hover:bg-green-800
+            disabled={!isFormValid}
+            className={`
+              px-6 py-3 w-full rounded-full
               transition
-              shadow-md"
+              shadow-md
+              ${isFormValid
+                ? "bg-green-700 text-white hover:bg-green-800"
+                : "bg-gray-400 text-gray-200 cursor-not-allowed"
+              }
+            `}
           >
             Sign In
           </button>
@@ -84,6 +197,17 @@ export default function Login() {
           </Link>
         </p>
       </div>
+
+      {toast && (
+        <div className="
+            fixed items-center justify-center text-center
+            bg-green-600
+            rounded-lg shadow-lg
+            animate-fade-in
+          ">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
