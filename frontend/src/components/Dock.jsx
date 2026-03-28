@@ -22,56 +22,56 @@ export default function Dock() {
       <div className="absolute inset-0 bg-[#e1efe7] z-0 mt-6 mx-4" />
 
       <div className="relative dock flex items-center justify-around z-10 bg-transparent">
-        {dockLinks.map(({ to, label, icon: Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              `${dockLinkBase} ${isActive ? itemActive : itemInactive}`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon size={20} strokeWidth={isActive ? 1.5 : 1} />
-                <span className={`dock-label ${isActive ? "font-bold" : ""}`}>{label}</span>
-              </>
-            )}
-          </NavLink>
-        ))}
-        {isAuthenticated ? (
-          <NavLink
-            to="/dashboard"
-            className={({ isActive }) =>
-              `${dockLinkBase} ${isActive ? itemActive : itemInactive}`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <LayoutDashboard size={20} strokeWidth={isActive ? 1.5 : 1} />
-                <span className={`dock-label ${isActive ? "font-bold" : ""}`}>
-                  Dashboard
-                </span>
-              </>
-            )}
-          </NavLink>
-        ) : (
-          <NavLink
-            to="/login"
-            className={({ isActive }) =>
-              `${dockLinkBase} ${isActive ? itemActive : itemInactive}`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <LogIn size={20} strokeWidth={isActive ? 1.5 : 1} />
-                <span className={`dock-label ${isActive ? "font-bold" : ""}`}>
-                  Login
-                </span>
-              </>
-            )}
-          </NavLink>
-        )}
+        {dockLinks.map(({ to, label, icon, end }) => {
+          const Icon = icon;
+          return (
+            <NavLink
+              key={to}
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                `${dockLinkBase} ${isActive ? itemActive : itemInactive}`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon size={20} strokeWidth={isActive ? 1.5 : 1} />
+                  <span className={`dock-label ${isActive ? "font-bold" : ""}`}>{label}</span>
+                </>
+              )}
+            </NavLink>
+          );
+        })}
+        {isAuthenticated
+          ? (
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                `${dockLinkBase} ${isActive ? itemActive : itemInactive}`}>
+              {({ isActive }) => (
+                <>
+                  <LayoutDashboard size={20} strokeWidth={isActive ? 1.5 : 1} />
+                  <span className={`dock-label ${isActive ? "font-bold" : ""}`}>
+                    Dashboard
+                  </span>
+                </>
+              )}
+            </NavLink>
+          ) : (
+            <NavLink
+              to="/login"
+              className={({ isActive }) =>
+                `${dockLinkBase} ${isActive ? itemActive : itemInactive}`}>
+              {({ isActive }) => (
+                <>
+                  <LogIn size={20} strokeWidth={isActive ? 1.5 : 1} />
+                  <span className={`dock-label ${isActive ? "font-bold" : ""}`}>
+                    Login
+                  </span>
+                </>
+              )}
+            </NavLink>
+          )}
       </div>
 
     </footer>
