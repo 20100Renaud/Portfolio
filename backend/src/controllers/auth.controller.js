@@ -43,18 +43,21 @@ export const connect = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const emailHash = hashEmail(email);
+    const normalizedEmail = email.toLowerCase().trim();
+    const emailHash = hashEmail(normalizedEmail);
 
     const user = await prisma.T_Clients.findUnique({
       where: { Mail_Hash_Client: emailHash }
     });
-
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const valid = await bcrypt.compare(password, user.Password_Client);
+    if (user.Password_Client === "DISABLED") {
+      return res.status(403).json({ error: "Account disabled" });
+    }
 
+    const valid = await bcrypt.compare(password, user.Password_Client);
     if (!valid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }

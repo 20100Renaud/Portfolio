@@ -1,14 +1,12 @@
 import prisma from "../prismaClient.js";
+import { hashEmail } from "../utils/hash.js";
 
-const isOwnerOrAdmin = (user, ownerId) => {
-  return user.role === "ADMIN" || user.clientId === ownerId;
-};
 
 // -----------------------------------------CRUD POSTS---------------------------------------------------------------
 export const createPost = async (req, res) => {
   try {
     const { title, description } = req.body;
-    const post = await prisma.t_Posts.create({
+    const post = await prisma.T_Posts.create({
       data: {
         Title_Post: title,
         Description_Post: description,
@@ -24,7 +22,7 @@ export const createPost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await prisma.t_Posts.findMany({
+    const posts = await prisma.T_Posts.findMany({
       include: {
         Client_Post: true,
         Comments_Post: {
@@ -42,16 +40,11 @@ export const getAllPosts = async (req, res) => {
 
 export const updatePost = async (req, res) => {
   try {
-    const post = await prisma.T_Posts.findUnique({
-      where: { ID_Post: req.params.id }
-    });
+    const post = req.post;
     if (!post) return res.status(404).json({ error: "Post not found" });
-    if (!isOwnerOrAdmin(req.user, post.ID_Client_Post)) {
-      return res.status(403).json({ error: "Forbidden" });
-    }
 
-    const updated = await prisma.t_Posts.update({
-      where: { ID_Post: req.params.id },
+    const updated = await prisma.T_Posts.update({
+      where: { ID_Post: post.ID_Post },
       data: {
         Title_Post: req.body.title,
         Description_Post: req.body.description
@@ -67,22 +60,27 @@ export const updatePost = async (req, res) => {
 
 export const deletePost = async (req, res) => {
   try {
-    const post = await prisma.T_Posts.findUnique({
-      where: { ID_Post: req.params.id }
-    });
+    const post = req.post;
     if (!post) return res.status(404).json({ error: "Post not found" });
-    if (!isOwnerOrAdmin(req.user, post.ID_Client_Post)) {
-      return res.status(403).json({ error: "Forbidden" });
+
+    if (!process.env.UNKNOWN_EMAIL) {
+      return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
+    }
+    const unknown = await prisma.T_Clients.findFirst({
+      where: { Mail_Hash_Client: hashEmail(process.env.UNKNOWN_EMAIL) }
+    });
+    if (!unknown) {
+      return res.status(500).json({ error: "Unknown user missing" });
     }
 
-    await prisma.T_Comments.updateMany({
-      where: { ID_Post_Com: post.ID_Post },
-      data: { ID_Client_Com: "UNKNOWN_CLIENT_ID" }
+    await prisma.T_Comments.deleteMany({
+      where: { ID_Post_Com: post.ID_Post }
     });
 
-    await prisma.t_Posts.delete({
-      where: { ID_Post: req.params.id }
+    await prisma.T_Posts.delete({
+      where: { ID_Post: post.ID_Post }
     });
+
     res.json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
@@ -94,16 +92,14 @@ export const deletePost = async (req, res) => {
 export const createComment = async (req, res) => {
   try {
     const { description } = req.body;
-    const post = await prisma.t_Posts.findUnique({
-      where: { ID_Post: req.params.postId }
-    });
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-    if (req.user.role !== "ADMIN" && post.ID_Client_Post === req.user.clientId) {
-      return res.status(403).json({ error: "You can't comment your own post"
+    const post = req.post;
+    if (!post) return res.status(404).json({ error: "Post not found" });
+    if (post.ID_Client_Post === req.user.clientId && req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        error: "You can't comment your own post"
       });
     }
+
     const comment = await prisma.T_Comments.create({
       data: {
         Description_Com: description,
@@ -121,13 +117,8 @@ export const createComment = async (req, res) => {
 
 export const updateComment = async (req, res) => {
   try {
-    const comment = await prisma.T_Comments.findUnique({
-      where: { ID_Com: req.params.id }
-    });
+    const comment = req.comment;
     if (!comment) return res.status(404).json({ error: "Comment not found" });
-    if (!isOwnerOrAdmin(req.user, comment.ID_Client_Com)) { 
-      return res.status(403).json({ error: "Forbidden" });
-    }
 
     const updated = await prisma.T_Comments.update({
       where: { ID_Com: req.params.id },
@@ -142,13 +133,8 @@ export const updateComment = async (req, res) => {
 
 export const deleteComment = async (req, res) => {
   try {
-    const comment = await prisma.T_Comments.findUnique({
-      where: { ID_Com: req.params.id }
-    });
+    const comment = req.comment;
     if (!comment) return res.status(404).json({ error: "Comment not found" });
-    if (!isOwnerOrAdmin(req.user, comment.ID_Client_Com)) {
-      return res.status(403).json({ error: "Forbidden" });
-    }
 
     await prisma.T_Comments.delete({ where: { ID_Com: req.params.id } });
     res.json({ message: "Deleted" });
