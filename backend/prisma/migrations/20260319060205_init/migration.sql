@@ -46,3 +46,9 @@ ALTER TABLE "T_Comments" ADD CONSTRAINT "T_Comments_ID_Post_Com_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "T_Comments" ADD CONSTRAINT "T_Comments_ID_Client_Com_fkey" FOREIGN KEY ("ID_Client_Com") REFERENCES "T_Clients"("ID_Client") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--Add Unkown Client
+INSERT INTO "T_Clients" 
+("ID_Client", "Login_Client", "Mail_Client", "Mail_Hash_Client", "Password_Client", "Role_Client", "PC_Client")
+VALUES 
+('00000000-0000-0000-0000-000000000000', 'Unknown', 'un@known.com', 'unknownhash', '', 'CLIENT', '');

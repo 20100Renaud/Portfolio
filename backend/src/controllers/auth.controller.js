@@ -12,7 +12,7 @@ export const register = async (req, res) => {
     const emailHash = hashEmail(normalizedEmail);
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const user = await prisma.client.create({
+    const user = await prisma.T_Clients.create({
       data: {
         Login_Client: data.username,
         Mail_Client: normalizedEmail,
@@ -22,7 +22,11 @@ export const register = async (req, res) => {
     });
 
     const token = jwt.sign(
-      { clientId: user.ID_Client, username: user.Login_Client },
+      {
+        clientId: user.ID_Client,
+        username: user.Login_Client,
+        role: user.Role_Client
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -41,8 +45,8 @@ export const connect = async (req, res) => {
 
     const emailHash = hashEmail(email);
 
-    const user = await prisma.client.findUnique({
-      where: { Mail_Client: emailHash }
+    const user = await prisma.T_Clients.findUnique({
+      where: { Mail_Hash_Client: emailHash }
     });
 
     if (!user) {
@@ -56,7 +60,11 @@ export const connect = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { clientId: user.ID_Client, username: user.Login_Client },
+      {
+        clientId: user.ID_Client,
+        username: user.Login_Client,
+        role: user.Role_Client
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     )

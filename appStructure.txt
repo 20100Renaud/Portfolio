@@ -5,10 +5,13 @@ portfolio/
 │  │  │  └─ hash.js
 │  │  ├─ controllers/
 │  │  │  └─ auth.controller.js
+│  │  │  └─ clients.controller.js
+│  │  │  └─ posts.controller.js
 │  │  ├─ middleware/
 │  │  │  └─ auth.middleware.js
 │  │  ├─ routes/
 │  │  │  └─ auth.routes.js
+│  │  │  └─ posts.routes.js
 │  │  ├─ validators/
 │  │  │  └─ auth.schema.js
 │  │  ├─ prismaClient.js

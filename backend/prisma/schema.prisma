@@ -6,6 +6,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  ADMIN
+  CLIENT
+}
+
 model T_Clients {
   ID_Client        String    @id @default(uuid())
   Login_Client     String    @unique
@@ -13,6 +18,7 @@ model T_Clients {
   Mail_Hash_Client String    @unique
   Password_Client  String
   PC_Client        String
+  Role_Client      Role      @default("CLIENT")
   Date_Client      DateTime  @default(now())
 
   Posts_Client     T_Posts[]
