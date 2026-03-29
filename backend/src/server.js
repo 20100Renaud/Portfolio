@@ -28,7 +28,7 @@ app.get("*", (req, res) => {
 
 app.get("/test", async (req, res) => {
   try {
-    const clients = await prisma.client.findMany()
+    const clients = await prisma.T_Clients.findMany()
     res.json(clients)
   } catch (err) {
     console.error(err)
