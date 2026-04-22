@@ -1,21 +1,7 @@
 portfolio/
 ├─ backend/
-│  ├─ src/
-│  │  ├─ utils/
-│  │  │  └─ hash.js
-│  │  ├─ controllers/
-│  │  │  └─ auth.controller.js
-│  │  │  └─ clients.controller.js
-│  │  │  └─ posts.controller.js
-│  │  ├─ middleware/
-│  │  │  └─ auth.middleware.js
-│  │  ├─ routes/
-│  │  │  └─ auth.routes.js
-│  │  │  └─ posts.routes.js
-│  │  ├─ validators/
-│  │  │  └─ auth.schema.js
-│  │  ├─ prismaClient.js
-│  │  └─ server.js
+│  ├─ .venv/
+│  ├─ node_modules/
 │  ├─ prisma/
 │  │  ├─ schema.prisma
 │  │  ├─ schema.prisma:7
@@ -23,10 +9,30 @@ portfolio/
 │  │     ├─ 20260319060205_init/
 │  │     │  └─ migration.sql
 │  │     └─ migration_lock.toml
+│  ├─ src/
+│  │  ├─ controllers/
+│  │  │  └─ admin.controller.js
+│  │  │  └─ auth.controller.js
+│  │  │  └─ clients.controller.js
+│  │  │  └─ posts.controller.js
+│  │  ├─ middleware/
+│  │  │  └─ auth.middleware.js
+│  │  │  └─ firstAdmin.middleware.js
+│  │  ├─ routes/
+│  │  │  └─ admin.routes.js
+│  │  │  └─ auth.routes.js
+│  │  │  └─ firstAdmin.routes.js
+│  │  │  └─ posts.routes.js
+│  │  ├─ utils/
+│  │  │  └─ hash.js
+│  │  ├─ validators/
+│  │  │  └─ auth.schema.js
+│  │  ├─ prismaClient.js
+│  │  └─ server.js
 │  ├─ .env
 │  ├─ .gitignore
-│  ├─ package.json
 │  ├─ package-lock.json
+│  ├─ package.json
 │  ├─ prisma.config.js
 │  └─ README.md
 ├─ frontend/
@@ -49,14 +55,10 @@ portfolio/
 │  │  │  ├─ Logo_32x32.png
 │  │  │  ├─ Logo_512x512.webp
 │  │  │  └─ Logo_512x512_bg.png
-│  │  ├─ manifest.json
-│  │  └─ _redirects
+│  │  ├─ _redirects
+│  │  ├─ favicon.ico
+│  │  └─ manifest.json
 │  ├─ src/
-│  │  ├─ App.jsx
-│  │  ├─ daisyui.d.ts
-│  │  ├─ index.css
-│  │  ├─ main.jsx
-│  │  ├─ style.js
 │  │  ├─ assets/
 │  │  │  ├─ Arrows_512x512.webp
 │  │  │  ├─ Coupe+Saint+Leu+copy.webp
@@ -65,43 +67,55 @@ portfolio/
 │  │  │  ├─ Logo_512x353.webp
 │  │  │  └─ ShareUp_512x512.webp
 │  │  ├─ components/
-│  │  │  ├─ AnimatedFlatLogo.jsx
-│  │  │  ├─ AnimatedFlatLogo_infinite.jsx
 │  │  │  ├─ Animated_logo.jsx
+│  │  │  ├─ AnimatedFlatLogo_infinite.jsx
+│  │  │  ├─ AnimatedFlatLogo.jsx
 │  │  │  ├─ Dock.jsx
 │  │  │  ├─ Footer.jsx
 │  │  │  ├─ Navbar.jsx
-│  │  │  └─ 'Navbar copy.jsx'
+│  │  │  └─ ProtectedRoute.jsx'
 │  │  ├─ constants/
 │  │  │  └─ shareItems.js
 │  │  ├─ context/
-│  │  │  └─ auth.controller.js
+│  │  │  └─ AuthContext.jsx
+│  │  │  └─ AuthProvider.jsx
 │  │  ├─ hooks/
 │  │  │  └─ useInView.js
 │  │  ├─ layouts/
 │  │  │  └─ MainLayout.jsx
-│  │  └─ pages/
-│  │     ├─ Dashboard.jsx
-│  │     ├─ Faq.jsx
-│  │     ├─ Home.jsx
-│  │     ├─ Login.jsx
-│  │     ├─ Market.jsx
-│  │     ├─ NotFound.jsx
-│  │     └─ SignUp.jsx
-│  ├─ package.json
-│  ├─ package-lock.json
-│  ├─ vite.config.js
-│  ├─ tailwind.config.js
-│  ├─ postcss.config.js
-│  ├─ eslint.config.js
+│  │  ├─ pages/
+│  │  │  ├─ Dashboard.jsx
+│  │  │  ├─ Faq.jsx
+│  │  │  ├─ Home.jsx
+│  │  │  ├─ Login.jsx
+│  │  │  ├─ Market.jsx
+│  │  │  ├─ NotFound.jsx
+│  │  │  └─ SignUp.jsx
+│  │  ├─ App.jsx
+│  │  ├─ daisyui.d.ts
+│  │  ├─ index.css
+│  │  ├─ main.jsx
+│  │  └─ style.js
 │  ├─ .stylelintrc.json
-│  └─ README.md
+│  ├─ eslint.config.js
+│  ├─ index.html
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ postcss.config.js
+│  ├─ ProtectedRoute.jsx
+│  ├─ README.md
+│  ├─ tailwind.config.js
+│  └─ vite.config.js
+├─ node_modules/
+├─ .dockerignore
+├─ .gitignore
+├─ appStructure.txt
 ├─ docker-compose.yml
 ├─ Dockerfile
 ├─ .git/
-├─ .gitignore
-├─ README.md
+├─ package-lock.json
+├─ package.json
 ├─ Production.png
+├─ README.md
 ├─ Technos.png
-├─ tmp.txt
-└─ appStructure.txt
+└─ tmp.txt

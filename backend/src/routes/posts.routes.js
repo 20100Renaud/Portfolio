@@ -1,3 +1,4 @@
+import express from "express";
 import { authMiddleware, isOwnerOrAdmin } from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
 import {
@@ -9,6 +10,8 @@ import {
   updateComment,
   deleteComment
 } from "../controllers/posts.controller.js";
+
+const router = express.Router();
 
 //---------------------------------------CRUD POST-----------------------------------------------
 const preloadPost = async (req, res, next) => {
@@ -40,3 +43,5 @@ const preloadComment = async (req, res, next) => {
 
 router.put("/comments/:id", authMiddleware, preloadComment, isOwnerOrAdmin((req) => req.comment.ID_Client_Com), updateComment);
 router.delete("/comments/:id", authMiddleware, preloadComment, isOwnerOrAdmin((req) => req.comment.ID_Client_Com), deleteComment);
+
+export default router;

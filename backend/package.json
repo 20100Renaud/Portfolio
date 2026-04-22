@@ -10,7 +10,7 @@
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "build": "tsc && npx prisma generate",
     "postinstall": "prisma generate",
-    "migrate": "prisma migrate deploy"
+    "migrate": "prisma migrate deploy --schema=prisma/schema.prisma"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -23,6 +23,7 @@
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",

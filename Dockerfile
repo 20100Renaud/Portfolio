@@ -1,11 +1,16 @@
-FROM node:20
+FROM node:22
 WORKDIR /app
+
 COPY backend/package*.json ./backend/
+COPY backend/prisma ./backend/prisma
 WORKDIR /app/backend
 RUN npm install
+RUN npx prisma generate
+
 WORKDIR /app
 COPY backend ./backend
 COPY frontend ./frontend
-COPY prisma ./prisma
+
+
 EXPOSE 5000
 CMD ["node", "backend/src/server.js"]

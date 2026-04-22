@@ -4,29 +4,25 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from 'url';
 import authRoutes from "./routes/auth.routes.js";
-import protectedRoutes from "./routes/protected.routes.js";
+import postsRoutes from "./routes/posts.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 import prisma from "./prismaClient.js";
 import cookieParser from "cookie-parser";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(express.json())
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
-app.use("/api", protectedRoutes);
+app.use("/api/posts", postsRoutes);
+app.use("/api/admin", adminRoutes);
 
-app.use(express.static(path.join(__dirname, "../../frontend")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../../frontend/index.html"));
-});
-
-app.get("/test", async (req, res) => {
+app.get("/api/test", async (req, res) => {
   try {
     const clients = await prisma.T_Clients.findMany()
     res.json(clients)
