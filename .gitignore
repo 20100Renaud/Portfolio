@@ -40,4 +40,3 @@ prisma/dev.db
 tmp.*
 /generated/prisma
 
-README_PERSO.md
