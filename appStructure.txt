@@ -31,9 +31,9 @@ portfolio/
 │  │  └─ server.js
 │  ├─ .env
 │  ├─ .gitignore
+│  ├─ docker-entrypoint.sh
 │  ├─ package-lock.json
 │  ├─ package.json
-│  ├─ prisma.config.js
 │  └─ README.md
 ├─ frontend/
 │  ├─ node_modules/
