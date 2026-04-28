@@ -3,14 +3,15 @@
 ### Frontend
 ~/portfolio/frontend$
 ```
-npm run dev
+npm install
+npm run dev    # http://localhost:5173
 ```
 
 ### Backend
 ~/portfolio$
 - Run what is existing:
 ```
-docker compose up
+docker compose up    # http://localhost:5000
 ```
 
 - After code / Dockerfile change (production):
@@ -19,47 +20,43 @@ docker compose down --remove-orphans
 docker compose up --build
 # Rebuild if necessary, then run
 ```
-- Development:
+- Development (with seed):
 ```
-docker compose -f docker-compose.dev.yml up --build
+docker compose -f docker compose.dev.yml up --build
 ```
-- When things feel broken / inconsistent:
+- Recreate the image from zero:
 ```
-docker compose build --no-cache    # Recreate the image from zero
+docker compose build --no-cache
 docker compose up
 ```
  *up : start container
 
 ## SETUP docker
-`/portfolio/$`
+`~/portfolio/$`
 ```
 sudo apt update
-sudo apt install docker-compose-plugin
+sudo apt  install docker.io -y
 ```
 ```
-docker --version
-docker compose version
+which docker         # /usr/bin/docker
+docker --version     # version 29.1.3-0ubuntu3~24.04.1
+
+```
+```
+sudo apt-get install docker-compose-plugin
+docker compose version              # Docker Compose version v5.1.3
 ```
 Add user to the docker group
 ```
 sudo usermod -aG docker $USER
 ```
+verify Docker is working
+```
+docker ps
+```
 ### To restard Docker
 ```
 sudo systemctl restart docker
-```
-### Config
-```
-~/Desktop/portfolio$ cat /etc/resolv.conf
-nameserver 1.1.1.1
-nameserver 8.8.8.8
-```
-```
-~/Desktop/portfolio$ cat /etc/docker/daemon.json
-{
-	"ipv6": flase,
-	"dns": ["1.1.1.1", "8.8.8.8"]
-}
 ```
 
 ## RUN container:
@@ -75,7 +72,10 @@ run the migration inside the container
 ```
 docker pull postgres
 ```
-
+## SETUP PRISMA
+```
+npm install prisma@6 @prisma/client@6   # 7 works differently
+```
 ## PRISMA COMMANDS to restard from schema.prisma
 
 ### 1. Delete old migrations

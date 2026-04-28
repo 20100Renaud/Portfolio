@@ -1,12 +1,21 @@
 #!/bin/sh
 
+cd /app/backend
+
+echo "Checking Prisma schema..."
+
+if [ ! -f "prisma/schema.prisma" ]; then
+  echo "ERROR: schema.prisma not found"
+  exit 1
+fi
+
 echo "Running Prisma migrations..."
-npx prisma migrate deploy --schema=backend/prisma/schema.prisma
+./node_modules/.bin/prisma migrate deploy --schema=prisma/schema.prisma
 
 if [ "$NODE_ENV" = "development" ]; then
-  echo "Running seed (dev only)..."
-  npx prisma db seed --schema=backend/prisma/schema.prisma
+  echo "Running seed..."
+  node prisma/seed.js
 fi
 
 echo "Starting server..."
-node backend/src/server.js
+node src/server.js

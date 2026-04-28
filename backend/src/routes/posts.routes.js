@@ -16,20 +16,20 @@ const router = express.Router();
 //---------------------------------------CRUD POST-----------------------------------------------
 const preloadPost = async (req, res, next) => {
   const post = await prisma.T_Posts.findUnique({
-    where: { ID_Post: req.params.postId || req.params.postId}
+    where: { ID_Post: req.params.postId }
   });
   if (!post) return res.status(404).json({ error: "Post not found" });
   req.post = post;
   next();
 };
 
-router.post("/posts", authMiddleware, createPost);
-router.get("/posts", authMiddleware, getAllPosts);
+router.post("/", authMiddleware, createPost);
+router.get("/", getAllPosts);
 
-router.put("/posts/:id", authMiddleware, preloadPost, isOwnerOrAdmin(async (req) => req.post.ID_Client_Post), updatePost);
-router.delete("/posts/:id", authMiddleware, preloadPost, isOwnerOrAdmin(async (req) => req.post.ID_Client_Post), deletePost);
+router.put("/:id", authMiddleware, preloadPost, isOwnerOrAdmin(async (req) => req.post.ID_Client_Post), updatePost);
+router.delete("/:id", authMiddleware, preloadPost, isOwnerOrAdmin(async (req) => req.post.ID_Client_Post), deletePost);
 
-router.post("/posts/:postId/comments", authMiddleware, preloadPost, createComment);
+router.post("/:postId/comments", authMiddleware, preloadPost, createComment);
 
 //---------------------------------------CRUD COMMENTS-----------------------------------------------
 const preloadComment = async (req, res, next) => {

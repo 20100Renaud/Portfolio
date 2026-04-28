@@ -3,8 +3,8 @@ portfolio/
 │  ├─ .venv/
 │  ├─ node_modules/
 │  ├─ prisma/
+│  │  ├─ seed.js
 │  │  ├─ schema.prisma
-│  │  ├─ schema.prisma:7
 │  │  └─ migrations/
 │  │     ├─ 20260319060205_init/
 │  │     │  └─ migration.sql

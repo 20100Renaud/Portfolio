@@ -27,7 +27,7 @@ services:
     volumes:
       - ./backend:/app/backend
       - /app/backend/node_modules
-    command: sh backend/docker-entrypoint.sh
+    command: sh docker-entrypoint.sh
 
 volumes:
   postgres_data:

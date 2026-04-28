@@ -24,7 +24,6 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/portfolio
       NODE_ENV: production
-    command: ["node", "backend/src/server.js"]
 
 volumes:
   postgres_data:
