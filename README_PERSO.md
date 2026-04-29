@@ -78,33 +78,29 @@ npm install prisma@6 @prisma/client@6   # 7 works differently
 ```
 ## PRISMA COMMANDS to restard from schema.prisma
 
-### 1. Delete old migrations
+### 1. Delete old migrations and migrate
 ```
 rm -rf prisma/migrations
+prisma migrate dev
 ```
 
 ### 2. Reset the DataBase
 ```
 npx prisma migrate reset
+docker compose exec backend npx prisma migrate reset  <= in the docker
 ```
 
-### 3. Generate a migration
+### 3. Generate a migration in the docker
 ```
-npx prisma migrate dev --name init
-```
-
-### 4. Check DataBase is migrated
-```
-npx prisma migrate deploy
-npx prisma migrate dev
+ docker compose exec backend npx prisma migrate dev --name init
 ```
 
-### 5. Generate Client
+### 4. Generate Client
 ```
 npx prisma generate
 ```
 
-### 6. Generate Admin and uknown user
+### 5. Generate Admin and uknown user
 - localy:
 ```
 npx prisma db seed
@@ -114,7 +110,7 @@ npx prisma db seed
 docker compose exec backend npx prisma db seed
 ```
 
-### 7. Check the DataBase
+### 6. Check the DataBase
 ```
 npx prisma studio
 ```

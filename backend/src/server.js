@@ -5,7 +5,6 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import authRoutes from "./routes/auth.routes.js";
 import postsRoutes from "./routes/posts.routes.js";
-import adminRoutes from "./routes/admin.routes.js";
 import prisma from "./prismaClient.js";
 import cookieParser from "cookie-parser";
 
@@ -20,7 +19,6 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
 app.use("/api/posts", postsRoutes);
-app.use("/api/admin", adminRoutes);
 
 app.get("/api/test", async (req, res) => {
   try {
@@ -37,3 +35,8 @@ const PORT = process.env.PORT || 5000
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on ${PORT}`)
 })
+
+app.use((req, res, next) => {
+  console.log(`\n[REQ] ${req.method} ${req.url}`);
+  next();
+});

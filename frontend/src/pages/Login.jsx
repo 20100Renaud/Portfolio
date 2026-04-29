@@ -41,19 +41,33 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isFormValid) return;
+		console.log("[LOGIN] submit triggered");
+		console.log("[LOGIN] email:", email);
+		console.log("[LOGIN] password length:", password.length);
+
+    if (!isFormValid) {
+			console.log("[LOGIN] form invalid, abort");
+			return;
+		}
 
     try {
-      const response = await fetch("/api/auth/login", {
+			console.log("[LOGIN] sending request...");
+
+      const response = await fetch("/api/auth/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
+			console.log("[LOGIN] response received");
+    	console.log("[LOGIN] status:", response.status);
+
       const data = await response.json();
+			console.log("[LOGIN] response JSON:", data);
 
       if (response.ok) {
+				console.log("[LOGIN] success → navigating dashboard");
         setToast(
           <div className="flex flex-col p-4">
             <span className="font-bold text-lg text-white">
@@ -61,19 +75,21 @@ export default function Login() {
             </span>
           </div>
         );
-        console.log("Login result:", data);
+        console.log("[LOGIN] result:", data);
         login(data.username);
         navigate("/dashboard");
       } else {
+				console.log("[LOGIN] error response:", data);
         setToast(
           <div className="flex flex-col p-4">
             <span className="font-bold text-lg text-white">
-              {data.message || "Login failed"}
+              {data.error || "Login failed"}
             </span>
           </div>
         );
       }
     } catch (err) {
+			console.log("[LOGIN] FETCH ERROR:", err);
       console.error("Error logging in:", err);
       setToast(
         <div className="flex flex-col p-4">

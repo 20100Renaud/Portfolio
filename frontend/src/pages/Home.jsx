@@ -88,17 +88,19 @@ export default function Home() {
           </div>
         </div>
 
-        <asside className="flex flex-wrap gap-10 justify-center pb-20">
+        <aside className="flex flex-wrap gap-10 justify-center pb-20">
           <div className="backdrop-blur-xs bg-white/90 border border-white/40 shadow-xl rounded-2xl p-8 max-w-md">
             <h2 className="text-2xl font-bold mb-6">Welcome nature lovers</h2>
             <p className="text-green-800 leading-relaxed">
               From our gardens come many treasures like leaves, fruits,
               vegetables, eggs, plants…
-              <div ref={basketRef} className="flex justify-center my-2">
-                <GiBasket
-                  size={32}
-                  style={{ transform: `scale(${basketScale})` }} />
-              </div>
+						</p>
+						<div ref={basketRef} className="flex justify-center my-2">
+							<GiBasket
+								size={32}
+								style={{ transform: `scale(${basketScale})` }} />
+						</div>
+						<p>
               When you have extras or needs,
               this app makes sharing simple and local.
               Giving nearby is a beautiful way to reduce waste.
@@ -110,11 +112,13 @@ export default function Home() {
             <p className="text-green-800 leading-relaxed">
               This app is free. No ads. No tracking.
               Only your email is required to connect with others.
-              <div ref={notebookRef} className="flex justify-center my-2">
-                <GiNotebook
-                  size={32}
-                  style={{ transform: `scale(${notebookScale})` }} />
-              </div>
+						</p>
+						<div ref={notebookRef} className="flex justify-center my-2">
+							<GiNotebook
+								size={32}
+								style={{ transform: `scale(${notebookScale})` }} />
+						</div>
+						<p>
               Our goal is a simple, intuitive interface
               that anyone can use.
               A growing community around sharing and sustainability.
@@ -141,7 +145,7 @@ export default function Home() {
             </div>
           </div>
 
-        </asside>
+        </aside>
       </section>
     </div>
   );

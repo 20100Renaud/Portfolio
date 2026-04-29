@@ -1,7 +1,9 @@
 import prisma from "../src/prismaClient.js";
 import bcrypt from "bcrypt";
-import { hashEmail } from "../src/utils/hash.js";
-import "dotenv/config";
+import dotenv from "dotenv";
+
+
+dotenv.config();
 
 async function main() {
   // ------------------ UNKNOWN USER ------------------
@@ -10,14 +12,12 @@ async function main() {
     throw new Error("UNKNOWN_EMAIL missing");
   }
 
-  const unknownHashEmail = hashEmail(unknownEmail);
   await prisma.T_Clients.upsert({
-    where: { Mail_Hash_Client: unknownHashEmail },
+    where: { Mail_Client: unknownEmail },
     update: {},
     create: {
       Login_Client: "Unknown",
       Mail_Client: unknownEmail,
-      Mail_Hash_Client: unknownHashEmail,
       Password_Client: "DISABLED",
       Role_Client: "CLIENT",
       PC_Client: "00000"
@@ -27,22 +27,20 @@ async function main() {
   console.log("Unknown user created");
 
   // ------------------ ADMIN USER ------------------
-  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminEmail = process.env.ADMIN_EMAIL.toLowerCase().trim();
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminEmail || !adminPassword) {
     throw new Error("ADMIN_EMAIL or ADMIN_PASSWORD missing");
   }
 
-  const adminHashEmail = hashEmail(adminEmail);
   const existingAdmin = await prisma.T_Clients.findUnique({
-    where: { Mail_Hash_Client: adminHashEmail },
+    where: { Mail_Client: adminEmail },
   });
   if (!existingAdmin) {
     await prisma.T_Clients.create({
       data: {
         Login_Client: "Admin",
         Mail_Client: adminEmail,
-        Mail_Hash_Client: adminHashEmail,
         Password_Client: await bcrypt.hash(adminPassword, 10),
         Role_Client: "ADMIN",
         PC_Client: "00000"

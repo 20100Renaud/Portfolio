@@ -22,7 +22,12 @@ services:
       postgres :
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/portfolio
+      DATABASE_URL: ${DATABASE_URL}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      UNKNOWN_EMAIL: ${UNKNOWN_EMAIL}
+      JWT_SECRET: ${JWT_SECRET}
+      EMAIL_PEPPER: ${EMAIL_PEPPER}
       NODE_ENV: production
 
 volumes:

@@ -1,5 +1,4 @@
 import prisma from "../prismaClient.js";
-import { hashEmail } from "../utils/hash.js";
 
 
 // -----------------------------------------CRUD POSTS---------------------------------------------------------------
@@ -67,7 +66,7 @@ export const deletePost = async (req, res) => {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
     }
     const unknown = await prisma.T_Clients.findFirst({
-      where: { Mail_Hash_Client: hashEmail(process.env.UNKNOWN_EMAIL) }
+      where: { Mail_Client: process.env.UNKNOWN_EMAIL }
     });
     if (!unknown) {
       return res.status(500).json({ error: "Unknown user missing" });
