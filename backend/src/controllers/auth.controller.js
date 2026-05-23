@@ -14,7 +14,8 @@ export const register = async (req, res) => {
       data: {
         Login_Client: data.username,
         Mail_Client: normalizedEmail,
-        Password_Client: hashedPassword
+        Password_Client: hashedPassword,
+        PC_Client: data.pc_client
       }
     });
 
