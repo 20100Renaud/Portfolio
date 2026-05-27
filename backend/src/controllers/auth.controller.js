@@ -10,6 +10,14 @@ export const register = async (req, res) => {
     const normalizedEmail = data.email.toLowerCase().trim();
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
+    const existingUser = await prisma.T_Clients.findUnique({
+      where: { Mail_Client: normalizedEmail }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already used" });
+    }
+
     const user = await prisma.T_Clients.create({
       data: {
         Login_Client: data.username,
@@ -30,17 +38,16 @@ export const register = async (req, res) => {
     );
 
     res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
-    .json({
-      username: user.Login_Client
-    });
-
-    res.status(201).json({ token, username: user.Login_Client });
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        username: user.Login_Client
+      });
 
   } catch (err) {
     console.error(err)
@@ -54,6 +61,10 @@ export const connect = async (req, res) => {
 
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ error: "Missing credentials" });
+    }
+
     const normalizedEmail = email.toLowerCase().trim();
 
     console.log("[AUTH] searching user...");
@@ -64,12 +75,6 @@ export const connect = async (req, res) => {
     if (!user) {
 			console.log("[AUTH] user not found");
       return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-		console.log("[AUTH] checking disabled status...");
-    if (user.Password_Client === "DISABLED") {
-			console.log("[AUTH] account disabled");
-      return res.status(403).json({ error: "Account disabled" });
     }
 
 		console.log("[AUTH] comparing password...");
@@ -96,6 +101,7 @@ export const connect = async (req, res) => {
 		console.log("[AUTH] sending response");
 
     res
+      .status(200)
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -108,7 +114,6 @@ export const connect = async (req, res) => {
 
 		console.log("[AUTH] --- LOGIN COMPLETE ---");
 
-    res.status(201).json({ token, username: user.Login_Client });
 
   } catch (err) {
     console.error(err)
