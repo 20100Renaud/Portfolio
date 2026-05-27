@@ -38,6 +38,7 @@ export default function Dashboard() {
       <h1 className="text-3xl sm:text-5xl font-bold">Welcome {username.username} </h1>
       <p className="text-sm sm:text-lg text-green-800">
         Here we can find our field.
+        </p>
         <button
           onClick={() => {
             logout();
@@ -47,7 +48,7 @@ export default function Dashboard() {
         >
           Logout
         </button>
-      </p>
+      
     </div>
   );
 }
