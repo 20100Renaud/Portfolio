@@ -29,6 +29,17 @@ export const register = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .json({
+      username: user.Login_Client
+    });
+
     res.status(201).json({ token, username: user.Login_Client });
 
   } catch (err) {
@@ -40,19 +51,15 @@ export const register = async (req, res) => {
 export const connect = async (req, res) => {
   try {
 		console.log("\n[AUTH] --- LOGIN REQUEST START ---");
-    console.log("[AUTH] body:", req.body);
 
     const { email, password } = req.body;
 
     const normalizedEmail = email.toLowerCase().trim();
-		console.log("[AUTH] normalizedEmail:", normalizedEmail);
 
     console.log("[AUTH] searching user...");
     const user = await prisma.T_Clients.findUnique({
       where: { Mail_Client: normalizedEmail }
     });
-
-		console.log("[AUTH] user found:", !!user);
 
     if (!user) {
 			console.log("[AUTH] user not found");
@@ -101,9 +108,10 @@ export const connect = async (req, res) => {
 
 		console.log("[AUTH] --- LOGIN COMPLETE ---");
 
+    res.status(201).json({ token, username: user.Login_Client });
+
   } catch (err) {
-		console.log("[AUTH] ERROR:", err);
     console.error(err)
-    res.status(500).json({ error: "Server error" })
+    res.status(500).json({ error: err.message })
   }
 }
