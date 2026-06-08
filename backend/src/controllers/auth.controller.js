@@ -6,6 +6,7 @@ import { registerSchema } from "../validators/auth.schema.js"
 
 export const register = async (req, res) => {
   try {
+    console.log("req.body: ", req.body);
     const data = registerSchema.parse(req.body)
     const normalizedEmail = data.email.toLowerCase().trim();
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -57,6 +58,7 @@ export const register = async (req, res) => {
 
 export const connect = async (req, res) => {
   try {
+    console.log("req.body: ", req.body);
 		console.log("\n[AUTH] --- LOGIN REQUEST START ---");
 
     const { email, password } = req.body;
