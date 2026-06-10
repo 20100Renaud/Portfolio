@@ -8,10 +8,13 @@ import postsRoutes from "./routes/posts.routes.js";
 import prisma from "./prismaClient.js";
 import cookieParser from "cookie-parser";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express()
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "http://localhost:5000",
   credentials: true
 }));
 app.use(express.json())
@@ -31,6 +34,12 @@ app.get("/api/test", async (req, res) => {
 })
 
 const PORT = process.env.PORT || 5000
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/{*path}", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on ${PORT}`)
