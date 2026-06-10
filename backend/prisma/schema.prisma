@@ -17,7 +17,9 @@ model T_Clients {
   Login_Client     String       @unique
   Mail_Client      String       @unique
   Password_Client  String
-  PC_Client        String       @db.VarChar(5)
+  Ville_Client     String?
+  Latitude_Client  Float?
+  Longitude_Client Float?
   Date_Client      DateTime     @default(now())
   Role_Client      String       @default("CLIENT")
 
