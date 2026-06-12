@@ -2,34 +2,34 @@ import prisma from "../prismaClient.js";
 
 
 // -----------------------------------------CRUD POSTS---------------------------------------------------------------
-export const createPost = async (req, res) => {
+export const createAd = async (req, res) => {
   try {
     const { title, description } = req.body;
-    const post = await prisma.T_Posts.create({
+    const ad = await prisma.T_Ads.create({
       data: {
-        Title_Post: title,
-        Description_Post: description,
-        ID_Client_Post: req.user.clientId
+        Title_Ad: title,
+        Description_Ad: description,
+        ID_Client_Ad: req.user.clientId
       }
     });
-    res.status(201).json(post);
+    res.status(201).json(ad);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 };
 
 
-export const getAllPosts = async (req, res) => {
+export const getAllAds = async (req, res) => {
   try {
-    const posts = await prisma.T_Posts.findMany({
+    const ads = await prisma.T_Ads.findMany({
       include: {
-        Client_Post: true,
-        Comments_Post: {
-          include: { Client_Comments: true }
+        Client_Ads: true,
+        Answers_Ads: {
+          include: { Client_Answers: true }
         }
       }
     });
-    res.json(posts);
+    res.json(ads);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -37,16 +37,16 @@ export const getAllPosts = async (req, res) => {
 };
 
 
-export const updatePost = async (req, res) => {
+export const updateAd = async (req, res) => {
   try {
-    const post = req.post;
-    if (!post) return res.status(404).json({ error: "Post not found" });
+    const ad = req.ad;
+    if (!ad) return res.status(404).json({ error: "Ad not found" });
 
-    const updated = await prisma.T_Posts.update({
-      where: { ID_Post: post.ID_Post },
+    const updated = await prisma.T_Ads.update({
+      where: { ID_Ad: ad.ID_Ad },
       data: {
-        Title_Post: req.body.title,
-        Description_Post: req.body.description
+        Title_Ad: req.body.title,
+        Description_Ad: req.body.description
       }
     });
     res.json(updated);
@@ -57,10 +57,10 @@ export const updatePost = async (req, res) => {
 };
 
 
-export const deletePost = async (req, res) => {
+export const deleteAd = async (req, res) => {
   try {
-    const post = req.post;
-    if (!post) return res.status(404).json({ error: "Post not found" });
+    const ad = req.ad;
+    if (!ad) return res.status(404).json({ error: "Ad not found" });
 
     if (!process.env.UNKNOWN_EMAIL) {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
@@ -72,12 +72,12 @@ export const deletePost = async (req, res) => {
       return res.status(500).json({ error: "Unknown user missing" });
     }
 
-    await prisma.T_Comments.deleteMany({
-      where: { ID_Post_Com: post.ID_Post }
+    await prisma.T_Answers.deleteMany({
+      where: { ID_Ad_Com: ad.ID_Ad }
     });
 
-    await prisma.T_Posts.delete({
-      where: { ID_Post: post.ID_Post }
+    await prisma.T_Ads.delete({
+      where: { ID_Ad: ad.ID_Ad }
     });
 
     res.json({ message: "Deleted" });
@@ -88,25 +88,25 @@ export const deletePost = async (req, res) => {
 };
 
 // -----------------------------------------------CRUD COMMENTS-----------------------------------------------------------
-export const createComment = async (req, res) => {
+export const createAnswer = async (req, res) => {
   try {
     const { description } = req.body;
-    const post = req.post;
-    if (!post) return res.status(404).json({ error: "Post not found" });
-    if (post.ID_Client_Post === req.user.clientId && req.user.role !== "ADMIN") {
+    const ad = req.ad;
+    if (!ad) return res.status(404).json({ error: "Ad not found" });
+    if (ad.ID_Client_Ad === req.user.clientId && req.user.role !== "ADMIN") {
       return res.status(403).json({
-        error: "You can't comment your own post"
+        error: "You can't answer to your own ad"
       });
     }
 
-    const comment = await prisma.T_Comments.create({
+    const answer = await prisma.T_Answers.create({
       data: {
         Description_Com: description,
-        ID_Post_Com: post.ID_Post,
+        ID_Ad_Com: ad.ID_Ad,
         ID_Client_Com: req.user.clientId
       }
     });
-    res.status(201).json(comment);
+    res.status(201).json(answer);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -114,12 +114,12 @@ export const createComment = async (req, res) => {
 };
 
 
-export const updateComment = async (req, res) => {
+export const updateAnswer = async (req, res) => {
   try {
-    const comment = req.comment;
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
+    const answer = req.answer;
+    if (!answer) return res.status(404).json({ error: "Answer not found" });
 
-    const updated = await prisma.T_Comments.update({
+    const updated = await prisma.T_Answers.update({
       where: { ID_Com: req.params.id },
       data: { Description_Com: req.body.description }
     });
@@ -130,12 +130,12 @@ export const updateComment = async (req, res) => {
   }
 };
 
-export const deleteComment = async (req, res) => {
+export const deleteAnswer = async (req, res) => {
   try {
-    const comment = req.comment;
-    if (!comment) return res.status(404).json({ error: "Comment not found" });
+    const answer = req.answer;
+    if (!answer) return res.status(404).json({ error: "Answer not found" });
 
-    await prisma.T_Comments.delete({ where: { ID_Com: req.params.id } });
+    await prisma.T_Answers.delete({ where: { ID_Com: req.params.id } });
     res.json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
