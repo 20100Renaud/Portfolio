@@ -96,6 +96,7 @@ export default function Navbar() {
                     <div className="divider my-1"></div>
 
                     <li>
+                      <Link to="/dashboard">My profile</Link>
                       <button onClick={logout}>Logout</button>
                     </li>
                   </ul>
