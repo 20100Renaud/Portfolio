@@ -23,8 +23,8 @@ export const getAllAds = async (req, res) => {
   try {
     const ads = await prisma.T_Ads.findMany({
       include: {
-        Client_Ad: true,
-        Answers_Ad: {
+        Client_Ads: true,
+        Answers_Ads: {
           include: { Client_Answers: true }
         }
       }
