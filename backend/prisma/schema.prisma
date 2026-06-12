@@ -23,28 +23,28 @@ model T_Clients {
   Date_Client      DateTime     @default(now())
   Role_Client      String       @default("CLIENT")
 
-  Comments_Client  T_Comments[]
-  Posts_Client     T_Posts[]
+  Answers_Client  T_Answers[]
+  Ads_Client     T_Ads[]
 }
 
-model T_Posts {
-  ID_Post          String       @id @default(uuid())
-  Title_Post       String
-  Description_Post String
-  Date_Post        DateTime     @default(now())
-  ID_Client_Post   String
+model T_Ads {
+  ID_Ad          String       @id @default(uuid())
+  Title_Ad       String
+  Text_Ad        String
+  Date_Ad        DateTime     @default(now())
+  ID_Client_Ad   String
 
-  Comments_Post    T_Comments[]
-  Client_Post      T_Clients    @relation(fields: [ID_Client_Post], references: [ID_Client])
+  Answers_Ads    T_Answers[]
+  Client_Ads     T_Clients    @relation(fields: [ID_Client_Ad], references: [ID_Client])
 }
 
-model T_Comments {
-  ID_Com          String    @id @default(uuid())
-  Description_Com String
-  Date_Com        DateTime  @default(now())
-  ID_Post_Com     String
-  ID_Client_Com   String
+model T_Answers {
+  ID_Answer      String    @id @default(uuid())
+  Text_Answer    String
+  Date_Answer        DateTime  @default(now())
+  ID_Ad_Ans     String
+  ID_Client_Ans   String
 
-  Client_Comments T_Clients @relation(fields: [ID_Client_Com], references: [ID_Client])
-  Post_Comments   T_Posts   @relation(fields: [ID_Post_Com], references: [ID_Post])
+  Client_Answers T_Clients @relation(fields: [ID_Client_Ans], references: [ID_Client])
+  Ads_Answers   T_Ads   @relation(fields: [ID_Ad_Ans], references: [ID_Ad])
 }
