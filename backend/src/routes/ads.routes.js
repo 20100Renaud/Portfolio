@@ -2,34 +2,34 @@ import express from "express";
 import { authMiddleware, isOwnerOrAdmin } from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
 import {
-  createPost,
-  updatePost,
-  deletePost,
-  getAllPosts,
+  createAd,
+  updateAd,
+  deleteAd,
+  getAllAds,
   createComment,
   updateComment,
   deleteComment
-} from "../controllers/posts.controller.js";
+} from "../controllers/ads.controller.js";
 
 const router = express.Router();
 
 //---------------------------------------CRUD POST-----------------------------------------------
-const preloadPost = async (req, res, next) => {
-  const post = await prisma.T_Posts.findUnique({
-    where: { ID_Post: req.params.postId }
+const preloadAd = async (req, res, next) => {
+  const ad = await prisma.T_Ads.findUnique({
+    where: { ID_Ad: req.params.adId }
   });
-  if (!post) return res.status(404).json({ error: "Post not found" });
-  req.post = post;
+  if (!ad) return res.status(404).json({ error: "Ad not found" });
+  req.ad = ad;
   next();
 };
 
-router.post("/", authMiddleware, createPost);
-router.get("/", getAllPosts);
+router.post("/", authMiddleware, createAd);
+router.get("/", getAllAds);
 
-router.put("/:id", authMiddleware, preloadPost, isOwnerOrAdmin(async (req) => req.post.ID_Client_Post), updatePost);
-router.delete("/:id", authMiddleware, preloadPost, isOwnerOrAdmin(async (req) => req.post.ID_Client_Post), deletePost);
+router.put("/:id", authMiddleware, preloadAd, isOwnerOrAdmin(async (req) => req.ad.ID_Client_Ad), updateAd);
+router.delete("/:id", authMiddleware, preloadAd, isOwnerOrAdmin(async (req) => req.ad.ID_Client_Ad), deleteAd);
 
-router.post("/:postId/comments", authMiddleware, preloadPost, createComment);
+router.post("/:adId/comments", authMiddleware, preloadAd, createComment);
 
 //---------------------------------------CRUD COMMENTS-----------------------------------------------
 const preloadComment = async (req, res, next) => {
