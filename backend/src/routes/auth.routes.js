@@ -17,8 +17,9 @@ router.get("/protected-data", authMiddleware, (req, res) => {
 router.get("/me", authMiddleware, (req, res) => {
   res.json({
     clientId: req.user.clientId,
-    username: req.user.username
+    username: req.user.username,
+    role: req.user.role,
   });
 });
 
-export default router
+export default router;

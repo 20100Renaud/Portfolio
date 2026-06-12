@@ -6,16 +6,28 @@ import { registerSchema } from "../validators/auth.schema.js"
 
 export const register = async (req, res) => {
   try {
+    console.log("req: ", req.body);
     const data = registerSchema.parse(req.body)
+    console.log("data: ", data);
     const normalizedEmail = data.email.toLowerCase().trim();
     const hashedPassword = await bcrypt.hash(data.password, 10);
+
+    const existingUser = await prisma.T_Clients.findUnique({
+      where: { Mail_Client: normalizedEmail }
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already used" });
+    }
 
     const user = await prisma.T_Clients.create({
       data: {
         Login_Client: data.username,
         Mail_Client: normalizedEmail,
         Password_Client: hashedPassword,
-        PC_Client: data.pc_client
+        Ville_Client: data.ville_client,
+        Latitude_Client: data.latitude_client,
+        Longitude_Client: data.longitude_client
       }
     });
 
@@ -29,40 +41,45 @@ export const register = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.status(201).json({ token, username: user.Login_Client });
+    res
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        username: user.Login_Client
+      });
 
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: "Server error" })
+    res.status(500).json({ error: err.message })
   }
 };
 
 export const connect = async (req, res) => {
   try {
+    console.log("req.body: ", req.body);
 		console.log("\n[AUTH] --- LOGIN REQUEST START ---");
-    console.log("[AUTH] body:", req.body);
 
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ error: "Missing credentials" });
+    }
+
     const normalizedEmail = email.toLowerCase().trim();
-		console.log("[AUTH] normalizedEmail:", normalizedEmail);
 
     console.log("[AUTH] searching user...");
     const user = await prisma.T_Clients.findUnique({
       where: { Mail_Client: normalizedEmail }
     });
 
-		console.log("[AUTH] user found:", !!user);
-
     if (!user) {
 			console.log("[AUTH] user not found");
       return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-		console.log("[AUTH] checking disabled status...");
-    if (user.Password_Client === "DISABLED") {
-			console.log("[AUTH] account disabled");
-      return res.status(403).json({ error: "Account disabled" });
     }
 
 		console.log("[AUTH] comparing password...");
@@ -89,6 +106,7 @@ export const connect = async (req, res) => {
 		console.log("[AUTH] sending response");
 
     res
+      .status(200)
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -101,9 +119,9 @@ export const connect = async (req, res) => {
 
 		console.log("[AUTH] --- LOGIN COMPLETE ---");
 
+
   } catch (err) {
-		console.log("[AUTH] ERROR:", err);
     console.error(err)
-    res.status(500).json({ error: "Server error" })
+    res.status(500).json({ error: err.message })
   }
 }
