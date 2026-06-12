@@ -1,5 +1,7 @@
 import { Link, NavLink } from "react-router-dom";
 import AnimatedFlatLogo from "../components/AnimatedFlatLogo";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 const handleLogout = () => {
   localStorage.removeItem("token");
@@ -30,6 +32,7 @@ const NavItem = ({ to, end, children, className = "" }) => {
 
 
 export default function Navbar() {
+  const { isAuthenticated, username, logout } = useContext(AuthContext);
   return (
     <>
       <section className="bg-green-700 w-full text-center">
@@ -62,20 +65,53 @@ export default function Navbar() {
           </ul>
         </div>
 
-        <div className="navbar-end">
-          <Link
-            to="/Login"
-            className="text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg hidden sm:flex"
-          >
-            Login
-          </Link>
+        <div className="navbar-end gap-4">
+          {isAuthenticated ? (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="text-white">{username}</span>
 
-          <button
-            onClick={handleLogout}
-            className="text-sm font-bold text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg hidden sm:flex mx-6 px-4"
-          >
-            Logout
-          </button>
+                <div className="dropdown dropdown-end">
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    className="btn btn-ghost btn-circle avatar"
+                  >
+                    <div className="w-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
+                      {username?.charAt(0).toUpperCase()}
+                    </div>
+                  </div>
+
+                  <ul
+                    tabIndex={0}
+                    className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+                  >
+                    <li className="px-2 py-1 text-gray-500 text-sm">
+                      Signed in as <br />
+                      <span className="font-semibold text-black">
+                        {username}
+                      </span>
+                    </li>
+
+                    <div className="divider my-1"></div>
+
+                    <li>
+                      <button onClick={logout}>Logout</button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg hidden sm:flex"
+              >
+                Login
+              </Link>
+            </>
+          )}
         </div>
       </section>
     </>
