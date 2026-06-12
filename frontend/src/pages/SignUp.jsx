@@ -11,9 +11,14 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [results, setResults] = useState([]);
+  const [ville_client, setCity] = useState("");
+  const [latitude_client, setLatitude] = useState(null);
+  const [longitude_client, setLongitude] = useState(null);
 
   const [errors, setErrors] = useState({
     username: "",
+    ville_client: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -21,6 +26,7 @@ export default function SignUp() {
 
   const [touched, setTouched] = useState({
     username: false,
+    ville_client: false,
     email: false,
     password: false,
     confirmPassword: false,
@@ -29,9 +35,11 @@ export default function SignUp() {
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPassword = (password) => password.length >= 4;
   const isValidUsername = (username) => username.length >= 4;
+  const isValidVille_client = (ville_client) => ville_client.length >= 2;
 
   const isFormValid =
     isValidUsername(username) &&
+    isValidVille_client(ville_client) &&
     isValidEmail(email) &&
     isValidPassword(password) &&
     password === confirmPassword;
@@ -41,6 +49,26 @@ export default function SignUp() {
       ✔
     </span>
   );
+
+  const handleCityChange = async (value) => {
+    setCity(value);
+
+    if (value.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://geo.api.gouv.fr/communes?nom=${value}&fields=centre,codesPostaux`
+      );
+
+      const data = await response.json();
+      setResults(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const [toast, setToast] = useState(null);
   useEffect(() => {
@@ -55,11 +83,18 @@ export default function SignUp() {
     if (!isFormValid) return;
 
     try {
+      console.log({
+        email,
+        username,
+        ville_client,
+        latitude_client,
+        longitude_client,
+      });
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ email, password, username, ville_client, latitude_client, longitude_client}),
       });
 
       const data = await response.json();
@@ -72,7 +107,7 @@ export default function SignUp() {
           </div>
         );
         console.log("SignUp result:", data);
-        login({ token: data.token, username: data.username });
+        login(data.username);
         navigate("/dashboard");
       } else {
         setToast(
@@ -143,6 +178,51 @@ export default function SignUp() {
             </div>
 
             {isValidUsername(username) && validItem}
+          </div>
+
+	        <div className="relative">
+            <label className="block text-gray-700">
+              City
+            </label>
+
+            <input
+                type="text"
+                value={ville_client}
+                onChange={(e) => handleCityChange(e.target.value)}
+                maxLength={50}
+                className="input input-bordered w-full"
+                placeholder="Votre ville"
+                required
+              />
+
+              {results.length > 0 && (
+                <ul className="absolute z-50 w-full mt-1 bg-white border rounded-box shadow-lg max-h-60 overflow-y-auto">
+                  {results.map((commune) => (
+                    <li
+                      key={commune.code}
+                      className="px-4 py-2 cursor-pointer hover:bg-base-200 flex justify-between"
+                      onClick={() => {
+                        setCity(commune.nom);
+
+                        if (commune.centre?.coordinates) {
+                          setLongitude(commune.centre.coordinates[0]);
+                          setLatitude(commune.centre.coordinates[1]);
+                        }
+
+                        setResults([]);
+                      }}
+                    >
+                      <span>{commune.nom}</span>
+
+                      {commune.codesPostaux?.length > 0 && (
+                        <span className="text-sm text-gray-500">
+                          {commune.codesPostaux[0]}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
           </div>
 
           <div className="relative">

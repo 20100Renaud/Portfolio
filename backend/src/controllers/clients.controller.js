@@ -27,12 +27,12 @@ export const deleteClient = async (req, res) => {
     });
 
     await prisma.T_Comments.deleteMany({
-      where: { ID_Post_Com: post.ID_Post }
+      where: { ID_Ads_Com: ad.ID_Ad }
     });
 
     await prisma.T_Clients.delete({ where: { ID_Client: clientId } });
 
-    res.json({ message: "Account deleted, comments reassigned" });
+    res.json({ message: "Account deleted, answers reassigned" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });

@@ -4,9 +4,12 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from 'url';
 import authRoutes from "./routes/auth.routes.js";
-import postsRoutes from "./routes/posts.routes.js";
+import adsRoutes from "./routes/ads.routes.js";
 import prisma from "./prismaClient.js";
 import cookieParser from "cookie-parser";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express()
 
@@ -18,7 +21,7 @@ app.use(express.json())
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
-app.use("/api/posts", postsRoutes);
+app.use("/api/ads", adsRoutes);
 
 app.get("/api/test", async (req, res) => {
   try {
@@ -31,6 +34,12 @@ app.get("/api/test", async (req, res) => {
 })
 
 const PORT = process.env.PORT || 5000
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/{*path}", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on ${PORT}`)
