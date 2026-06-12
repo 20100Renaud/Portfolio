@@ -20,7 +20,9 @@ async function main() {
       Mail_Client: unknownEmail,
       Password_Client: "DISABLED",
       Role_Client: "CLIENT",
-      PC_Client: "00000"
+      Ville_Client: "Unknow",
+      Latitude_Client: 0.0,
+      Longitude_Client: 0.0,
     },
   });
 
@@ -43,7 +45,9 @@ async function main() {
         Mail_Client: adminEmail,
         Password_Client: await bcrypt.hash(adminPassword, 10),
         Role_Client: "ADMIN",
-        PC_Client: "00000"
+        Ville_Client: "Unknow",
+        Latitude_Client: 0.0,
+        Longitude_Client: 0.0,
       },
     });
 
