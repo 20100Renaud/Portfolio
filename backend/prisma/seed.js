@@ -12,7 +12,7 @@ async function main() {
     throw new Error("UNKNOWN_EMAIL missing");
   }
 
-  await prisma.T_Clients.upsert({
+  const unknownClient = await prisma.T_Clients.upsert({
     where: { Mail_Client: unknownEmail },
     update: {},
     create: {
@@ -20,7 +20,7 @@ async function main() {
       Mail_Client: unknownEmail,
       Password_Client: "DISABLED",
       Role_Client: "CLIENT",
-      Ville_Client: "Unknow",
+      Ville_Client: "Unknown",
       Latitude_Client: 0.0,
       Longitude_Client: 0.0,
     },
@@ -56,6 +56,19 @@ async function main() {
     console.log("Admin already exists (password NOT modified)");
   }
 
+  // ------------------ CREATE AD ------------------
+  await prisma.T_Ads.upsert({
+    where: {
+      ID_Ad: "UNKNOWN_AD_ID",
+    },
+    update: {},
+    create: {
+      ID_Ad: "UNKNOWN_AD_ID",
+      Title_Ad: "Unknown advertisement",
+      Text_Ad: "This is a fallback ad created by the system.",
+      ID_Client_Ad: unknownClient.ID_Client, // important !
+    },
+  });
   // -------------------- VERIFY ---------------------
   const users = await prisma.T_Clients.findMany({
     select: { Login_Client: true, Role_Client: true },
