@@ -27,7 +27,7 @@ export const deleteUser = async (req, res) => {
     });
 
     await prisma.T_Comments.deleteMany({
-      where: { ID_Depots_Com: depot.ID_Depot }
+      where: { ID_Depos_Com: depo.ID_Depo }
     });
 
     await prisma.T_Users.delete({ where: { ID_User: userId } });

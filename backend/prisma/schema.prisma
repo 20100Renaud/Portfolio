@@ -12,8 +12,8 @@ enum Role {
   CLIENT
 }
 
-enum Type_Depot {
-  Depot
+enum Type_Depo {
+  Depo
   Question
 }
 
@@ -29,28 +29,28 @@ model T_Users {
   Role_User      String       @default("CLIENT")
 
   Answers_User  T_Answers[]
-  Depots_User     T_Depots[]
+  Depos_User     T_Depos[]
 }
 
-model T_Depots {
-  ID_Depot          String       @id @default(uuid())
-  Type_Depot        String       @default("Depot")
-  Title_Depot       String
-  Text_Depot        String
-  Date_Depot        DateTime     @default(now())
-  ID_User_Depot     String
+model T_Depos {
+  ID_Depo          String       @id @default(uuid())
+  Type_Depo        String       @default("Depo")
+  Title_Depo       String
+  Text_Depo        String
+  Date_Depo        DateTime     @default(now())
+  ID_User_Depo     String
 
-  Answers_Depots    T_Answers[]
-  User_Depots     T_Users    @relation(fields: [ID_User_Depot], references: [ID_User])
+  Answers_Depos    T_Answers[]
+  User_Depos     T_Users    @relation(fields: [ID_User_Depo], references: [ID_User])
 }
 
 model T_Answers {
   ID_Answer      String    @id @default(uuid())
   Text_Answer    String
   Date_Answer        DateTime  @default(now())
-  ID_Depot_Ans     String
+  ID_Depo_Ans     String
   ID_User_Ans   String
 
   User_Answers T_Users @relation(fields: [ID_User_Ans], references: [ID_User])
-  Depots_Answers   T_Depots   @relation(fields: [ID_Depot_Ans], references: [ID_Depot])
+  Depos_Answers   T_Depos   @relation(fields: [ID_Depo_Ans], references: [ID_Depo])
 }

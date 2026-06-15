@@ -4,7 +4,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from 'url';
 import authRoutes from "./routes/auth.routes.js";
-import depotsRoutes from "./routes/depots.routes.js";
+import deposRoutes from "./routes/depos.routes.js";
 import prisma from "./prismaClient.js";
 import cookieParser from "cookie-parser";
 
@@ -21,7 +21,7 @@ app.use(express.json())
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
-app.use("/api/depots", depotsRoutes);
+app.use("/api/depos", deposRoutes);
 
 app.get("/api/test", async (req, res) => {
   try {

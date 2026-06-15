@@ -57,16 +57,16 @@ async function main() {
   }
 
   // ------------------ CREATE DEPOT ------------------
-  await prisma.T_Depots.upsert({
+  await prisma.T_Depos.upsert({
     where: {
-      ID_Depot: "UNKNOWN_DEPOT_ID",
+      ID_Depo: "UNKNOWN_DEPOT_ID",
     },
     update: {},
     create: {
-      ID_Depot: "UNKNOWN_DEPOT_ID",
-      Title_Depot: "Unknown Depot",
-      Text_Depot: "This is a fallback Depot created by the system.",
-      ID_User_Depot: unknownUser.ID_User, // important !
+      ID_Depo: "UNKNOWN_DEPOT_ID",
+      Title_Depo: "Unknown Depo",
+      Text_Depo: "This is a fallback Depo created by the system.",
+      ID_User_Depo: unknownUser.ID_User, // important !
     },
   });
   // -------------------- VERIFY ---------------------

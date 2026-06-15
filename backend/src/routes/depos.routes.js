@@ -2,34 +2,34 @@ import express from "express";
 import { authMiddleware, isOwnerOrAdmin } from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
 import {
-  createDepot,
-  updateDepot,
-  deleteDepot,
-  getAllDepots,
+  createDepo,
+  updateDepo,
+  deleteDepo,
+  getAllDepos,
   createAnswer,
   updateAnswer,
   deleteAnswer
-} from "../controllers/depots.controller.js";
+} from "../controllers/depos.controller.js";
 
 const router = express.Router();
 
 //---------------------------------------CRUD POST-----------------------------------------------
-const preloadDepot = async (req, res, next) => {
-  const depot = await prisma.T_Depots.findUnique({
-    where: { ID_Depot: req.params.depotId }
+const preloadDepo = async (req, res, next) => {
+  const depo = await prisma.T_Depos.findUnique({
+    where: { ID_Depo: req.params.depoId }
   });
-  if (!depot) return res.status(404).json({ error: "Depot not found" });
-  req.depot = depot;
+  if (!depo) return res.status(404).json({ error: "Depo not found" });
+  req.depo = depo;
   next();
 };
 
-router.post("/", authMiddleware, createDepot);
-router.get("/", getAllDepots);
+router.post("/", authMiddleware, createDepo);
+router.get("/", getAllDepos);
 
-router.put("/:id", authMiddleware, preloadDepot, isOwnerOrAdmin(async (req) => req.depot.ID_User_Depot), updateDepot);
-router.delete("/:id", authMiddleware, preloadDepot, isOwnerOrAdmin(async (req) => req.depot.ID_User_Depot), deleteDepot);
+router.put("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_Depo), updateDepo);
+router.delete("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_Depo), deleteDepo);
 
-router.post("/:depotId/answers", authMiddleware, preloadDepot, createAnswer);
+router.post("/:depoId/answers", authMiddleware, preloadDepo, createAnswer);
 
 //---------------------------------------CRUD COMMENTS-----------------------------------------------
 const preloadAnswer = async (req, res, next) => {
