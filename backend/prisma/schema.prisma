@@ -13,8 +13,9 @@ enum Role {
 }
 
 enum Type_Depo {
-  Depo
-  Question
+  OFFER
+  REQUEST
+  QUESTION
 }
 
 model T_Users {
@@ -22,9 +23,9 @@ model T_Users {
   Login_User     String       @unique
   Mail_User      String       @unique
   Password_User  String
-  Ville_User     String?
-  Latitude_User  Float?
-  Longitude_User Float?
+  City_User     String
+  Latitude_User  Float
+  Longitude_User Float
   Date_User      DateTime     @default(now())
   Role_User      String       @default("CLIENT")
 

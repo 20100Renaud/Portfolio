@@ -25,7 +25,7 @@ export const register = async (req, res) => {
         Login_User: data.username,
         Mail_User: normalizedEmail,
         Password_User: hashedPassword,
-        Ville_User: data.ville_user,
+        City_User: data.city_user,
         Latitude_User: data.latitude_user,
         Longitude_User: data.longitude_user
       }

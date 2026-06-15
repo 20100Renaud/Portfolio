@@ -2,7 +2,7 @@
 CREATE TYPE "Role" AS ENUM ('ADMIN', 'CLIENT');
 
 -- CreateEnum
-CREATE TYPE "Type_Depo" AS ENUM ('Depo', 'Question');
+CREATE TYPE "Type_Depo" AS ENUM ('OFFER', 'REQUEST', 'QUESTION');
 
 -- CreateTable
 CREATE TABLE "T_Users" (
@@ -10,9 +10,9 @@ CREATE TABLE "T_Users" (
     "Login_User" TEXT NOT NULL,
     "Mail_User" TEXT NOT NULL,
     "Password_User" TEXT NOT NULL,
-    "Ville_User" TEXT,
-    "Latitude_User" DOUBLE PRECISION,
-    "Longitude_User" DOUBLE PRECISION,
+    "City_User" TEXT NOT NULL,
+    "Latitude_User" DOUBLE PRECISION NOT NULL,
+    "Longitude_User" DOUBLE PRECISION NOT NULL,
     "Date_User" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "Role_User" TEXT NOT NULL DEFAULT 'CLIENT',
 
