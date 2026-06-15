@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound"
 import Dashboard from "./pages/Dashboard"
 import Faq from "./pages/Faq"
 import Market from "./pages/Market"
+import Depo from "./pages/Depo";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -25,6 +26,12 @@ export default function App() {
           />
           <Route path="/faq" element={<Faq />} />
           <Route path="/market" element={<Market />} />
+          <Route path="/depo/:id" element={
+              <ProtectedRoute>
+                <Depo />
+              </ProtectedRoute>
+            }
+            />
         </Route >
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
