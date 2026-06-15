@@ -35,7 +35,8 @@ model T_Users {
 
 model T_Depos {
   ID_Depo          String       @id @default(uuid())
-  Type_Depo        String       @default("Depo")
+  Type_Depo        String       @default("OFFER")
+  Lifetime         DateTime     @default(now())
   Title_Depo       String
   Text_Depo        String
   Date_Depo        DateTime     @default(now())
