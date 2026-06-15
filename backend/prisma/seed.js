@@ -56,17 +56,17 @@ async function main() {
     console.log("Admin already exists (password NOT modified)");
   }
 
-  // ------------------ CREATE AD ------------------
-  await prisma.T_Ads.upsert({
+  // ------------------ CREATE DEPOT ------------------
+  await prisma.T_Depots.upsert({
     where: {
-      ID_Ad: "UNKNOWN_AD_ID",
+      ID_Depot: "UNKNOWN_DEPOT_ID",
     },
     update: {},
     create: {
-      ID_Ad: "UNKNOWN_AD_ID",
-      Title_Ad: "Unknown advertisement",
-      Text_Ad: "This is a fallback ad created by the system.",
-      ID_User_Ad: unknownUser.ID_User, // important !
+      ID_Depot: "UNKNOWN_DEPOT_ID",
+      Title_Depot: "Unknown Depot",
+      Text_Depot: "This is a fallback Depot created by the system.",
+      ID_User_Depot: unknownUser.ID_User, // important !
     },
   });
   // -------------------- VERIFY ---------------------
