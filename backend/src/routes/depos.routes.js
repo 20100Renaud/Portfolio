@@ -16,7 +16,13 @@ const router = express.Router();
 //---------------------------------------CRUD POST-----------------------------------------------
 const preloadDepo = async (req, res, next) => {
   const depo = await prisma.T_Depos.findUnique({
-    where: { ID_Depo: req.params.depoId }
+    where: { ID_Depo: req.params.id },
+    include: {
+      User_Depos: true,
+      Answers_Depos: {
+        include: { User_Answers: true }
+      }
+    }
   });
   if (!depo) return res.status(404).json({ error: "Depo not found" });
   req.depo = depo;
@@ -26,10 +32,13 @@ const preloadDepo = async (req, res, next) => {
 router.post("/", authMiddleware, createDepo);
 router.get("/", getAllDepos);
 
+router.get("/:id", preloadDepo, (req, res) => {
+  res.json(req.depo);
+});
 router.put("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_Depo), updateDepo);
 router.delete("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_Depo), deleteDepo);
 
-router.post("/:depoId/answers", authMiddleware, preloadDepo, createAnswer);
+router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
 
 //---------------------------------------CRUD COMMENTS-----------------------------------------------
 const preloadAnswer = async (req, res, next) => {
