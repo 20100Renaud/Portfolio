@@ -12,19 +12,19 @@ enum Role {
   CLIENT
 }
 
-model T_Clients {
-  ID_Client        String       @id @default(uuid())
-  Login_Client     String       @unique
-  Mail_Client      String       @unique
-  Password_Client  String
-  Ville_Client     String?
-  Latitude_Client  Float?
-  Longitude_Client Float?
-  Date_Client      DateTime     @default(now())
-  Role_Client      String       @default("CLIENT")
+model T_Users {
+  ID_User        String       @id @default(uuid())
+  Login_User     String       @unique
+  Mail_User      String       @unique
+  Password_User  String
+  Ville_User     String?
+  Latitude_User  Float?
+  Longitude_User Float?
+  Date_User      DateTime     @default(now())
+  Role_User      String       @default("CLIENT")
 
-  Answers_Client  T_Answers[]
-  Ads_Client     T_Ads[]
+  Answers_User  T_Answers[]
+  Ads_User     T_Ads[]
 }
 
 model T_Ads {
@@ -32,10 +32,10 @@ model T_Ads {
   Title_Ad       String
   Text_Ad        String
   Date_Ad        DateTime     @default(now())
-  ID_Client_Ad   String
+  ID_User_Ad     String
 
   Answers_Ads    T_Answers[]
-  Client_Ads     T_Clients    @relation(fields: [ID_Client_Ad], references: [ID_Client])
+  User_Ads     T_Users    @relation(fields: [ID_User_Ad], references: [ID_User])
 }
 
 model T_Answers {
@@ -43,8 +43,8 @@ model T_Answers {
   Text_Answer    String
   Date_Answer        DateTime  @default(now())
   ID_Ad_Ans     String
-  ID_Client_Ans   String
+  ID_User_Ans   String
 
-  Client_Answers T_Clients @relation(fields: [ID_Client_Ans], references: [ID_Client])
+  User_Answers T_Users @relation(fields: [ID_User_Ans], references: [ID_User])
   Ads_Answers   T_Ads   @relation(fields: [ID_Ad_Ans], references: [ID_Ad])
 }

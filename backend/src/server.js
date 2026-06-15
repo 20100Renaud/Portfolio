@@ -25,8 +25,8 @@ app.use("/api/ads", adsRoutes);
 
 app.get("/api/test", async (req, res) => {
   try {
-    const clients = await prisma.T_Clients.findMany()
-    res.json(clients)
+    const users = await prisma.T_Users.findMany()
+    res.json(users)
   } catch (err) {
     console.error(err)
     res.status(500).send("Server error")

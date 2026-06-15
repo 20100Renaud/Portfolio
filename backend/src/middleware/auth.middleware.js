@@ -28,7 +28,7 @@ export const isOwnerOrAdmin = (getOwnerId) => {
     try {
       const resourceOwnerId = await getOwnerId(req);
 
-      if (req.user.role === "ADMIN" || req.user.clientId === resourceOwnerId) {
+      if (req.user.role === "ADMIN" || req.user.userId === resourceOwnerId) {
         return next();
       }
 

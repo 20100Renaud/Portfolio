@@ -12,7 +12,7 @@ portfolio/
 │  ├─ src/
 │  │  ├─ controllers/
 │  │  │  └─ auth.controller.js
-│  │  │  └─ clients.controller.js
+│  │  │  └─ users.controller.js
 │  │  │  └─ posts.controller.js
 │  │  ├─ middleware/
 │  │  │  └─ auth.middleware.js

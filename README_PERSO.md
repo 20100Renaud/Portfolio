@@ -95,7 +95,7 @@ docker compose exec backend npx prisma migrate reset  <= in the docker
  docker compose exec backend npx prisma migrate dev --name init
 ```
 
-### 4. Generate Client
+### 4. Generate User
 ```
 npx prisma generate
 ```
@@ -126,18 +126,18 @@ npx prisma db pull
 ```
 erDiagram
 direction LR
-    T_Clients {
-        int Id_Client PK
-        string Login_Client
-        string Email_Client
-        string Password_Client
-        string PC_Client FK
-        datetime Date_Client
+    T_Users {
+        int Id_User PK
+        string Login_User
+        string Email_User
+        string Password_User
+        string PC_User FK
+        datetime Date_User
     }
 
     T_Posts {
         int Id_Post PK
-        int Id_Client_Post FK
+        int Id_User_Post FK
         string Title_Post
         text Description_Post
         datetime Date_Post
@@ -146,7 +146,7 @@ direction LR
     T_Comments {
         int Id_Com PK
         int Id_Post FK
-        int Id_Client_Com FK
+        int Id_User_Com FK
         text Description_Com
         datetime Date_Com
     }
@@ -160,8 +160,8 @@ direction LR
         int longitude_PC
     }
 
-    T_Clients ||--o{ T_Posts : Whrite
-    T_Clients ||--o{ T_Comments : Whrite
+    T_Users ||--o{ T_Posts : Whrite
+    T_Users ||--o{ T_Comments : Whrite
     T_Posts ||--o{ T_Comments : Contains
-    T_PostalCodes ||--o{ T_Clients : Has
+    T_PostalCodes ||--o{ T_Users : Has
 ```

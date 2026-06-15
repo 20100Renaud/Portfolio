@@ -12,30 +12,30 @@ export const register = async (req, res) => {
     const normalizedEmail = data.email.toLowerCase().trim();
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    const existingUser = await prisma.T_Clients.findUnique({
-      where: { Mail_Client: normalizedEmail }
+    const existingUser = await prisma.T_Users.findUnique({
+      where: { Mail_User: normalizedEmail }
     });
 
     if (existingUser) {
       return res.status(409).json({ error: "Email already used" });
     }
 
-    const user = await prisma.T_Clients.create({
+    const user = await prisma.T_Users.create({
       data: {
-        Login_Client: data.username,
-        Mail_Client: normalizedEmail,
-        Password_Client: hashedPassword,
-        Ville_Client: data.ville_client,
-        Latitude_Client: data.latitude_client,
-        Longitude_Client: data.longitude_client
+        Login_User: data.username,
+        Mail_User: normalizedEmail,
+        Password_User: hashedPassword,
+        Ville_User: data.ville_user,
+        Latitude_User: data.latitude_user,
+        Longitude_User: data.longitude_user
       }
     });
 
     const token = jwt.sign(
       {
-        clientId: user.ID_Client,
-        username: user.Login_Client,
-        role: user.Role_Client
+        userId: user.ID_User,
+        username: user.Login_User,
+        role: user.Role_User
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -50,7 +50,7 @@ export const register = async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .json({
-        username: user.Login_Client
+        username: user.Login_User
       });
 
   } catch (err) {
@@ -73,8 +73,8 @@ export const connect = async (req, res) => {
     const normalizedEmail = email.toLowerCase().trim();
 
     console.log("[AUTH] searching user...");
-    const user = await prisma.T_Clients.findUnique({
-      where: { Mail_Client: normalizedEmail }
+    const user = await prisma.T_Users.findUnique({
+      where: { Mail_User: normalizedEmail }
     });
 
     if (!user) {
@@ -83,7 +83,7 @@ export const connect = async (req, res) => {
     }
 
 		console.log("[AUTH] comparing password...");
-		    const valid = await bcrypt.compare(password, user.Password_Client);
+		    const valid = await bcrypt.compare(password, user.Password_User);
 
 		console.log("[AUTH] password valid:", valid);
 
@@ -95,9 +95,9 @@ export const connect = async (req, res) => {
 		console.log("[AUTH] generating JWT...");
     const token = jwt.sign(
       {
-        clientId: user.ID_Client,
-        username: user.Login_Client,
-        role: user.Role_Client
+        userId: user.ID_User,
+        username: user.Login_User,
+        role: user.Role_User
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -114,7 +114,7 @@ export const connect = async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .json({
-        username: user.Login_Client
+        username: user.Login_User
       });
 
 		console.log("[AUTH] --- LOGIN COMPLETE ---");

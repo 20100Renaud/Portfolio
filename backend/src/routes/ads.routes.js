@@ -26,8 +26,8 @@ const preloadAd = async (req, res, next) => {
 router.post("/", authMiddleware, createAd);
 router.get("/", getAllAds);
 
-router.put("/:id", authMiddleware, preloadAd, isOwnerOrAdmin(async (req) => req.ad.ID_Client_Ad), updateAd);
-router.delete("/:id", authMiddleware, preloadAd, isOwnerOrAdmin(async (req) => req.ad.ID_Client_Ad), deleteAd);
+router.put("/:id", authMiddleware, preloadAd, isOwnerOrAdmin(async (req) => req.ad.ID_User_Ad), updateAd);
+router.delete("/:id", authMiddleware, preloadAd, isOwnerOrAdmin(async (req) => req.ad.ID_User_Ad), deleteAd);
 
 router.post("/:adId/answers", authMiddleware, preloadAd, createAnswer);
 
@@ -41,7 +41,7 @@ const preloadAnswer = async (req, res, next) => {
   next();
 };
 
-router.put("/answers/:id", authMiddleware, preloadAnswer, isOwnerOrAdmin((req) => req.answer.ID_Client_Com), updateAnswer);
-router.delete("/answers/:id", authMiddleware, preloadAnswer, isOwnerOrAdmin((req) => req.answer.ID_Client_Com), deleteAnswer);
+router.put("/answers/:id", authMiddleware, preloadAnswer, isOwnerOrAdmin((req) => req.answer.ID_User_Com), updateAnswer);
+router.delete("/answers/:id", authMiddleware, preloadAnswer, isOwnerOrAdmin((req) => req.answer.ID_User_Com), deleteAnswer);
 
 export default router;

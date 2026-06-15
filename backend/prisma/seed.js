@@ -12,17 +12,17 @@ async function main() {
     throw new Error("UNKNOWN_EMAIL missing");
   }
 
-  const unknownClient = await prisma.T_Clients.upsert({
-    where: { Mail_Client: unknownEmail },
+  const unknownUser = await prisma.T_Users.upsert({
+    where: { Mail_User: unknownEmail },
     update: {},
     create: {
-      Login_Client: "Unknown",
-      Mail_Client: unknownEmail,
-      Password_Client: "DISABLED",
-      Role_Client: "CLIENT",
-      Ville_Client: "Unknown",
-      Latitude_Client: 0.0,
-      Longitude_Client: 0.0,
+      Login_User: "Unknown",
+      Mail_User: unknownEmail,
+      Password_User: "DISABLED",
+      Role_User: "CLIENT",
+      Ville_User: "Unknown",
+      Latitude_User: 0.0,
+      Longitude_User: 0.0,
     },
   });
 
@@ -35,19 +35,19 @@ async function main() {
     throw new Error("ADMIN_EMAIL or ADMIN_PASSWORD missing");
   }
 
-  const existingAdmin = await prisma.T_Clients.findUnique({
-    where: { Mail_Client: adminEmail },
+  const existingAdmin = await prisma.T_Users.findUnique({
+    where: { Mail_User: adminEmail },
   });
   if (!existingAdmin) {
-    await prisma.T_Clients.create({
+    await prisma.T_Users.create({
       data: {
-        Login_Client: "Admin",
-        Mail_Client: adminEmail,
-        Password_Client: await bcrypt.hash(adminPassword, 10),
-        Role_Client: "ADMIN",
-        Ville_Client: "Unknow",
-        Latitude_Client: 0.0,
-        Longitude_Client: 0.0,
+        Login_User: "Admin",
+        Mail_User: adminEmail,
+        Password_User: await bcrypt.hash(adminPassword, 10),
+        Role_User: "ADMIN",
+        Ville_User: "Unknow",
+        Latitude_User: 0.0,
+        Longitude_User: 0.0,
       },
     });
 
@@ -66,12 +66,12 @@ async function main() {
       ID_Ad: "UNKNOWN_AD_ID",
       Title_Ad: "Unknown advertisement",
       Text_Ad: "This is a fallback ad created by the system.",
-      ID_Client_Ad: unknownClient.ID_Client, // important !
+      ID_User_Ad: unknownUser.ID_User, // important !
     },
   });
   // -------------------- VERIFY ---------------------
-  const users = await prisma.T_Clients.findMany({
-    select: { Login_Client: true, Role_Client: true },
+  const users = await prisma.T_Users.findMany({
+    select: { Login_User: true, Role_User: true },
   });
 
   console.log("Users in DB:", users);

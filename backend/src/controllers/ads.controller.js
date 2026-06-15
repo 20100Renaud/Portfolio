@@ -9,7 +9,7 @@ export const createAd = async (req, res) => {
       data: {
         Title_Ad: title,
         Description_Ad: description,
-        ID_Client_Ad: req.user.clientId
+        ID_User_Ad: req.user.userId
       }
     });
     res.status(201).json(ad);
@@ -23,9 +23,9 @@ export const getAllAds = async (req, res) => {
   try {
     const ads = await prisma.T_Ads.findMany({
       include: {
-        Client_Ads: true,
+        User_Ads: true,
         Answers_Ads: {
-          include: { Client_Answers: true }
+          include: { User_Answers: true }
         }
       }
     });
@@ -65,8 +65,8 @@ export const deleteAd = async (req, res) => {
     if (!process.env.UNKNOWN_EMAIL) {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
     }
-    const unknown = await prisma.T_Clients.findFirst({
-      where: { Mail_Client: process.env.UNKNOWN_EMAIL }
+    const unknown = await prisma.T_Users.findFirst({
+      where: { Mail_User: process.env.UNKNOWN_EMAIL }
     });
     if (!unknown) {
       return res.status(500).json({ error: "Unknown user missing" });
@@ -93,7 +93,7 @@ export const createAnswer = async (req, res) => {
     const { description } = req.body;
     const ad = req.ad;
     if (!ad) return res.status(404).json({ error: "Ad not found" });
-    if (ad.ID_Client_Ad === req.user.clientId && req.user.role !== "ADMIN") {
+    if (ad.ID_User_Ad === req.user.userId && req.user.role !== "ADMIN") {
       return res.status(403).json({
         error: "You can't answer to your own ad"
       });
@@ -103,7 +103,7 @@ export const createAnswer = async (req, res) => {
       data: {
         Description_Com: description,
         ID_Ad_Com: ad.ID_Ad,
-        ID_Client_Com: req.user.clientId
+        ID_User_Com: req.user.userId
       }
     });
     res.status(201).json(answer);
