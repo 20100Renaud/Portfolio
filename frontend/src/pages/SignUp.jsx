@@ -12,13 +12,13 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [results, setResults] = useState([]);
-  const [ville_client, setCity] = useState("");
-  const [latitude_client, setLatitude] = useState(null);
-  const [longitude_client, setLongitude] = useState(null);
+  const [ville_user, setCity] = useState("");
+  const [latitude_user, setLatitude] = useState(null);
+  const [longitude_user, setLongitude] = useState(null);
 
   const [errors, setErrors] = useState({
     username: "",
-    ville_client: "",
+    ville_user: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -26,7 +26,7 @@ export default function SignUp() {
 
   const [touched, setTouched] = useState({
     username: false,
-    ville_client: false,
+    ville_user: false,
     email: false,
     password: false,
     confirmPassword: false,
@@ -35,11 +35,11 @@ export default function SignUp() {
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPassword = (password) => password.length >= 4;
   const isValidUsername = (username) => username.length >= 4;
-  const isValidVille_client = (ville_client) => ville_client.length >= 2;
+  const isValidVille_user = (ville_user) => ville_user.length >= 2;
 
   const isFormValid =
     isValidUsername(username) &&
-    isValidVille_client(ville_client) &&
+    isValidVille_user(ville_user) &&
     isValidEmail(email) &&
     isValidPassword(password) &&
     password === confirmPassword;
@@ -86,15 +86,15 @@ export default function SignUp() {
       console.log({
         email,
         username,
-        ville_client,
-        latitude_client,
-        longitude_client,
+        ville_user,
+        latitude_user,
+        longitude_user,
       });
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password, username, ville_client, latitude_client, longitude_client}),
+        body: JSON.stringify({ email, password, username, ville_user, latitude_user, longitude_user}),
       });
 
       const data = await response.json();
@@ -187,7 +187,7 @@ export default function SignUp() {
 
             <input
                 type="text"
-                value={ville_client}
+                value={ville_user}
                 onChange={(e) => handleCityChange(e.target.value)}
                 maxLength={50}
                 className="input input-bordered w-full"

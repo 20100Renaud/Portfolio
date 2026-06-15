@@ -2,34 +2,34 @@ import prisma from "../prismaClient.js";
 
 
 // -----------------------------------------CRUD POSTS---------------------------------------------------------------
-export const createAd = async (req, res) => {
+export const createDepo = async (req, res) => {
   try {
     const { title, description } = req.body;
-    const ad = await prisma.T_Ads.create({
+    const depo = await prisma.T_Depos.create({
       data: {
-        Title_Ad: title,
-        Description_Ad: description,
-        ID_Client_Ad: req.user.clientId
+        Title_Depo: title,
+        Description_Depo: description,
+        ID_User_Depo: req.user.userId
       }
     });
-    res.status(201).json(ad);
+    res.status(201).json(depo);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 };
 
 
-export const getAllAds = async (req, res) => {
+export const getAllDepos = async (req, res) => {
   try {
-    const ads = await prisma.T_Ads.findMany({
+    const depos = await prisma.T_Depos.findMany({
       include: {
-        Client_Ads: true,
-        Answers_Ads: {
-          include: { Client_Answers: true }
+        User_Depos: true,
+        Answers_Depos: {
+          include: { User_Answers: true }
         }
       }
     });
-    res.json(ads);
+    res.json(depos);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -37,16 +37,16 @@ export const getAllAds = async (req, res) => {
 };
 
 
-export const updateAd = async (req, res) => {
+export const updateDepo = async (req, res) => {
   try {
-    const ad = req.ad;
-    if (!ad) return res.status(404).json({ error: "Ad not found" });
+    const depo = req.depo;
+    if (!depo) return res.status(404).json({ error: "Depo not found" });
 
-    const updated = await prisma.T_Ads.update({
-      where: { ID_Ad: ad.ID_Ad },
+    const updated = await prisma.T_Depos.update({
+      where: { ID_Depo: depo.ID_Depo },
       data: {
-        Title_Ad: req.body.title,
-        Description_Ad: req.body.description
+        Title_Depo: req.body.title,
+        Description_Depo: req.body.description
       }
     });
     res.json(updated);
@@ -57,27 +57,27 @@ export const updateAd = async (req, res) => {
 };
 
 
-export const deleteAd = async (req, res) => {
+export const deleteDepo = async (req, res) => {
   try {
-    const ad = req.ad;
-    if (!ad) return res.status(404).json({ error: "Ad not found" });
+    const depo = req.depo;
+    if (!depo) return res.status(404).json({ error: "Depo not found" });
 
     if (!process.env.UNKNOWN_EMAIL) {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
     }
-    const unknown = await prisma.T_Clients.findFirst({
-      where: { Mail_Client: process.env.UNKNOWN_EMAIL }
+    const unknown = await prisma.T_Users.findFirst({
+      where: { Mail_User: process.env.UNKNOWN_EMAIL }
     });
     if (!unknown) {
       return res.status(500).json({ error: "Unknown user missing" });
     }
 
     await prisma.T_Answers.deleteMany({
-      where: { ID_Ad_Com: ad.ID_Ad }
+      where: { ID_Depo_Com: depo.ID_Depo }
     });
 
-    await prisma.T_Ads.delete({
-      where: { ID_Ad: ad.ID_Ad }
+    await prisma.T_Depos.delete({
+      where: { ID_Depo: depo.ID_Depo }
     });
 
     res.json({ message: "Deleted" });
@@ -91,19 +91,19 @@ export const deleteAd = async (req, res) => {
 export const createAnswer = async (req, res) => {
   try {
     const { description } = req.body;
-    const ad = req.ad;
-    if (!ad) return res.status(404).json({ error: "Ad not found" });
-    if (ad.ID_Client_Ad === req.user.clientId && req.user.role !== "ADMIN") {
+    const depo = req.depo;
+    if (!depo) return res.status(404).json({ error: "Depo not found" });
+    if (depo.ID_User_Depo === req.user.userId && req.user.role !== "ADMIN") {
       return res.status(403).json({
-        error: "You can't answer to your own ad"
+        error: "You can't answer to your own depo"
       });
     }
 
     const answer = await prisma.T_Answers.create({
       data: {
         Description_Com: description,
-        ID_Ad_Com: ad.ID_Ad,
-        ID_Client_Com: req.user.clientId
+        ID_Depo_Com: depo.ID_Depo,
+        ID_User_Com: req.user.userId
       }
     });
     res.status(201).json(answer);

@@ -1,36 +1,36 @@
 import prisma from "../prismaClient.js";
 
 
-export const deleteClient = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
-    const clientId = req.user.clientId;
+    const userId = req.user.userId;
 
-    const client = await prisma.T_Clients.findUnique({ where: { ID_Client: clientId } });
-    if (!client) return res.status(404).json({ error: "Client not found" });
+    const user = await prisma.T_Users.findUnique({ where: { ID_User: userId } });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     if (!process.env.UNKNOWN_EMAIL) {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
     }
-    const unknown = await prisma.T_Clients.findFirst({
-      where: { Mail_Client: process.env.UNKNOWN_EMAIL }
+    const unknown = await prisma.T_Users.findFirst({
+      where: { Mail_User: process.env.UNKNOWN_EMAIL }
     });
     if (!unknown) {
       return res.status(500).json({ error: "Unknown user missing" });
     }
-    if (client.Role_Client === "ADMIN") {
+    if (user.Role_User === "ADMIN") {
       return res.status(403).json({ error: "Cannot delete admin account" });
     }
 
     await prisma.T_Comments.updateMany({
-      where: { ID_Client_Com: req.user.clientId },
-      data: { ID_Client_Com: unknown.ID_Client }
+      where: { ID_User_Com: req.user.userId },
+      data: { ID_User_Com: unknown.ID_User }
     });
 
     await prisma.T_Comments.deleteMany({
-      where: { ID_Ads_Com: ad.ID_Ad }
+      where: { ID_Depos_Com: depo.ID_Depo }
     });
 
-    await prisma.T_Clients.delete({ where: { ID_Client: clientId } });
+    await prisma.T_Users.delete({ where: { ID_User: userId } });
 
     res.json({ message: "Account deleted, answers reassigned" });
   } catch (err) {

@@ -4,7 +4,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from 'url';
 import authRoutes from "./routes/auth.routes.js";
-import adsRoutes from "./routes/ads.routes.js";
+import deposRoutes from "./routes/depos.routes.js";
 import prisma from "./prismaClient.js";
 import cookieParser from "cookie-parser";
 
@@ -21,12 +21,12 @@ app.use(express.json())
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
-app.use("/api/ads", adsRoutes);
+app.use("/api/depos", deposRoutes);
 
 app.get("/api/test", async (req, res) => {
   try {
-    const clients = await prisma.T_Clients.findMany()
-    res.json(clients)
+    const users = await prisma.T_Users.findMany()
+    res.json(users)
   } catch (err) {
     console.error(err)
     res.status(500).send("Server error")

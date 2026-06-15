@@ -11,12 +11,12 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/protected-data", authMiddleware, (req, res) => {
-  res.json({ message: "This is protected", clientId: req.user.clientId });
+  res.json({ message: "This is protected", userId: req.user.userId });
 });
 
 router.get("/me", authMiddleware, (req, res) => {
   res.json({
-    clientId: req.user.clientId,
+    userId: req.user.userId,
     username: req.user.username,
     role: req.user.role,
   });
