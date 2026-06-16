@@ -10,6 +10,7 @@ import {
   updateAnswer,
   deleteAnswer
 } from "../controllers/depos.controller.js";
+import upload from "../middleware/upload.middleware.js";
 
 const router = express.Router();
 
@@ -29,14 +30,14 @@ const preloadDepo = async (req, res, next) => {
   next();
 };
 
-router.post("/", authMiddleware, createDepo);
+router.post("/", authMiddleware, upload.array("images", 5), createDepo);
 router.get("/", getAllDepos);
 
 router.get("/:id", preloadDepo, (req, res) => {
   res.json(req.depo);
 });
 router.put("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User), updateDepo);
-router.delete("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_), deleteDepo);
+router.delete("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User), deleteDepo);
 
 router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
 

@@ -23,7 +23,7 @@ CREATE TABLE "T_Users" (
 CREATE TABLE "T_Depos" (
     "ID_Depo" TEXT NOT NULL,
     "Type_Depo" TEXT NOT NULL DEFAULT 'OFFER',
-    "Lifetime_Depo" TIMESTAMP(3) NOT NULL,
+    "Lifetime_Depo" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "Title_Depo" TEXT NOT NULL,
     "Text_Depo" TEXT NOT NULL,
     "Date_Depo" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -48,8 +48,8 @@ CREATE TABLE "T_Images" (
     "ID_Image" TEXT NOT NULL,
     "ID_Depo" TEXT NOT NULL,
     "URL_Image" TEXT NOT NULL,
-    "Text_Image" TEXT NOT NULL,
-    "Date_Image" TEXT NOT NULL,
+    "Text_Image" TEXT,
+    "Date_Image" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "T_Images_pkey" PRIMARY KEY ("ID_Image")
 );

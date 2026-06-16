@@ -36,7 +36,7 @@ model T_Users {
 model T_Depos {
   ID_Depo          String       @id @default(uuid())
   Type_Depo        String       @default("OFFER")
-  Lifetime_Depo    DateTime
+  Lifetime_Depo    DateTime     @default(now())
   Title_Depo       String
   Text_Depo        String
   Date_Depo        DateTime     @default(now())
@@ -62,8 +62,8 @@ model T_Images {
   ID_Image       String    @id @default(uuid())
   ID_Depo        String
   URL_Image      String
-  Text_Image     String
-  Date_Image     String
+  Text_Image     String?
+  Date_Image     DateTime
 
   Depos_Images   T_Depos   @relation(fields: [ID_Depo], references: [ID_Depo])
 }
