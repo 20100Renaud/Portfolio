@@ -9,7 +9,7 @@ export const createDepo = async (req, res) => {
       data: {
         Title_Depo: title,
         Description_Depo: description,
-        ID_User_Depo: req.user.userId
+        ID_User: req.user.userId
       }
     });
     res.status(201).json(depo);
@@ -66,7 +66,7 @@ export const deleteDepo = async (req, res) => {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
     }
     const unknown = await prisma.T_Users.findFirst({
-      where: { Mail_User: process.env.UNKNOWN_EMAIL }
+      where: { Email_User: process.env.UNKNOWN_EMAIL }
     });
     if (!unknown) {
       return res.status(500).json({ error: "Unknown user missing" });
@@ -93,7 +93,7 @@ export const createAnswer = async (req, res) => {
     const { description } = req.body;
     const depo = req.depo;
     if (!depo) return res.status(404).json({ error: "Depo not found" });
-    if (depo.ID_User_Depo === req.user.userId && req.user.role !== "ADMIN") {
+    if (depo.ID_User === req.user.userId && req.user.role !== "ADMIN") {
       return res.status(403).json({
         error: "You can't answer to your own depo"
       });

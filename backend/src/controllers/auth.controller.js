@@ -13,7 +13,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const existingUser = await prisma.T_Users.findUnique({
-      where: { Mail_User: normalizedEmail }
+      where: { Email_User: normalizedEmail }
     });
 
     if (existingUser) {
@@ -23,7 +23,7 @@ export const register = async (req, res) => {
     const user = await prisma.T_Users.create({
       data: {
         Login_User: data.username,
-        Mail_User: normalizedEmail,
+        Email_User: normalizedEmail,
         Password_User: hashedPassword,
         City_User: data.city_user,
         Latitude_User: data.latitude_user,
@@ -74,7 +74,7 @@ export const connect = async (req, res) => {
 
     console.log("[AUTH] searching user...");
     const user = await prisma.T_Users.findUnique({
-      where: { Mail_User: normalizedEmail }
+      where: { Email_User: normalizedEmail }
     });
 
     if (!user) {

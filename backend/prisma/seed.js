@@ -13,11 +13,11 @@ async function main() {
   }
 
   const unknownUser = await prisma.T_Users.upsert({
-    where: { Mail_User: unknownEmail },
+    where: { Email_User: unknownEmail },
     update: {},
     create: {
       Login_User: "Unknown",
-      Mail_User: unknownEmail,
+      Email_User: unknownEmail,
       Password_User: "DISABLED",
       Role_User: "CLIENT",
       City_User: "Unknown",
@@ -36,13 +36,13 @@ async function main() {
   }
 
   const existingAdmin = await prisma.T_Users.findUnique({
-    where: { Mail_User: adminEmail },
+    where: { Email_User: adminEmail },
   });
   if (!existingAdmin) {
     await prisma.T_Users.create({
       data: {
         Login_User: "Admin",
-        Mail_User: adminEmail,
+        Email_User: adminEmail,
         Password_User: await bcrypt.hash(adminPassword, 10),
         Role_User: "ADMIN",
         City_User: "Unknow",
@@ -66,7 +66,7 @@ async function main() {
       ID_Depo: "UNKNOWN_DEPOT_ID",
       Title_Depo: "Unknown Depo",
       Text_Depo: "This is a fallback Depo created by the system.",
-      ID_User_Depo: unknownUser.ID_User, // important !
+      ID_User: unknownUser.ID_User, // important !
     },
   });
   // -------------------- VERIFY ---------------------
