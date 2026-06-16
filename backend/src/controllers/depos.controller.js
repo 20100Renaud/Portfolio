@@ -4,14 +4,29 @@ import prisma from "../prismaClient.js";
 // -----------------------------------------CRUD POSTS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, lifetime } = req.body;
+
+    const lifetimeDate = lifetime
+      ? new Date(lifetime)
+      : new Date(new Date().setMonth(new Date().getMonth() + 1));
+
     const depo = await prisma.T_Depos.create({
       data: {
         Title_Depo: title,
-        Description_Depo: description,
+        Text_Depo: description,
+        lifetime_Depo: lifetimeDate,
         ID_User: req.user.userId
       }
     });
+    
+    if (images?.length) {
+      await prisma.T_images.createmany({
+        data: images.map(url => ({
+          ID_Depo: depo.ID_Depo,
+          URL_Image: url
+        }))
+      });
+    }
     res.status(201).json(depo);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
@@ -46,7 +61,8 @@ export const updateDepo = async (req, res) => {
       where: { ID_Depo: depo.ID_Depo },
       data: {
         Title_Depo: req.body.title,
-        Description_Depo: req.body.description
+        Text_Depo: req.body.description,
+        Lifetime_Depo: req.body.lifetime
       }
     });
     res.json(updated);
