@@ -14,22 +14,23 @@ export const createDepo = async (req, res) => {
       data: {
         Title_Depo: title,
         Text_Depo: description,
-        lifetime_Depo: lifetimeDate,
+        Lifetime_Depo: lifetimeDate,
         ID_User: req.user.userId
       }
     });
     
-    if (images?.length) {
-      await prisma.T_images.createmany({
-        data: images.map(url => ({
+    if (req.files?.length) {
+      await prisma.T_Images.createMany({
+        data: req.files.map(file => ({
           ID_Depo: depo.ID_Depo,
-          URL_Image: url
+          Date_Image: new Date(),
+          URL_Image: `/uploads/${file.filename}`
         }))
       });
     }
     res.status(201).json(depo);
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: err.message});
   }
 };
 
