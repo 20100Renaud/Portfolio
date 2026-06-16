@@ -15,22 +15,30 @@ export const createDepo = async (req, res) => {
         Title_Depo: title,
         Text_Depo: description,
         Lifetime_Depo: lifetimeDate,
-        ID_User: req.user.userId
-      }
+        ID_User: req.user.userId,
+      },
     });
-    
+
+    // Check if the user send an image
     if (req.files?.length) {
+      const uploadedImages = await Promise.all(
+        //Stock it/them in cloudinary
+        req.files.map((file) => uploadToCloudinary(file.buffer))
+      );
+
       await prisma.T_Images.createMany({
-        data: req.files.map(file => ({
+        //Then, in the database
+        data: uploadedImages.map((image) => ({
           ID_Depo: depo.ID_Depo,
           Date_Image: new Date(),
-          URL_Image: `/uploads/${file.filename}`
-        }))
+          URL_Image: image.secure_url,
+        })),
       });
     }
+
     res.status(201).json(depo);
   } catch (err) {
-    res.status(500).json({ error: err.message});
+    res.status(500).json({ error: err.message });
   }
 };
 
