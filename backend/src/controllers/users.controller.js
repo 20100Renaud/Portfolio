@@ -12,7 +12,7 @@ export const deleteUser = async (req, res) => {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
     }
     const unknown = await prisma.T_Users.findFirst({
-      where: { Mail_User: process.env.UNKNOWN_EMAIL }
+      where: { Email_User: process.env.UNKNOWN_EMAIL }
     });
     if (!unknown) {
       return res.status(500).json({ error: "Unknown user missing" });

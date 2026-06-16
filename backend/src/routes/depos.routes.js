@@ -35,8 +35,8 @@ router.get("/", getAllDepos);
 router.get("/:id", preloadDepo, (req, res) => {
   res.json(req.depo);
 });
-router.put("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_Depo), updateDepo);
-router.delete("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_Depo), deleteDepo);
+router.put("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User), updateDepo);
+router.delete("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User_), deleteDepo);
 
 router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
 

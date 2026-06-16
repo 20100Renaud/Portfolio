@@ -21,38 +21,49 @@ enum Type_Depo {
 model T_Users {
   ID_User        String       @id @default(uuid())
   Login_User     String       @unique
-  Mail_User      String       @unique
+  Email_User     String       @unique
   Password_User  String
-  City_User     String
+  City_User      String
   Latitude_User  Float
   Longitude_User Float
   Date_User      DateTime     @default(now())
   Role_User      String       @default("CLIENT")
 
-  Answers_User  T_Answers[]
+  Answers_User   T_Answers[]
   Depos_User     T_Depos[]
 }
 
 model T_Depos {
   ID_Depo          String       @id @default(uuid())
   Type_Depo        String       @default("OFFER")
-  Lifetime         DateTime     @default(now())
+  Lifetime_Depo    DateTime
   Title_Depo       String
   Text_Depo        String
   Date_Depo        DateTime     @default(now())
-  ID_User_Depo     String
+  ID_User          String
 
   Answers_Depos    T_Answers[]
-  User_Depos     T_Users    @relation(fields: [ID_User_Depo], references: [ID_User])
+  Images_Depos     T_Images[]
+  User_Depos       T_Users    @relation(fields: [ID_User], references: [ID_User])
 }
 
 model T_Answers {
   ID_Answer      String    @id @default(uuid())
   Text_Answer    String
-  Date_Answer        DateTime  @default(now())
-  ID_Depo_Ans     String
-  ID_User_Ans   String
+  Date_Answer    DateTime  @default(now())
+  ID_Depo        String
+  ID_User        String
 
-  User_Answers T_Users @relation(fields: [ID_User_Ans], references: [ID_User])
-  Depos_Answers   T_Depos   @relation(fields: [ID_Depo_Ans], references: [ID_Depo])
+  User_Answers   T_Users   @relation(fields: [ID_User], references: [ID_User])
+  Depos_Answers  T_Depos   @relation(fields: [ID_Depo], references: [ID_Depo])
+}
+
+model T_Images {
+  ID_Image       String    @id @default(uuid())
+  ID_Depo        String
+  URL_Image      String
+  Text_Image     String
+  Date_Image     String
+
+  Depos_Images   T_Depos   @relation(fields: [ID_Depo], references: [ID_Depo])
 }
