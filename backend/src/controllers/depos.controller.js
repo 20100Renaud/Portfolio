@@ -19,12 +19,15 @@ export const createDepo = async (req, res) => {
       },
     });
 
+    // Check if the user send an image
     if (req.files?.length) {
       const uploadedImages = await Promise.all(
+        //Stock it/them in cloudinary
         req.files.map((file) => uploadToCloudinary(file.buffer))
       );
 
       await prisma.T_Images.createMany({
+        //Then, in the database
         data: uploadedImages.map((image) => ({
           ID_Depo: depo.ID_Depo,
           Date_Image: new Date(),
