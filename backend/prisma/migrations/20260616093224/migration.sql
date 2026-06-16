@@ -48,8 +48,8 @@ CREATE TABLE "T_Images" (
     "ID_Image" TEXT NOT NULL,
     "ID_Depo" TEXT NOT NULL,
     "URL_Image" TEXT NOT NULL,
-    "Text_Image" TEXT NOT NULL,
-    "Date_Image" TEXT NOT NULL,
+    "Text_Image" TEXT,
+    "Date_Image" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "T_Images_pkey" PRIMARY KEY ("ID_Image")
 );
