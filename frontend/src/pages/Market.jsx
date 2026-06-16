@@ -23,12 +23,20 @@ export default function Home() {
       </p>
         {depos.map((depo) => {
           return (
-            <Link key={depo.ID_Depo} to={`/depo/${depo.ID_Depo}`}>
-              <div>
-                <h3>{depo.Title_Depo}</h3>
-                <p>{depo.User_Depos.Login_User}</p>
-              </div>
-            </Link>
+           <Link
+            key={depo.ID_Depo}
+            to={`/depo/${depo.ID_Depo}`}
+          >
+            <div className="bg-white rounded-xl shadow-md p-4 hover:shadow-xl transition-all duration-300 mb-4">
+              <h3 className="text-xl font-semibold text-green-900">
+                {depo.Title_Depo}
+              </h3>
+
+              <p className="text-green-700">
+                {depo.User_Depos?.Login_User}
+              </p>
+            </div>
+          </Link>
           );
         })}
     </div>
