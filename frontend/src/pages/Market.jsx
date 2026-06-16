@@ -9,8 +9,18 @@ export default function Home() {
     const loadDepos = async () => {
       const response = await fetch("http://localhost:5000/api/depos");
       const data = await response.json();
-      setDepos(data);
-    }
+
+      console.log("API RESPONSE:", data);
+
+      if (Array.isArray(data)) {
+        setDepos(data);
+      } else if (Array.isArray(data.depos)) {
+        setDepos(data.depos);
+      } else {
+        setDepos([]);
+      }
+    };
+
     loadDepos();
   }, []);
 
