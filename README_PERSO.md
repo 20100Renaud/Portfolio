@@ -1,128 +1,180 @@
 # Share Up
+
 ## LOADING COMMANDS
-### Frontend
-~/portfolio/frontend$
+### 1. Usual dev
+`~/portfolio/`
+
 ```
-npm install
-npm run dev    # http://localhost:5173
+npm run dev
+
+// docker compose -f docker-compose.dev.yml up --build
 ```
 
-### Backend
-~/portfolio$
-- Run what is existing:
+#### Steps:
+
+- Start containers
+- Rebuild images if needed
+- Reuse existing:
+  - PostgreSQL container (if already created)
+  - Postgres volume (portfolio_postgres_data)
+- Keep database state
+
+### 2. On prisma or seed changes = reset everything
+`~/portfolio/`
+
 ```
-docker compose up    # http://localhost:5000
+npm run clean
+
+// docker compose -f docker-compose.dev.yml down -v && npm run dev
 ```
 
-- After code / Dockerfile change (production):
+#### Steps:
+
+- Stop everything
+- ***Delete containers and volume so data***
+- Recreate everything from scratch
+- Re-run:
+  - Prisma migrations
+  - Seed script
+
+### 3. Check the DataBase inside the docker (use another terminal)
+`~/portfolio/backend/$`
 ```
-docker compose down --remove-orphans
-docker compose up --build
-# Rebuild if necessary, then run
+npm run studio
+
+// The first time run:
+npm install --save-dev dotenv-cli
 ```
-- Development (with seed):
-```
-docker compose -f docker compose.dev.yml up --build
-```
-- Recreate the image from zero:
-```
-docker compose build --no-cache
-docker compose up
-```
- *up : start container
+
+### 4. Development Ports
+
+| Port | Service |
+|------|---------|
+| 5000 | Backend API (Express) |
+| 5173 | Frontend (Vite + React) |
+| 5433 | PostgreSQL Database |
+| 5555 | Prisma Studio |
 
 ## SETUP docker
+
 `~/portfolio/$`
+
 ```
 sudo apt update
 sudo apt  install docker.io -y
 ```
+
 ```
 which docker         # /usr/bin/docker
 docker --version     # version 29.1.3-0ubuntu3~24.04.1
 
 ```
+
 ```
 sudo apt-get install docker-compose-plugin
 docker compose version              # Docker Compose version v5.1.3
 ```
+
 Add user to the docker group
+
 ```
 sudo usermod -aG docker $USER
 ```
+
 verify Docker is working
+
 ```
 docker ps
 ```
+
 ### To restard Docker
+
 ```
 sudo systemctl restart docker
 ```
 
 ## RUN container:
+
 ```
 docker exec -it portfolio-backend-1 sh
 ```
+
 run the migration inside the container
+
 ```
 # npx prisma migrate deploy --schema=prisma/schema.prisma
 ```
 
 ### Pull from library/postgres
+
 ```
 docker pull postgres
 ```
+
 ## SETUP PRISMA
+
 ```
 npm install prisma@6 @prisma/client@6   # 7 works differently
 ```
+
 ## PRISMA COMMANDS to restard from schema.prisma
 
 ### 1. Delete old migrations and migrate
+
 ```
 rm -rf prisma/migrations
 prisma migrate dev
 ```
 
 ### 2. Reset the DataBase
+
 ```
-npx prisma migrate reset
-docker compose exec backend npx prisma migrate reset  <= in the docker
+npx prisma migrate reset //outside the docker
+docker compose exec backend npx prisma migrate reset  //inside the docker
 ```
 
 ### 3. Generate a migration in the docker
+
 ```
  docker compose exec backend npx prisma migrate dev --name init
 ```
 
 ### 4. Generate User
+
 ```
 npx prisma generate
 ```
 
 ### 5. Generate Admin and uknown user
+
 - localy:
+
 ```
 npx prisma db seed
 ```
+
 - in the container:
+
 ```
 docker compose exec backend npx prisma db seed
 ```
 
-### 6. Check the DataBase
+### 6. Check the DataBase localy
+`~/portfolio/backend/$`
 ```
-npx prisma studio
+npx prisma studio //port:5555
 ```
 
 ## PRISMA COMMANDS to restard from DataBase
 
 ### Adjust schema.prisma to match current DataBase
+
 ```
 npx prisma db pull
 ```
 
 ## MERMAID
+
 ```
 erDiagram
 direction LR
