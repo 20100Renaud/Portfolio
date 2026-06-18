@@ -2,7 +2,6 @@ import prisma from "../src/prismaClient.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
-
 dotenv.config();
 
 async function main() {
@@ -78,7 +77,6 @@ async function main() {
 }
 
 main()
-
   .then(() => {
     console.log("🌱 Seeding done");
     process.exit(0);

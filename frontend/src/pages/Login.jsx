@@ -25,8 +25,7 @@ export default function Login() {
   const isValidPassword = (password) => {
     return password.length >= 4;
   };
-  const isFormValid =
-    isValidEmail(email) && isValidPassword(password);
+  const isFormValid = isValidEmail(email) && isValidPassword(password);
 
   const [toast, setToast] = useState(null);
   useEffect(() => {
@@ -41,17 +40,17 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-		console.log("[LOGIN] submit triggered");
-		console.log("[LOGIN] email:", email);
-		console.log("[LOGIN] password length:", password.length);
+    console.log("[LOGIN] submit triggered");
+    console.log("[LOGIN] email:", email);
+    console.log("[LOGIN] password length:", password.length);
 
     if (!isFormValid) {
-			console.log("[LOGIN] form invalid, abort");
-			return;
-		}
+      console.log("[LOGIN] form invalid, abort");
+      return;
+    }
 
     try {
-			console.log("[LOGIN] sending request...");
+      console.log("[LOGIN] sending request...");
 
       const response = await fetch("/api/auth/connect", {
         method: "POST",
@@ -60,43 +59,43 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-			console.log("[LOGIN] response received");
-    	console.log("[LOGIN] status:", response.status);
+      console.log("[LOGIN] response received");
+      console.log("[LOGIN] status:", response.status);
 
       const data = await response.json();
-			console.log("[LOGIN] response JSON:", data);
+      console.log("[LOGIN] response JSON:", data);
 
       if (response.ok) {
-				console.log("[LOGIN] success → navigating dashboard");
+        console.log("[LOGIN] success → navigating dashboard");
         setToast(
           <div className="flex flex-col p-4">
             <span className="font-bold text-lg text-white">
               Login successful!
             </span>
-          </div>
+          </div>,
         );
         console.log("[LOGIN] result:", data);
         login(data.username);
         navigate("/dashboard");
       } else {
-				console.log("[LOGIN] error response:", data);
+        console.log("[LOGIN] error response:", data);
         setToast(
           <div className="flex flex-col p-4">
             <span className="font-bold text-lg text-white">
               {data.error || "Login failed"}
             </span>
-          </div>
+          </div>,
         );
       }
     } catch (err) {
-			console.log("[LOGIN] FETCH ERROR:", err);
+      console.log("[LOGIN] FETCH ERROR:", err);
       console.error("Error logging in:", err);
       setToast(
         <div className="flex flex-col p-4">
           <span className="font-bold text-lg text-white">
             Server error, try again later
           </span>
-        </div>
+        </div>,
       );
       console.error(err);
     }
@@ -104,7 +103,8 @@ export default function Login() {
 
   return (
     <div className="mt-6 flex flex-grow items-center justify-center w-full px-6">
-      <div className="
+      <div
+        className="
         relative w-full max-w-md p-8
         bg-gradient-to-b
         from-white from-[30%] to-[#a5d6a7]
@@ -194,9 +194,10 @@ export default function Login() {
               px-6 py-3 w-full rounded-full
               transition
               shadow-md
-              ${isFormValid
-                ? "bg-green-700 text-white hover:bg-green-800"
-                : "bg-gray-400 text-gray-200 cursor-not-allowed"
+              ${
+                isFormValid
+                  ? "bg-green-700 text-white hover:bg-green-800"
+                  : "bg-gray-400 text-gray-200 cursor-not-allowed"
               }
             `}
           >
@@ -216,12 +217,14 @@ export default function Login() {
       </div>
 
       {toast && (
-        <div className="
+        <div
+          className="
             fixed items-center justify-center text-center
             bg-green-600
             rounded-lg shadow-lg
             animate-fade-in
-          ">
+          "
+        >
           {toast}
         </div>
       )}

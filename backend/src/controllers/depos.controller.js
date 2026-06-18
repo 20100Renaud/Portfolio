@@ -1,7 +1,7 @@
 import prisma from "../prismaClient.js";
 
 
-// -----------------------------------------CRUD POSTS---------------------------------------------------------------
+// -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
   try {
     const { title, description, lifetime } = req.body;
@@ -112,7 +112,7 @@ export const deleteDepo = async (req, res) => {
   }
 };
 
-// -----------------------------------------------CRUD COMMENTS-----------------------------------------------------------
+// -----------------------------------------------CRUD ANSWERS-----------------------------------------------------------
 export const createAnswer = async (req, res) => {
   try {
     const { description } = req.body;

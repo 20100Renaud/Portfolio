@@ -1,5 +1,8 @@
 import express from "express";
-import { authMiddleware, isOwnerOrAdmin } from "../middleware/auth.middleware.js";
+import {
+  authMiddleware,
+  isOwnerOrAdmin,
+} from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
 import {
   createDepo,
@@ -8,22 +11,22 @@ import {
   getAllDepos,
   createAnswer,
   updateAnswer,
-  deleteAnswer
+  deleteAnswer,
 } from "../controllers/depos.controller.js";
 import upload from "../middleware/upload.middleware.js";
 
 const router = express.Router();
 
-//---------------------------------------CRUD POST-----------------------------------------------
+//---------------------------------------CRUD DEPOS-----------------------------------------------
 const preloadDepo = async (req, res, next) => {
   const depo = await prisma.T_Depos.findUnique({
     where: { ID_Depo: req.params.id },
     include: {
       User_Depos: true,
       Answers_Depos: {
-        include: { User_Answers: true }
-      }
-    }
+        include: { User_Answers: true },
+      },
+    },
   });
   if (!depo) return res.status(404).json({ error: "Depo not found" });
   req.depo = depo;
@@ -36,22 +39,46 @@ router.get("/", getAllDepos);
 router.get("/:id", preloadDepo, (req, res) => {
   res.json(req.depo);
 });
-router.put("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User), updateDepo);
-router.delete("/:id", authMiddleware, preloadDepo, isOwnerOrAdmin(async (req) => req.depo.ID_User), deleteDepo);
+router.put(
+  "/:id",
+  authMiddleware,
+  preloadDepo,
+  isOwnerOrAdmin(async (req) => req.depo.ID_User),
+  updateDepo,
+);
+router.delete(
+  "/:id",
+  authMiddleware,
+  preloadDepo,
+  isOwnerOrAdmin(async (req) => req.depo.ID_User),
+  deleteDepo,
+);
 
 router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
 
-//---------------------------------------CRUD COMMENTS-----------------------------------------------
+//---------------------------------------CRUD ANSWERS-----------------------------------------------
 const preloadAnswer = async (req, res, next) => {
   const answer = await prisma.T_Answers.findUnique({
-    where: { ID_Com: req.params.id }
+    where: { ID_Com: req.params.id },
   });
   if (!answer) return res.status(404).json({ error: "Answer not found" });
   req.answer = answer;
   next();
 };
 
-router.put("/answers/:id", authMiddleware, preloadAnswer, isOwnerOrAdmin((req) => req.answer.ID_User_Com), updateAnswer);
-router.delete("/answers/:id", authMiddleware, preloadAnswer, isOwnerOrAdmin((req) => req.answer.ID_User_Com), deleteAnswer);
+router.put(
+  "/answers/:id",
+  authMiddleware,
+  preloadAnswer,
+  isOwnerOrAdmin((req) => req.answer.ID_User_Com),
+  updateAnswer,
+);
+router.delete(
+  "/answers/:id",
+  authMiddleware,
+  preloadAnswer,
+  isOwnerOrAdmin((req) => req.answer.ID_User_Com),
+  deleteAnswer,
+);
 
 export default router;

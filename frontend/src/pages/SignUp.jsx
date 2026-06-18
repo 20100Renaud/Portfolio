@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 
-
 export default function SignUp() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -60,7 +59,7 @@ export default function SignUp() {
 
     try {
       const response = await fetch(
-        `https://geo.api.gouv.fr/communes?nom=${value}&fields=centre,codesPostaux`
+        `https://geo.api.gouv.fr/communes?nom=${value}&fields=centre,codesPostaux`,
       );
 
       const data = await response.json();
@@ -94,7 +93,14 @@ export default function SignUp() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password, username, city_user, latitude_user, longitude_user}),
+        body: JSON.stringify({
+          email,
+          password,
+          username,
+          city_user,
+          latitude_user,
+          longitude_user,
+        }),
       });
 
       const data = await response.json();
@@ -103,8 +109,10 @@ export default function SignUp() {
         setToast(
           <div className="flex flex-col p-4">
             <span className="text-green-100">Account created!</span>
-            <span className="font-bold text-lg text-white">Welcome {username}</span>
-          </div>
+            <span className="font-bold text-lg text-white">
+              Welcome {username}
+            </span>
+          </div>,
         );
         console.log("SignUp result:", data);
         login(data.username);
@@ -112,8 +120,10 @@ export default function SignUp() {
       } else {
         setToast(
           <div className="flex flex-col p-4">
-            <span className="text-white">{data.message || "Sign up failed"}</span>
-          </div>
+            <span className="text-white">
+              {data.message || "Sign up failed"}
+            </span>
+          </div>,
         );
       }
     } catch (err) {
@@ -121,14 +131,11 @@ export default function SignUp() {
       setToast(
         <div className="flex flex-col p-4">
           <span className="text-white">Server error, try again later</span>
-        </div>
+        </div>,
       );
       console.error(err);
     }
   };
-
-
-
 
   return (
     <div className="mt-6 flex flex-grow items-center justify-center w-full px-6">
@@ -161,12 +168,14 @@ export default function SignUp() {
               }}
               onBlur={() => setTouched((prev) => ({ ...prev, username: true }))}
               className={`
-              input input-bordered w-full bg-white pl-4 
+              input input-bordered w-full bg-white pl-4
               focus:placeholder-transparent
               focus:outline-none
-              ${touched.username && errors.username
+              ${
+                touched.username && errors.username
                   ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
+                  : "focus:ring-2 focus:ring-green-700"
+              }
             `}
               placeholder="Your username"
               required
@@ -180,49 +189,47 @@ export default function SignUp() {
             {isValidUsername(username) && validItem}
           </div>
 
-	        <div className="relative">
-            <label className="block text-gray-700">
-              City
-            </label>
+          <div className="relative">
+            <label className="block text-gray-700">City</label>
 
             <input
-                type="text"
-                value={city_user}
-                onChange={(e) => handleCityChange(e.target.value)}
-                maxLength={50}
-                className="input input-bordered w-full"
-                placeholder="Votre city"
-                required
-              />
+              type="text"
+              value={city_user}
+              onChange={(e) => handleCityChange(e.target.value)}
+              maxLength={50}
+              className="input input-bordered w-full"
+              placeholder="Votre city"
+              required
+            />
 
-              {results.length > 0 && (
-                <ul className="absolute z-50 w-full mt-1 bg-white border rounded-box shadow-lg max-h-60 overflow-y-auto">
-                  {results.map((commune) => (
-                    <li
-                      key={commune.code}
-                      className="px-4 py-2 cursor-pointer hover:bg-base-200 flex justify-between"
-                      onClick={() => {
-                        setCity(commune.nom);
+            {results.length > 0 && (
+              <ul className="absolute z-50 w-full mt-1 bg-white border rounded-box shadow-lg max-h-60 overflow-y-auto">
+                {results.map((commune) => (
+                  <li
+                    key={commune.code}
+                    className="px-4 py-2 cursor-pointer hover:bg-base-200 flex justify-between"
+                    onClick={() => {
+                      setCity(commune.nom);
 
-                        if (commune.centre?.coordinates) {
-                          setLongitude(commune.centre.coordinates[0]);
-                          setLatitude(commune.centre.coordinates[1]);
-                        }
+                      if (commune.centre?.coordinates) {
+                        setLongitude(commune.centre.coordinates[0]);
+                        setLatitude(commune.centre.coordinates[1]);
+                      }
 
-                        setResults([]);
-                      }}
-                    >
-                      <span>{commune.nom}</span>
+                      setResults([]);
+                    }}
+                  >
+                    <span>{commune.nom}</span>
 
-                      {commune.codesPostaux?.length > 0 && (
-                        <span className="text-sm text-gray-500">
-                          {commune.codesPostaux[0]}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                    {commune.codesPostaux?.length > 0 && (
+                      <span className="text-sm text-gray-500">
+                        {commune.codesPostaux[0]}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="relative">
@@ -235,9 +242,7 @@ export default function SignUp() {
                 setEmail(value);
                 setErrors((prev) => ({
                   ...prev,
-                  email: isValidEmail(value)
-                    ? ""
-                    : "Invalid email address",
+                  email: isValidEmail(value) ? "" : "Invalid email address",
                 }));
               }}
               onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
@@ -245,9 +250,11 @@ export default function SignUp() {
               input input-bordered w-full bg-white pl-4
               focus:placeholder-transparent
               focus:outline-none
-              ${touched.email && errors.email
+              ${
+                touched.email && errors.email
                   ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
+                  : "focus:ring-2 focus:ring-green-700"
+              }
             `}
               placeholder="you@example.com"
               required
@@ -259,7 +266,7 @@ export default function SignUp() {
               )}
             </div>
 
-            {isValidEmail(email) && (validItem)}
+            {isValidEmail(email) && validItem}
           </div>
 
           <div className="relative">
@@ -277,16 +284,16 @@ export default function SignUp() {
                     : "Password must be at least 4 characters",
                 }));
               }}
-              onBlur={() =>
-                setTouched((prev) => ({ ...prev, password: true }))
-              }
+              onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
               className={`
               input input-bordered w-full bg-white pl-4
               focus:placeholder-transparent
               focus:outline-none
-              ${touched.password && errors.password
+              ${
+                touched.password && errors.password
                   ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
+                  : "focus:ring-2 focus:ring-green-700"
+              }
             `}
               placeholder="********"
               required
@@ -313,9 +320,7 @@ export default function SignUp() {
                 setErrors((prev) => ({
                   ...prev,
                   confirmPassword:
-                    value === password
-                      ? ""
-                      : "Passwords do not match",
+                    value === password ? "" : "Passwords do not match",
                 }));
               }}
               onBlur={() =>
@@ -328,9 +333,11 @@ export default function SignUp() {
               input input-bordered w-full bg-white pl-4
               focus:placeholder-transparent
               focus:outline-none
-              ${touched.confirmPassword && errors.confirmPassword
+              ${
+                touched.confirmPassword && errors.confirmPassword
                   ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
+                  : "focus:ring-2 focus:ring-green-700"
+              }
                 }
             `}
               placeholder="********"
@@ -339,9 +346,7 @@ export default function SignUp() {
 
             <div className="h-2">
               {touched.confirmPassword && errors.confirmPassword && (
-                <p className="text-red-500 text-sm">
-                  {errors.confirmPassword}
-                </p>
+                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
               )}
             </div>
 
@@ -355,10 +360,11 @@ export default function SignUp() {
             px-6 py-3 w-full rounded-full
             transition
             shadow-md
-            ${isFormValid
+            ${
+              isFormValid
                 ? "bg-green-700 text-white hover:bg-green-800"
                 : "bg-gray-400 text-gray-200 cursor-not-allowed"
-              }
+            }
           `}
           >
             Sign Up
@@ -377,12 +383,14 @@ export default function SignUp() {
       </div>
 
       {toast && (
-        <div className="
+        <div
+          className="
             fixed items-center justify-center text-center
             bg-green-600
             rounded-lg shadow-lg
             animate-fade-in
-          ">
+          "
+        >
           {toast}
         </div>
       )}

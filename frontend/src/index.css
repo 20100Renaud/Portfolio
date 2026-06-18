@@ -1,55 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Zain';
-  src: url('/fonts/Zain-Regular.woff2') format('woff2');
+  font-family: "Zain";
+  src: url("/fonts/Zain-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Zain';
-  src: url('/fonts/Zain-Bold.woff2') format('woff2');
+  font-family: "Zain";
+  src: url("/fonts/Zain-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Zain';
-  src: url('/fonts/Zain-Black.woff2') format('woff2');
+  font-family: "Zain";
+  src: url("/fonts/Zain-Black.woff2") format("woff2");
   font-weight: 900;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Zain';
-  src: url('/fonts/Zain-Light.woff2') format('woff2');
+  font-family: "Zain";
+  src: url("/fonts/Zain-Light.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Zain';
-  src: url('/fonts/Zain-ExtraLight.woff2') format('woff2');
+  font-family: "Zain";
+  src: url("/fonts/Zain-ExtraLight.woff2") format("woff2");
   font-weight: 200;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Zain';
-  src: url('/fonts/Zain-Italic.woff2') format('woff2');
+  font-family: "Zain";
+  src: url("/fonts/Zain-Italic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
 }
 
 @font-face {
-  font-family: 'Zain';
-  src: url('/fonts/Zain-LightItalic.woff2') format('woff2');
+  font-family: "Zain";
+  src: url("/fonts/Zain-LightItalic.woff2") format("woff2");
   font-weight: 300;
   font-style: italic;
 }
@@ -76,15 +75,18 @@ body {
 
 /* Dropdown open animation à supprimer de partout*/
 .dropdown-in {
-  transition: height 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms;
+  transition:
+    height 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 220ms;
   opacity: 1;
   overflow: hidden;
 }
 
 .dropdown-out {
-  transition: height 220ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms;
+  transition:
+    height 220ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 220ms;
   height: 0;
   opacity: 0;
   overflow: hidden;
 }
-

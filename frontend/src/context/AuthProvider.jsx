@@ -10,11 +10,11 @@ export function AuthProvider({ children }) {
     fetch("/api/auth/me", {
       credentials: "include",
     })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then(data => {
+      .then((data) => {
         setIsAuthenticated(true);
         setUsername(data.username);
       })
