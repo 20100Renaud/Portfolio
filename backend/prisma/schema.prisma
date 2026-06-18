@@ -44,7 +44,7 @@ model T_Depos {
 
   Answers_Depos    T_Answers[]
   Images_Depos     T_Images[]
-  User_Depos       T_Users    @relation(fields: [ID_User], references: [ID_User])
+  User_Depos       T_Users      @relation(fields: [ID_User], references: [ID_User])
 }
 
 model T_Answers {
@@ -55,7 +55,7 @@ model T_Answers {
   ID_User        String
 
   User_Answers   T_Users   @relation(fields: [ID_User], references: [ID_User])
-  Depos_Answers  T_Depos   @relation(fields: [ID_Depo], references: [ID_Depo])
+  Depos_Answers  T_Depos   @relation(fields: [ID_Depo], references: [ID_Depo], onDelete: Cascade)
 }
 
 model T_Images {

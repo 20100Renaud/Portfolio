@@ -7,11 +7,14 @@ import authRoutes from "./routes/auth.routes.js";
 import deposRoutes from "./routes/depos.routes.js";
 import prisma from "./prismaClient.js";
 import cookieParser from "cookie-parser";
+import { startDepoCleanupJob } from "./jobs/cleanupDepos.job.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+startDepoCleanupJob();
 
 app.use((req, res, next) => {
   console.log(`\n[REQ] ${req.method} ${req.url}`);

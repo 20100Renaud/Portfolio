@@ -1,43 +1,67 @@
 # Share Up
 
 ## LOADING COMMANDS
-### 1. Usual dev
+### 1. Usual development start
 `~/portfolio/`
 
 ```
 npm run dev
 
-// docker compose -f docker-compose.dev.yml up --build
+# docker compose -f docker-compose.dev.yml up --build
 ```
 
-#### Steps:
+#### What it does:
+- Starts all containers (frontend, backend, postgres)
+- Builds images only if needed
+- Reuses existing Docker layers (fast startup)
+- Keeps existing database state
+- Keeps Prisma data intact
 
-- Start containers
-- Rebuild images if needed
-- Reuse existing:
-  - PostgreSQL container (if already created)
-  - Postgres volume (portfolio_postgres_data)
-- Keep database state
+### 2. Rebuild containers (no cache, full refresh)
 
-### 2. On prisma or seed changes = reset everything
 `~/portfolio/`
+```
+npm run rebuild
 
+
+# docker compose -f docker-compose.dev.yml up --build --force-recreate
+```
+
+#### When to use:
+- Docker is not picking up code changes
+- Strange runtime errors after updates
+- After dependency changes (package.json changes)
+#### What it does:
+- Recreates containers even if they already exist
+- Rebuilds images from scratch (ignores cached container state)
+- Keeps PostgreSQL data volume intact
+- Keeps database data
+
+### 3. Full reset (Prisma / seed / DB changes)
+
+`~/portfolio/`
 ```
 npm run clean
 
-// docker compose -f docker-compose.dev.yml down -v && npm run dev
+# docker compose -f docker-compose.dev.yml down -v && npm run dev
 ```
 
-#### Steps:
+#### When to use:
+- Prisma schema changed
+- Seeder logic changed
+- Want a completely fresh database
+- DB state is corrupted or outdated
 
-- Stop everything
-- ***Delete containers and volume so data***
-- Recreate everything from scratch
-- Re-run:
+#### What it does:
+- Stops all containers
+- Deletes containers + all volumes
+- Removes PostgreSQL data completely
+- Recreates database from scratch
+- Runs:
   - Prisma migrations
-  - Seed script
+  - Seed script (automatic on backend start)
 
-### 3. Check the DataBase inside the docker (use another terminal)
+### 4. Check the DataBase inside the docker (use another terminal)
 `~/portfolio/backend/$`
 ```
 npm run studio
@@ -46,7 +70,7 @@ npm run studio
 npm install --save-dev dotenv-cli
 ```
 
-### 4. Development Ports
+### 5. Development Ports
 
 | Port | Service |
 |------|---------|
@@ -171,49 +195,4 @@ npx prisma studio //port:5555
 
 ```
 npx prisma db pull
-```
-
-## MERMAID
-
-```
-erDiagram
-direction LR
-    T_Users {
-        int Id_User PK
-        string Login_User
-        string Email_User
-        string Password_User
-        string PC_User FK
-        datetime Date_User
-    }
-
-    T_Posts {
-        int Id_Post PK
-        int Id_User_Post FK
-        string Title_Post
-        text Description_Post
-        datetime Date_Post
-    }
-
-    T_Comments {
-        int Id_Com PK
-        int Id_Post FK
-        int Id_User_Com FK
-        text Description_Com
-        datetime Date_Com
-    }
-
-    T_PostalCodes  {
-        int Id_PC PK
-        string PC
-        string City_PC
-        string Insee_PC
-        int latitude_PC
-        int longitude_PC
-    }
-
-    T_Users ||--o{ T_Posts : Whrite
-    T_Users ||--o{ T_Comments : Whrite
-    T_Posts ||--o{ T_Comments : Contains
-    T_PostalCodes ||--o{ T_Users : Has
 ```

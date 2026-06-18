@@ -22,13 +22,9 @@ export const deleteUser = async (req, res) => {
       return res.status(403).json({ error: "Cannot delete admin account" });
     }
 
-    await prisma.T_Comments.updateMany({
-      where: { ID_User_Com: req.user.userId },
-      data: { ID_User_Com: unknown.ID_User },
-    });
-
-    await prisma.T_Comments.deleteMany({
-      where: { ID_Depos_Com: depo.ID_Depo },
+    await prisma.T_Answers.updateMany({
+      where: { ID_User: req.user.userId },
+      data: { ID_User: unknown.ID_User },
     });
 
     await prisma.T_Users.delete({ where: { ID_User: userId } });
