@@ -58,11 +58,12 @@ async function main() {
   // ------------------ CREATE DEPO ------------------
   await prisma.T_Depos.upsert({
     where: {
-      ID_Depo: "UNKNOWN_DEPOT_ID",
+      ID_Depo: "45g98ty32",
     },
     update: {},
     create: {
-      ID_Depo: "UNKNOWN_DEPOT_ID",
+      ID_Depo: "45g98ty32",
+      Cat_Depo: "Plants",
       Title_Depo: "Test Depo title",
       Text_Depo: "Text for the test depo.",
       ID_User: unknownUser.ID_User,

@@ -23,7 +23,6 @@ npm run dev
 ```
 npm run rebuild
 
-
 # docker compose -f docker-compose.dev.yml up --build --force-recreate
 ```
 
@@ -143,33 +142,46 @@ npm install prisma@6 @prisma/client@6   # 7 works differently
 
 ## PRISMA COMMANDS to restard from schema.prisma
 
-### 1. Delete old migrations and migrate
+### 1. Stop Docker and delete the database
+`~/portfolio/$`
+```
+docker compose -f docker-compose.dev.yml down -v
+```
 
+### 2. Delete existing migrations
+`~/portfolio/backend/$`
 ```
 rm -rf prisma/migrations
-prisma migrate dev
 ```
 
-### 2. Reset the DataBase
+### 3. Start PostgreSQL ans backend containers
+(Need a database running to generate migrations)
 
+`~/portfolio/$`
 ```
-npx prisma migrate reset //outside the docker
-docker compose exec backend npx prisma migrate reset  //inside the docker
+docker compose -f docker-compose.dev.yml up postgres backend -d
+```
+Wait the time to process.
+
+### 4. Create a fresh migration inside the docker
+`~/portfolio/backend`
+```
+docker compose exec backend npx prisma migrate dev --name init
 ```
 
-### 3. Generate a migration in the docker
-
+### 5. Rebuild containers
+`~/portfolio`
 ```
- docker compose exec backend npx prisma migrate dev --name init
+npm run clean
 ```
 
-### 4. Generate User
+### Generate User
 
 ```
 npx prisma generate
 ```
 
-### 5. Generate Admin and uknown user
+### Generate Admin and uknown user
 
 - localy:
 
@@ -196,3 +208,65 @@ npx prisma studio //port:5555
 ```
 npx prisma db pull
 ```
+## SETUP TURF
+`~/portfolio/frontend/$`
+```
+npm install @turf/turf
+```
+
+## MERMAID
+
+```
+---
+config:
+  theme: forest
+  look: handDrawn
+  fontFamily: '''Inter Variable'', sans-serif'
+
+---
+erDiagram
+	direction LR
+	T_Users {
+		string ID_User PK
+		string Role_User
+		string Login_User
+		string Email_User
+		string Password_User
+		datetime Date_User
+		string City_User
+		float Latitude_User
+  		float Longitude_User
+	}
+
+	T_Depos {
+		string ID_Depo PK
+		string ID_User FK
+		string Type_Depo
+		string Cat_Depo
+		string Title_Depo
+		text Text_Depo
+		datetime Date_Depo
+		satetime Lifetime_Depo
+	}
+
+	T_Answers {
+		string ID_Answer PK
+		string ID_Depo FK
+		string ID_User FK
+		text Text_Answer
+		datetime Date_Answer
+	}
+
+	T_Images {
+		string ID_Image PK
+		string ID_Depo FK
+		string URL_Image
+		string Text_Image
+		dateTime Date_Image
+	}
+
+	T_Users||--o{T_Depos:"Owns"
+	T_Users||--o{T_Answers:"Write"
+	T_Depos||--o{T_Answers:"Contains"
+	T_Depos||--o{T_Images:"Contains"
+  ```

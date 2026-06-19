@@ -10,6 +10,8 @@ export default function Depo() {
   const [depo, setDepo] = useState(null);
   const [user, setUser] = useState(null);
   const [answerText, setAnswerText] = useState("");
+  const [type, setType] = useState("");
+  const [cat, setCat] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
@@ -101,6 +103,8 @@ export default function Depo() {
       const response = await apiFetch(`/depos/${id}`, {
         method: "PUT",
         body: JSON.stringify({
+          type,
+          cat,
           title,
           description,
           lifetime: lifetime || null,
@@ -175,6 +179,7 @@ export default function Depo() {
         <h1 className="text-3xl sm:text-5xl font-bold mb-4">
           {depo.Title_Depo}
         </h1>
+        <h2>{depo.Cat_Depo}</h2>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 text-green-700 mb-8">
           <p>👤 {depo.User_Depos?.Login_User}</p>
@@ -193,6 +198,8 @@ export default function Depo() {
           <>
             <button
               onClick={() => {
+                setType(depo.Type_Depo);
+                setCat(depo.Cat_Depo);
                 setTitle(depo.Title_Depo);
                 setDescription(depo.Text_Depo);
                 setLifetime(
@@ -268,6 +275,20 @@ export default function Depo() {
 
       <Modal open={isDepoModalOpen} onClose={() => setDepoModalOpen(false)}>
         <h2>Edit Depo</h2>
+
+        <select value={type} onChange={(e) => setType(e.target.value)}>
+          <option value="OFFER">Offer</option>
+          <option value="REQUEST">Request</option>
+        </select>
+
+        <select value={cat} onChange={(e) => setCat(e.target.value)}>
+          <option value="Undefined">Choose a category</option>
+          <option value="Vegetables">Vegetables</option>
+          <option value="Plants">Plants</option>
+          <option value="Organic matter">Organic matter</option>
+          <option value="Tools">Tools</option>
+          <option value="Services">Services</option>
+        </select>
 
         <input
           value={title}

@@ -12,6 +12,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@turf/turf": "^7.3.5",
     "daisyui": "^5.5.18",
     "lucide-react": "^0.576.0",
     "multer": "^2.2.0",

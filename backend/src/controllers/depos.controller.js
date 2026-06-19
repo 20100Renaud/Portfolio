@@ -3,7 +3,7 @@ import prisma from "../prismaClient.js";
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
   try {
-    const { title, description, lifetime } = req.body;
+    const { type, cat, title, description, lifetime } = req.body;
 
     const lifetimeDate =
       req.body.lifetime && req.body.lifetime !== ""
@@ -12,10 +12,12 @@ export const createDepo = async (req, res) => {
 
     const depo = await prisma.T_Depos.create({
       data: {
+        ID_User: req.user.userId,
+        Type_Depo: type,
+        Cat_Depo: cat,
         Title_Depo: title,
         Text_Depo: description,
         Lifetime_Depo: lifetimeDate,
-        ID_User: req.user.userId,
       },
     });
 
@@ -67,6 +69,8 @@ export const updateDepo = async (req, res) => {
     const updated = await prisma.T_Depos.update({
       where: { ID_Depo: depo.ID_Depo },
       data: {
+        Type_Depo: req.body.type,
+        Cat_Depo: req.body.cat,
         Title_Depo: req.body.title,
         Text_Depo: req.body.description,
         Lifetime_Depo: req.body.lifetime

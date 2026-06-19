@@ -198,7 +198,7 @@ export default function SignUp() {
               onChange={(e) => handleCityChange(e.target.value)}
               maxLength={50}
               className="input input-bordered w-full"
-              placeholder="Votre city"
+              placeholder="Your city"
               required
             />
 
