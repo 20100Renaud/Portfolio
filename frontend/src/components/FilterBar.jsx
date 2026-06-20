@@ -1,29 +1,49 @@
 import { useState } from "react";
+import { ChevronDown, ChevronUp, Shovel } from "lucide-react";
 
 export default function FilterBar({
   filterType,
   setFilterType,
   filterCat,
   setFilterCat,
+  filterUser,
+  setFilterUser,
   radius,
   setRadius,
-  categories = [],
   isLoggedIn,
   activeLocation,
   setActiveLocation,
   user,
-
-  locationMode,
-  setLocationMode,
+  typeOptions,
+  categories = [],
+  categoryOptions,
+  usersOptions,
   displayMode,
   setDisplayMode,
+  resultCount,
+  resetFilters,
+  filtersOpen,
+  setFiltersOpen,
 }) {
   const [results, setResults] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
+  // When user change the city filter
   const handleCityChange = async (value) => {
+    if (value === "") {
+      setActiveLocation({
+        city: "",
+        lat: null,
+        lng: null,
+      });
+      setResults([]);
+      return;
+    }
+
     setActiveLocation((prev) => ({
       ...prev,
-      city: value,
+      lat: null,
+      lng: null,
     }));
 
     if (value.length < 2) {
@@ -43,125 +63,185 @@ export default function FilterBar({
     }
   };
 
+  // Filter summary
+  const summary =
+    displayMode === "local" && activeLocation?.city && activeLocation?.lat
+      ? `${resultCount} deposits found in ${radius} km around ${activeLocation.city}`
+      : `${resultCount} deposits found in France`;
 
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-4 mb-6 border border-green-100">
-      <div className="flex flex-wrap gap-4 items-end">
-        {/* Type */}
-        <div className="flex flex-col">
-          <label className="text-xs text-gray-600">Type</label>
-          <select
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="border p-2 rounded"
-          >
-            <option value="">All</option>
-            <option value="OFFER">Offers</option>
-            <option value="REQUEST">Requests</option>
-          </select>
+    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-green-100 overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-green-100"
+      >
+        <div className="flex items-center gap-2">
+          <Shovel size={24} className="text-green-800" />
+
+          <span className="font-medium text-green-900">{summary}</span>
         </div>
 
-        {/* Category */}
-        <div className="flex flex-col">
-          <label className="text-xs text-gray-600">Category</label>
-          <select
-            value={filterCat}
-            onChange={(e) => setFilterCat(e.target.value)}
-            className="border p-2 rounded"
-          >
-            <option value="">All</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
+        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      </button>
 
-        {/* Radius */}
-        {displayMode === "local" && (
-          <div className="flex flex-col">
-            <label className="text-xs text-gray-600">Radius: {radius} km</label>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-[500px] p-4" : "max-h-0"
+        }`}
+      >
+        <p className="">Find the right place to dig</p>
+        <div className="mt-4 p-4 border-t border-green-100">
+          {/* BLOCK 1: dropdowns + reset btn */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-4">
+            {/* Type */}
+            <div className="flex flex-col w-full">
+              <label className="text-xs">Type</label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="border p-2 rounded w-full"
+              >
+                <option value="">All</option>
+
+                {typeOptions.map(([type, count]) => (
+                  <option key={type} value={type}>
+                    {type} ({count})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category */}
+            <div className="flex flex-col w-full">
+              <label className="text-xs">Category</label>
+              <select
+                value={filterCat}
+                onChange={(e) => setFilterCat(e.target.value)}
+                className="border p-2 rounded w-full"
+              >
+                <option value="">All</option>
+                {categoryOptions.map(([cat, count]) => (
+                  <option key={cat} value={cat}>
+                    {cat} ({count})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Username */}
+            <div className="flex flex-col w-full">
+              <label className="text-xs">User</label>
+
+              <select
+                value={filterUser}
+                onChange={(e) => setFilterUser(e.target.value)}
+                className="border p-2 rounded w-full"
+              >
+                <option value="">All</option>
+
+                {usersOptions.map(([user, count]) => (
+                  <option key={user} value={user}>
+                    {user} ({count})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Reset btn */}
+            <div className="flex justify-center mt-3 w-full">
+              <button
+                onClick={() => {
+                  resetFilters();
+                  setIsOpen(false);
+                }}
+                className=" bg-green-600 text-white px-3 py-1 text-sm rounded hover:bg-green-500"
+              >
+                Reset filters
+              </button>
+            </div>
+          </div>
+
+          {/* BLOCK 2: Swith mode btn */}
+
+          <label className="flex justify-center items-center gap-3 mb-4 border border-green-200 rounded-2xl bg-green-100 p-2 cursor-pointer select-none">
+            <span className="text-sm">All deposits</span>
 
             <input
-              type="range"
-              min="1"
-              max="100"
-              value={radius}
-              onChange={(e) => setRadius(Number(e.target.value))}
-              className="w-48"
+              type="checkbox"
+              className="toggle border bg-white p-1"
+              checked={displayMode === "local"}
+              onChange={(e) =>
+                setDisplayMode(e.target.checked ? "local" : "all")
+              }
             />
-          </div>
-        )}
 
-        {/* City */}
-        {(!isLoggedIn || locationMode === "travel") &&
-          displayMode === "local" && (
-            <div className="flex flex-col relative">
-              <label className="text-xs text-gray-600">City</label>
+            <span className="text-sm">Local search</span>
+          </label>
 
-              <input
-                value={activeLocation?.city || ""}
-                onChange={(e) => handleCityChange(e.target.value)}
-                className="border p-2 rounded w-64"
-                placeholder="Choose a city"
-              />
+          {/* BLOCK 3: City + radius */}
+          <div className="flex flex-wrap justify-center items-center gap-4">
+            {/* City */}
+            {displayMode === "local" && (
+              <div className="flex flex-col relative">
+                <label className="text-xs text-gray-600">City</label>
 
-              {results.length > 0 && (
-                <ul className="absolute top-full mt-1 z-50 w-full bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
-                  {results.map((commune) => (
-                    <li
-                      key={commune.code}
-                      className="px-4 py-2 cursor-pointer hover:bg-gray-100 flex justify-between"
-                      onClick={() => {
-                        setActiveLocation({
-                          city: commune.nom,
-                          lat: commune.centre.coordinates[1],
-                          lng: commune.centre.coordinates[0],
-                        });
+                <input
+                  type="text"
+                  value={activeLocation?.city || ""}
+                  onChange={(e) => handleCityChange(e.target.value)}
+                  className="border p-2 rounded"
+                  placeholder="Choose a city"
+                />
+              </div>
+            )}
 
-                        setResults([]);
-                      }}
-                    >
-                      <span>{commune.nom}</span>
+            {results.length > 0 && (
+              <ul className="absolute z-50 bg-white border rounded-box shadow-lg w- max-h-60 overflow-y-auto">
+                {results.map((commune) => (
+                  <li
+                    key={commune.code}
+                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between"
+                    onClick={() => {
+                      setActiveLocation({
+                        city: commune.nom,
+                        lat: commune.centre.coordinates[1],
+                        lng: commune.centre.coordinates[0],
+                      });
 
-                      {commune.codesPostaux?.length > 0 && (
-                        <span className="text-xs text-gray-500">
-                          {commune.codesPostaux[0]}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                      setResults([]);
+                    }}
+                  >
+                    <span>{commune.nom}</span>
+                    <span className="text-xs text-gray-500">
+                      {commune.codesPostaux?.[0]}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Radius */}
+            {displayMode === "local" &&
+              activeLocation?.city &&
+              activeLocation?.lat &&
+              activeLocation?.lng && (
+                <div className="flex flex-col">
+                  <label className="text-xs text-gray-600">
+                    Radius: {radius} km
+                  </label>
+
+                  <input
+                    type="range"
+                    min="1"
+                    max="100"
+                    value={radius}
+                    onChange={(e) => setRadius(Number(e.target.value))}
+                    className="w-48"
+                  />
+                </div>
               )}
-            </div>
-          )}
-
-        {/* Buttons */}
-
-        <div className="flex gap-2">
-          {/* Local/all */}
-          <button
-            onClick={() =>
-              setDisplayMode(displayMode === "local" ? "all" : "local")
-            }
-            className="px-3 py-2 bg-green-100 rounded"
-          >
-            {displayMode === "local" ? "Show all deposits" : "Use local search"}
-          </button>
+          </div>
         </div>
-
-        {/* Home/travel */}
-        {isLoggedIn && displayMode === "local" && (
-          <button
-            onClick={() =>
-              setLocationMode(locationMode === "home" ? "travel" : "home")
-            }
-            className="px-3 py-2 bg-blue-100 rounded"
-          >
-            {locationMode === "home" ? "Travel mode" : "Home mode"}
-          </button>
-        )}
       </div>
     </div>
   );

@@ -15,13 +15,14 @@ export default function Market() {
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString());
-  const [filterType, setFilterType] = useState("");
-  const [filterCat, setFilterCat] = useState("");
   const [radius, setRadius] = useState(10);
   const [user, setUser] = useState(null);
-  const [locationMode, setLocationMode] = useState("home");
-  const [displayMode, setDisplayMode] = useState("local");
+  const [displayMode, setDisplayMode] = useState("all");
   const isLoggedIn = !!user?.userId;
+  const [filterType, setFilterType] = useState("");
+  const [filterCat, setFilterCat] = useState("");
+  const [filterUser, setFilterUser] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [activeLocation, setActiveLocation] = useState({
     city: "",
     lat: null,
@@ -73,28 +74,38 @@ export default function Market() {
     }).format(new Date(date));
 
   // Coordinates to use
-  const coordsToUse =
-    locationMode === "home" && user
-      ? {
-          lat: user.Latitude_User,
-          lng: user.Longitude_User,
-        }
-      : {
-          lat: activeLocation.lat,
-          lng: activeLocation.lng,
-        };
-
+  const coordsToUse = {
+    lat: activeLocation.lat,
+    lng: activeLocation.lng,
+  };
 
   // Filter logic
   const filteredDepos = depos.filter((d) => {
     if (filterType && d.Type_Depo !== filterType) return false;
     if (filterCat && d.Cat_Depo !== filterCat) return false;
+    if (filterUser && d.User_Depos?.Login_User !== filterUser) return false;
     if (displayMode === "all") return true;
     if (!coordsToUse?.lat || !coordsToUse?.lng) return true;
 
     return isWithinRadius(coordsToUse, d, radius);
   });
 
+  // Filter logic counts
+  const getFiltered = (exclude = null) => {
+    return depos.filter((d) => {
+      if (exclude !== "type" && filterType && d.Type_Depo !== filterType)
+        return false;
+      if (exclude !== "cat" && filterCat && d.Cat_Depo !== filterCat)
+        return false;
+      if (
+        exclude !== "user" &&
+        filterUser &&
+        d.User_Depos?.Login_User !== filterUser
+      )
+        return false;
+      return true;
+    });
+  };
   // Fetch user on load
   useEffect(() => {
     const loadUser = async () => {
@@ -109,23 +120,108 @@ export default function Market() {
         lat: data.Latitude_User,
         lng: data.Longitude_User,
       });
-      setLocationMode("home");
       setDisplayMode("local");
     };
 
     loadUser();
   }, []);
 
-  // Display categories only used
-  const categories = [
-    ...new Set(depos.map((d) => d.Cat_Depo).filter(Boolean)),
+  // Display categories only available
+  const availableCategories = [
+    ...new Set(
+      depos
+        .filter((d) => {
+          if (filterUser && d.User_Depos?.Login_User !== filterUser)
+            return false;
+          if (filterType && d.Type_Depo !== filterType) return false;
+          return true;
+        })
+        .map((d) => d.Cat_Depo)
+        .filter(Boolean),
+    ),
   ].sort();
+
+  // Counts categories
+  const categoryOptions = Object.entries(
+    getFiltered("cat").reduce((acc, d) => {
+      acc[d.Cat_Depo] = (acc[d.Cat_Depo] || 0) + 1;
+      return acc;
+    }, {}),
+  ).sort();
+
+  // Display users only available
+  const availableUsers = [
+    ...new Set(
+      depos
+        .filter((d) => {
+          if (filterCat && d.Cat_Depo !== filterCat) return false;
+          if (filterType && d.Type_Depo !== filterType) return false;
+          return true;
+        })
+        .map((d) => d.User_Depos?.Login_User)
+        .filter(Boolean),
+    ),
+  ].sort();
+
+  // Counts users
+  const usersOptions = Object.entries(
+    getFiltered("user").reduce((acc, d) => {
+      const u = d.User_Depos?.Login_User;
+      if (!u) return acc;
+      acc[u] = (acc[u] || 0) + 1;
+      return acc;
+    }, {}),
+  ).sort();
+
+  // Display types only available
+  const availableTypes = [
+    ...new Set(
+      depos
+        .filter((d) => {
+          if (filterCat && d.Cat_Depo !== filterCat) return false;
+
+          if (filterUser && d.User_Depos?.Login_User !== filterUser)
+            return false;
+
+          return true;
+        })
+        .map((d) => d.Type_Depo)
+        .filter(Boolean),
+    ),
+  ].sort();
+
+  // Counts types
+  const typeOptions = Object.entries(
+    getFiltered("type").reduce((acc, d) => {
+      acc[d.Type_Depo] = (acc[d.Type_Depo] || 0) + 1;
+      return acc;
+    }, {}),
+  ).sort();
+
+  // Reset filters
+  const resetFilters = () => {
+    setFilterType("");
+    setFilterCat("");
+    setFilterUser("");
+    setRadius(10);
+    setActiveLocation({
+      city: "",
+      lat: null,
+      lng: null,
+    });
+    setDisplayMode(isLoggedIn ? "local" : "all");
+    setFiltersOpen(false);
+  };
 
   return (
     <div className="relative text-center text-green-900 overflow-hidden justify-center my-10 mx-auto px-4">
-      <h1 className="text-3xl sm:text-5xl font-bold">Welcome to the market</h1>
+      <h1 className="text-3xl sm:text-5xl font-bold">
+        <span className="animate-pulse text-4xl">🏝️</span>
+        Treasure Island
+        <span className="animate-pulse text-4xl">🏝️</span>
+      </h1>
       <p className="text-sm sm:text-lg text-green-800">
-        Here we can share what we have or need.
+        Share or discover, your next quest awaits!
       </p>
 
       <button
@@ -138,7 +234,7 @@ export default function Market() {
           setDate(new Date().toISOString());
           setLifetime(getDefaultLifetime());
         }}
-        className="bg-green-600 text-white px-4 py-2 rounded my-4"
+        className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded my-4"
       >
         Create a deposit
       </button>
@@ -148,23 +244,32 @@ export default function Market() {
         setFilterType={setFilterType}
         filterCat={filterCat}
         setFilterCat={setFilterCat}
+        filterUser={filterUser}
+        setFilterUser={setFilterUser}
         radius={radius}
         setRadius={setRadius}
-        categories={categories}
         isLoggedIn={isLoggedIn}
-        locationMode={locationMode}
-        setLocationMode={setLocationMode}
         displayMode={displayMode}
         setDisplayMode={setDisplayMode}
         activeLocation={activeLocation}
         setActiveLocation={setActiveLocation}
         user={user}
+        types={availableTypes}
+        typeOptions={typeOptions}
+        categories={availableCategories}
+        categoryOptions={categoryOptions}
+        users={availableUsers}
+        usersOptions={usersOptions}
+        resultCount={filteredDepos.length}
+        resetFilters={resetFilters}
+        filtersOpen={filtersOpen}
+        setFiltersOpen={setFiltersOpen}
       />
 
       {filteredDepos.map((depo) => {
         return (
           <Link key={depo.ID_Depo} to={`/depo/${depo.ID_Depo}`}>
-            <div className="flex justify-between max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl transition-all duration-300 m-4 border border-green-100">
+            <div className="flex justify-between max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl hover:bg-green-100 transition-all duration-300 m-4 border border-green-100">
               <div className="flex flex-col text-left">
                 <p className="text-green-700 flex items-center gap-2">
                   <span className="text-green-900">

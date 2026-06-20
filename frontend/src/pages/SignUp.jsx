@@ -177,7 +177,7 @@ export default function SignUp() {
                   : "focus:ring-2 focus:ring-green-700"
               }
             `}
-              placeholder="Your username"
+              placeholder="Username"
               required
             />
             <div className="h-2">

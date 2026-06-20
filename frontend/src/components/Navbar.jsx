@@ -57,10 +57,10 @@ export default function Navbar() {
               <NavItem to="/" end>Home</NavItem>
             </li>
             <li>
-              <NavItem to="/market" end>Market</NavItem>
+              <NavItem to="/market" end>Explore</NavItem>
             </li>
             <li>
-              <NavItem to="/faq" end>Faq</NavItem>
+              <NavItem to="/faq" end>Request</NavItem>
             </li>
           </ul>
         </div>
