@@ -138,7 +138,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="mt-6 flex flex-grow items-center justify-center w-full px-6">
+    <div className="mt-6 flex flex-grow items-center justify-center w-full px-6 text-green-900">
       <div
         className="
         relative w-full max-w-md p-8
@@ -146,13 +146,13 @@ export default function SignUp() {
         from-white from-[0%] to-[#a5d6a7]
         rounded-xl shadow-lg flex flex-col items-center"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+        <h2 className="text-2xl font-bold text-center mb-2">
           Create an account
         </h2>
 
         <form onSubmit={handleSubmit} noValidate className="w-full space-y-4">
           <div className="relative">
-            <label className="block text-gray-700">Username</label>
+            <label className="block">Username</label>
             <input
               type="text"
               value={username}
@@ -190,17 +190,35 @@ export default function SignUp() {
           </div>
 
           <div className="relative">
-            <label className="block text-gray-700">City</label>
-
+            <label className="block">City</label>
             <input
               type="text"
               value={city_user}
               onChange={(e) => handleCityChange(e.target.value)}
               maxLength={50}
-              className="input input-bordered w-full"
+              onBlur={() =>
+                setTouched((prev) => ({ ...prev, city_user: true }))
+              }
+              className={`
+              input input-bordered w-full bg-white pl-4
+              focus:placeholder-transparent
+              focus:outline-none
+              ${
+                touched.city_user && errors.city_user
+                  ? "border-red-500 ring-2 ring-red-600"
+                  : "focus:ring-2 focus:ring-green-700"
+              }
+            `}
               placeholder="Your city"
               required
             />
+            <div className="h-2">
+              {touched.city_user && errors.city_user && (
+                <p className="text-red-500 text-sm">{errors.city_user}</p>
+              )}
+            </div>
+
+            {isValidCity_user(city_user) && validItem}
 
             {results.length > 0 && (
               <ul className="absolute z-50 w-full mt-1 bg-white border rounded-box shadow-lg max-h-60 overflow-y-auto">
@@ -233,7 +251,7 @@ export default function SignUp() {
           </div>
 
           <div className="relative">
-            <label className="block text-gray-700">Email</label>
+            <label className="block">Email</label>
             <input
               type="email"
               value={email}
@@ -270,7 +288,7 @@ export default function SignUp() {
           </div>
 
           <div className="relative">
-            <label className="block text-gray-700">Password</label>
+            <label className="block">Password</label>
             <input
               type="password"
               value={password}
@@ -309,7 +327,7 @@ export default function SignUp() {
           </div>
 
           <div className="relative">
-            <label className="block text-gray-700">Confirm Password</label>
+            <label className="block">Confirm Password</label>
             <input
               type="password"
               value={confirmPassword}
@@ -371,7 +389,7 @@ export default function SignUp() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm">
           Already have an account?
           <Link
             to="/Login"

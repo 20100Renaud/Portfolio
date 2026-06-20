@@ -26,7 +26,6 @@ export default function FilterBar({
   setFiltersOpen,
 }) {
   const [results, setResults] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
 
   // When user change the city filter
   const handleCityChange = async (value) => {
@@ -72,7 +71,7 @@ export default function FilterBar({
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-green-100 overflow-hidden">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setFiltersOpen(!filtersOpen)}
         className="w-full flex items-center justify-between px-4 py-3 bg-green-100"
       >
         <div className="flex items-center gap-2">
@@ -81,12 +80,12 @@ export default function FilterBar({
           <span className="font-medium text-green-900">{summary}</span>
         </div>
 
-        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        {filtersOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </button>
 
       <div
         className={`overflow-hidden transition-all duration-300 ${
-          isOpen ? "max-h-[500px] p-4" : "max-h-0"
+          filtersOpen ? "max-h-[500px] p-4" : "max-h-0"
         }`}
       >
         <p className="">Find the right place to dig</p>
@@ -152,7 +151,7 @@ export default function FilterBar({
               <button
                 onClick={() => {
                   resetFilters();
-                  setIsOpen(false);
+                  setFiltersOpen(false);
                 }}
                 className=" bg-green-600 text-white px-3 py-1 text-sm rounded hover:bg-green-500"
               >
@@ -170,9 +169,15 @@ export default function FilterBar({
               type="checkbox"
               className="toggle border bg-white p-1"
               checked={displayMode === "local"}
-              onChange={(e) =>
-                setDisplayMode(e.target.checked ? "local" : "all")
-              }
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setDisplayMode("local");
+                  setFiltersOpen(true);
+                } else {
+                  setDisplayMode("all");
+                  setFiltersOpen(false);
+                }
+              }}
             />
 
             <span className="text-sm">Local search</span>

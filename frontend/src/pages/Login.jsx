@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
 import { useAuth } from "../context/useAuth";
 
@@ -102,7 +101,7 @@ export default function Login() {
   };
 
   return (
-    <div className="mt-6 flex flex-grow items-center justify-center w-full px-6">
+    <div className="mt-6 flex flex-grow items-center justify-center w-full px-6 text-green-900">
       <div
         className="
         relative w-full max-w-md p-8
@@ -114,13 +113,11 @@ export default function Login() {
           <AnimatedFlatLogoInfinite size={120} />
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-8">
-          Login
-        </h2>
+        <h2 className="text-2xl font-bold text-center mb-8">Login</h2>
 
         <form onSubmit={handleSubmit} noValidate className="w-full space-y-4">
           <div>
-            <label className="block text-gray-700">Email</label>
+            <label className="block">Email</label>
             <input
               type="email"
               value={email}
@@ -153,7 +150,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block text-gray-700">Password</label>
+            <label className="block">Password</label>
             <input
               type="password"
               value={password}
@@ -205,7 +202,7 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm">
           Don’t have an account yet?{"    "}
           <Link
             to="/signup"

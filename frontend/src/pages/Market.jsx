@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Modal from "../components/Modal";
 import { apiFetch } from "../api";
 import { getDefaultLifetime } from "../utils/date";
@@ -9,6 +9,7 @@ import FilterBar from "../components/FilterBar";
 export default function Market() {
   const [depos, setDepos] = useState([]);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const navigate = useNavigate();
   const [type, setType] = useState("");
   const [cat, setCat] = useState("Undefined");
   const [title, setTitle] = useState("");
@@ -23,6 +24,7 @@ export default function Market() {
   const [filterCat, setFilterCat] = useState("");
   const [filterUser, setFilterUser] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(true);
+  const [showUndefinedWarning, setShowUndefinedWarning] = useState(false);
   const [activeLocation, setActiveLocation] = useState({
     city: "",
     lat: null,
@@ -63,6 +65,16 @@ export default function Market() {
     setLifetime("");
 
     await loadDepos();
+  };
+
+  // Toast on create depo if type = Undefined
+  const handleCreateClick = () => {
+    if (cat === "Undefined") {
+      setShowUndefinedWarning(true);
+      return;
+    }
+
+    handleCreateDepo();
   };
 
   // Date formating
@@ -204,12 +216,25 @@ export default function Market() {
     setFilterCat("");
     setFilterUser("");
     setRadius(10);
-    setActiveLocation({
-      city: "",
-      lat: null,
-      lng: null,
-    });
-    setDisplayMode(isLoggedIn ? "local" : "all");
+
+    if (isLoggedIn && user) {
+      setActiveLocation({
+        city: user.City_User,
+        lat: user.Latitude_User,
+        lng: user.Longitude_User,
+      });
+
+      setDisplayMode("local");
+    } else {
+      setActiveLocation({
+        city: "",
+        lat: null,
+        lng: null,
+      });
+
+      setDisplayMode("all");
+    }
+
     setFiltersOpen(false);
   };
 
@@ -223,9 +248,13 @@ export default function Market() {
       <p className="text-sm sm:text-lg text-green-800">
         Share or discover, your next quest awaits!
       </p>
-
       <button
         onClick={() => {
+          if (!isLoggedIn) {
+            navigate("/login");
+            return;
+          }
+
           setIsCreateOpen(true);
           setType("OFFER");
           setCat("Undefined");
@@ -236,7 +265,7 @@ export default function Market() {
         }}
         className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded my-4"
       >
-        Create a deposit
+        Buried a deposit
       </button>
 
       <FilterBar
@@ -265,7 +294,6 @@ export default function Market() {
         filtersOpen={filtersOpen}
         setFiltersOpen={setFiltersOpen}
       />
-
       {filteredDepos.map((depo) => {
         return (
           <Link key={depo.ID_Depo} to={`/depo/${depo.ID_Depo}`}>
@@ -302,6 +330,7 @@ export default function Market() {
         );
       })}
 
+      {/* Create a new Deposit */}
       <Modal open={isCreateOpen} onClose={() => setIsCreateOpen(false)}>
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-green-900">
@@ -376,13 +405,44 @@ export default function Market() {
             </button>
 
             <button
-              onClick={handleCreateDepo}
+              onClick={handleCreateClick}
               disabled={!title || !description}
               className="bg-green-600 text-white px-4 py-2 rounded disabled:opacity-50"
             >
               Create
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Toast on create depo if type = Undefined */}
+      <Modal
+        open={showUndefinedWarning}
+        onClose={() => setShowUndefinedWarning(false)}
+      >
+        <h3 className="text-lg font-bold mb-2">Category not selected</h3>
+
+        <p className="mb-4">
+          This deposit has no category. Are you sure you want to create it?
+        </p>
+
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => setShowUndefinedWarning(false)}
+            className="px-4 py-2"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={async () => {
+              setShowUndefinedWarning(false);
+              await handleCreateDepo();
+            }}
+            className="bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Create anyway
+          </button>
         </div>
       </Modal>
     </div>
