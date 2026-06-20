@@ -63,10 +63,11 @@ export default function FilterBar({
   };
 
   // Filter summary
+  const s = resultCount > 1 ? "chests" : "chest";
   const summary =
     displayMode === "local" && activeLocation?.city && activeLocation?.lat
-      ? `${resultCount} deposits found in ${radius} km around ${activeLocation.city}`
-      : `${resultCount} deposits found in France`;
+      ? `${resultCount} ${s} in ${radius} km around ${activeLocation.city}`
+      : `${resultCount} ${s} found in France`;
 
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-green-100 overflow-hidden">
@@ -163,7 +164,15 @@ export default function FilterBar({
           {/* BLOCK 2: Swith mode btn */}
 
           <label className="flex justify-center items-center gap-3 mb-4 border border-green-200 rounded-2xl bg-green-100 p-2 cursor-pointer select-none">
-            <span className="text-sm">All deposits</span>
+            <span
+              className={`text-sm transition ${
+                displayMode === "all"
+                  ? "font-semibold text-green-800 text-lg"
+                  : "text-green-800/50"
+              }`}
+            >
+              All deposits
+            </span>
 
             <input
               type="checkbox"
@@ -180,7 +189,15 @@ export default function FilterBar({
               }}
             />
 
-            <span className="text-sm">Local search</span>
+            <span
+              className={`text-sm transition ${
+                displayMode === "local"
+                  ? "font-semibold text-green-800"
+                  : "text-green-800/50"
+              }`}
+            >
+              Local search
+            </span>
           </label>
 
           {/* BLOCK 3: City + radius */}

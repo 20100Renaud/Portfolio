@@ -23,7 +23,7 @@ export default function Market() {
   const [filterType, setFilterType] = useState("");
   const [filterCat, setFilterCat] = useState("");
   const [filterUser, setFilterUser] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [showUndefinedWarning, setShowUndefinedWarning] = useState(false);
   const [activeLocation, setActiveLocation] = useState({
     city: "",
