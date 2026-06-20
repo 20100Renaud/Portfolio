@@ -1,7 +1,8 @@
-import { Link, NavLink } from "react-router-dom";
 import AnimatedFlatLogo from "../components/AnimatedFlatLogo";
-import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Link, NavLink } from "react-router-dom";
+import { User, LogOut } from "lucide-react";
+import { useContext } from "react";
 
 const handleLogout = () => {
   localStorage.removeItem("token");
@@ -18,10 +19,9 @@ const NavItem = ({ to, end, children, className = "" }) => {
     >
       {({ isActive }) => (
         <span
-          className={`relative inline-block ${isActive
-            ? "text-white font-bold"
-            : "text-white"
-            }`}
+          className={`relative inline-block ${
+            isActive ? "text-white font-bold" : "text-white"
+          }`}
         >
           {children}
         </span>
@@ -29,7 +29,6 @@ const NavItem = ({ to, end, children, className = "" }) => {
     </NavLink>
   );
 };
-
 
 export default function Navbar() {
   const { isAuthenticated, username, logout } = useContext(AuthContext);
@@ -41,7 +40,7 @@ export default function Navbar() {
         </p>
       </section>
 
-      <section className="navbar bg-green-700 shadow-lg px-4 hidden sm:flex fixed top-0 left-0 right-0 z-50 h-16">
+      <section className="navbar bg-green-700 shadow-lg px-4 hidden sm:flex fixed top-0 left-0 right-0 z-50 h-16 text-green-900">
         <div className="navbar-start">
           <Link
             to="/"
@@ -54,13 +53,19 @@ export default function Navbar() {
         <div className="navbar-center">
           <ul className="hidden lg:flex px-1 gap-6">
             <li>
-              <NavItem to="/" end>Home</NavItem>
+              <NavItem to="/" end>
+                Home
+              </NavItem>
             </li>
             <li>
-              <NavItem to="/market" end>Explore</NavItem>
+              <NavItem to="/market" end>
+                Explore
+              </NavItem>
             </li>
             <li>
-              <NavItem to="/faq" end>Request</NavItem>
+              <NavItem to="/faq" end>
+                Request
+              </NavItem>
             </li>
           </ul>
         </div>
@@ -77,28 +82,42 @@ export default function Navbar() {
                     role="button"
                     className="btn btn-ghost btn-circle avatar"
                   >
-                    <div className="w-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
+                    <div className="w-8 h-8 pt-1 rounded-full bg-green-500 text-white flex items-center justify-center font-bold leading-none text-sm">
                       {username?.charAt(0).toUpperCase()}
                     </div>
                   </div>
 
                   <ul
                     tabIndex={0}
-                    className="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+                    className="mt-3 z-[1] w-56 rounded-box bg-base-100 shadow-xl border border-base-200 p-6 menu menu-sm dropdown-content gap-4"
                   >
-                    <li className="px-2 py-1 text-gray-500 text-sm">
-                      Signed in as <br />
-                      <span className="font-semibold text-black">
-                        {username}
-                      </span>
-                    </li>
+                    {/* User info */}
+                    <div className="p-4 flex justify-center border rounded-box bg-green-100 select-none">
+                      <span className="text-sm">Signed in as {username}</span>
+                    </div>
 
-                    <div className="divider my-1"></div>
+                    {/* Actions */}
+                    <div className="flex flex-col items-center gap-2">
+                      <li>
+                        <Link
+                          to="/dashboard"
+                          className="border border-green-200 flex flex-col items-center justify-center gap-1 rounded-xl hover:bg-green-100 transition p-4 w-24"
+                        >
+                          <User size={28} />
+                          <span className="text-sm font-medium">Dashboard</span>
+                        </Link>
+                      </li>
 
-                    <li>
-                      <Link to="/dashboard">My profile</Link>
-                      <button onClick={logout}>Logout</button>
-                    </li>
+                      <li>
+                        <button
+                          onClick={logout}
+                          className="border border-red-200 flex flex-col items-center justify-center gap-1 rounded-xl hover:bg-red-50 transition p-4 text-red-500 w-24"
+                        >
+                          <LogOut size={28} />
+                          Logout
+                        </button>
+                      </li>
+                    </div>
                   </ul>
                 </div>
               </div>
@@ -107,7 +126,7 @@ export default function Navbar() {
             <>
               <Link
                 to="/login"
-                className="text-black btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg hidden sm:flex"
+                className="btn bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7] hover:shadow-lg hidden sm:flex"
               >
                 Login
               </Link>
