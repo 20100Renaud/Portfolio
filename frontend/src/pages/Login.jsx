@@ -74,7 +74,7 @@ export default function Login() {
           </div>,
         );
         console.log("[LOGIN] result:", data);
-        login(data.username);
+        await login();
         navigate("/dashboard");
       } else {
         console.log("[LOGIN] error response:", data);

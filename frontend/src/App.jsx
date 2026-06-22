@@ -26,8 +26,8 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/faq" element={<Faq />} />
           <Route path="/market" element={<Market />} />
+          <Route path="/faq" element={<Faq />} />
           <Route
             path="/depo/:id"
             element={

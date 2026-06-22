@@ -17,7 +17,9 @@ const app = express();
 startDepoCleanupJob();
 
 app.use((req, res, next) => {
-  console.log(`\n[REQ] ${req.method} ${req.url}`);
+  if (req.url !== "/health") {
+    console.log(`[REQ] ${req.method} ${req.url}`);
+  }
   next();
 });
 
@@ -44,11 +46,15 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
+app.get("/health", (req, res) => {
+  res.json({ ok: true });
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/{*path}", (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 

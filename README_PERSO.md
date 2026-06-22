@@ -1,18 +1,33 @@
 # Share Up
 
 ## LOADING COMMANDS
-### 1. Usual development start
+
+- Terminal 1: `~/portfolio/`
+
+    1. npm run dev
+    2. npm run rebuild
+    3. npm run clean
+
+        - *1,2 and 3 auto-open the browser when frontend is ready.*
+        - *Can fail sometimes with WSL*
+
+    4. npm run stop
+
+- Terminal 2: `~/portfolio/backend/$`
+
+    5. npm run studio
+
+### 1. Usual development (restart from the last time)
+
 `~/portfolio/`
 
 ```
 npm run dev
 
-# docker compose -f docker-compose.dev.yml up --build
+# docker compose -f docker-compose.dev.yml up -d
 ```
 
-#### What it does:
-- Starts all containers (frontend, backend, postgres)
-- Builds images only if needed
+- Starts containers (frontend, backend, postgres)
 - Reuses existing Docker layers (fast startup)
 - Keeps existing database state
 - Keeps Prisma data intact
@@ -20,17 +35,21 @@ npm run dev
 ### 2. Rebuild containers (no cache, full refresh)
 
 `~/portfolio/`
+
 ```
 npm run rebuild
 
-# docker compose -f docker-compose.dev.yml up --build --force-recreate
+# docker compose -f docker-compose.dev.yml up --build -d
 ```
 
 #### When to use:
+
 - Docker is not picking up code changes
 - Strange runtime errors after updates
 - After dependency changes (package.json changes)
+
 #### What it does:
+
 - Recreates containers even if they already exist
 - Rebuilds images from scratch (ignores cached container state)
 - Keeps PostgreSQL data volume intact
@@ -39,19 +58,22 @@ npm run rebuild
 ### 3. Full reset (Prisma / seed / DB changes)
 
 `~/portfolio/`
+
 ```
 npm run clean
 
-# docker compose -f docker-compose.dev.yml down -v && npm run dev
+# docker compose -f docker-compose.dev.yml down -v && npm run rebuild
 ```
 
 #### When to use:
+
 - Prisma schema changed
 - Seeder logic changed
 - Want a completely fresh database
 - DB state is corrupted or outdated
 
 #### What it does:
+
 - Stops all containers
 - Deletes containers + all volumes
 - Removes PostgreSQL data completely
@@ -60,8 +82,25 @@ npm run clean
   - Prisma migrations
   - Seed script (automatic on backend start)
 
-### 4. Check the DataBase inside the docker (use another terminal)
+### 4. Stop the containers at the end of the day (restard with dev)
+*Usually `Ctr + C` is enough but with -d, the logs are not visible*
+
+`~/portfolio/`
+
+```
+npm run stop
+
+# docker compose -f docker-compose.dev.yml down
+```
+
+- Stop containers
+- Remove containers
+- Remove default network
+
+### 5. Check the DataBase inside the docker (use another terminal)
+
 `~/portfolio/backend/$`
+
 ```
 npm run studio
 
@@ -69,14 +108,14 @@ npm run studio
 npm install --save-dev dotenv-cli
 ```
 
-### 5. Development Ports
+### Development Ports
 
-| Port | Service |
-|------|---------|
-| 5000 | Backend API (Express) |
+| Port | Service                 |
+| ---- | ----------------------- |
+| 5000 | Backend API (Express)   |
 | 5173 | Frontend (Vite + React) |
-| 5433 | PostgreSQL Database |
-| 5555 | Prisma Studio |
+| 5433 | PostgreSQL Database     |
+| 5555 | Prisma Studio           |
 
 ## SETUP docker
 
@@ -143,34 +182,45 @@ npm install prisma@6 @prisma/client@6   # 7 works differently
 ## PRISMA COMMANDS to restard from schema.prisma
 
 ### 1. Stop Docker and delete the database
+
 `~/portfolio/$`
+
 ```
 docker compose -f docker-compose.dev.yml down -v
 ```
 
 ### 2. Delete existing migrations
+
 `~/portfolio/backend/$`
+
 ```
 rm -rf prisma/migrations
 ```
 
 ### 3. Start PostgreSQL ans backend containers
+
 (Need a database running to generate migrations)
 
 `~/portfolio/$`
+
 ```
 docker compose -f docker-compose.dev.yml up postgres backend -d
 ```
+
 Wait the time to process.
 
 ### 4. Create a fresh migration inside the docker
+
 `~/portfolio/backend`
+
 ```
 docker compose exec backend npx prisma migrate dev --name init
 ```
 
 ### 5. Rebuild containers
+
 `~/portfolio`
+
 ```
 npm run clean
 ```
@@ -196,7 +246,9 @@ docker compose exec backend npx prisma db seed
 ```
 
 ### 6. Check the DataBase localy
+
 `~/portfolio/backend/$`
+
 ```
 npx prisma studio //port:5555
 ```
@@ -208,10 +260,19 @@ npx prisma studio //port:5555
 ```
 npx prisma db pull
 ```
+
 ## SETUP TURF
+
 `~/portfolio/frontend/$`
+
 ```
 npm install @turf/turf
+```
+
+## TREE STRUCTURE (without node-modules)
+
+```
+tree -I node_modules
 ```
 
 ## MERMAID
@@ -269,4 +330,4 @@ erDiagram
 	T_Users||--o{T_Answers:"Write"
 	T_Depos||--o{T_Answers:"Contains"
 	T_Depos||--o{T_Images:"Contains"
-  ```
+```

@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    open: true,
+    open: false,
     proxy: {
       "/api": {
         target: "http://backend:5000",

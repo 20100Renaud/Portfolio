@@ -1,7 +1,10 @@
 import { distance } from "@turf/turf";
 
 export const isWithinRadius = (user, depo, km) => {
-  if (!depo.User_Depos?.Latitude_User || !depo.User_Depos?.Longitude_User) {
+  if (
+    depo.User_Depos?.Latitude_User == null ||
+    depo.User_Depos?.Longitude_User == null
+  ) {
     return false;
   }
 

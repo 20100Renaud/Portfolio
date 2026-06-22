@@ -115,7 +115,7 @@ export default function SignUp() {
           </div>,
         );
         console.log("SignUp result:", data);
-        login(data.username);
+        await login();
         navigate("/dashboard");
       } else {
         setToast(
