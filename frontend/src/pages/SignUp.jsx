@@ -144,7 +144,7 @@ export default function SignUp() {
         relative w-full max-w-md p-8
         bg-gradient-to-b
         from-white from-[0%] to-[#a5d6a7]
-        rounded-xl shadow-lg flex flex-col items-center"
+        rounded-2xl shadow-lg flex flex-col items-center"
       >
         <h2 className="text-2xl font-bold text-center mb-2">
           Create an account
@@ -405,7 +405,7 @@ export default function SignUp() {
           className="
             fixed items-center justify-center text-center
             bg-green-600
-            rounded-lg shadow-lg
+            rounded-2xl shadow-lg
             animate-fade-in
           "
         >

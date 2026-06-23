@@ -29,7 +29,7 @@ export default function Login() {
   const [toast, setToast] = useState(null);
   useEffect(() => {
     if (toast) {
-      const timer = setTimeout(() => setToast(null), 3000);
+      const timer = setTimeout(() => setToast(null), 2000);
       return () => clearTimeout(timer);
     }
   }, [toast]);
@@ -107,7 +107,7 @@ export default function Login() {
         relative w-full max-w-md p-8
         bg-gradient-to-b
         from-white from-[30%] to-[#a5d6a7]
-        rounded-xl shadow-lg flex flex-col items-center"
+        rounded-2xl shadow-lg flex flex-col items-center"
       >
         <div className="transition-transform duration-200 mb-8">
           <AnimatedFlatLogoInfinite size={120} />
@@ -218,7 +218,7 @@ export default function Login() {
           className="
             fixed items-center justify-center text-center
             bg-green-600
-            rounded-lg shadow-lg
+            rounded-2xl shadow-lg
             animate-fade-in
           "
         >
