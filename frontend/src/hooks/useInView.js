@@ -1,4 +1,3 @@
-// hooks/useInView.js
 import { useState, useEffect } from "react";
 
 export function useScrollScale(ref, stayRange = 0.2, maxScale = 1.75) {
@@ -23,7 +22,8 @@ export function useScrollScale(ref, stayRange = 0.2, maxScale = 1.75) {
         newScale = maxScale;
       } else {
         // outside safe zone -> scale down linearly toward 0
-        const normalizedDistance = (distanceFromCenter - stayDistance) / (maxDistance - stayDistance);
+        const normalizedDistance =
+          (distanceFromCenter - stayDistance) / (maxDistance - stayDistance);
         newScale = Math.max(0, maxScale * (1 - normalizedDistance));
       }
 

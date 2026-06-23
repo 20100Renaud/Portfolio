@@ -1,11 +1,13 @@
-import { Router } from "express"
-import { register, connect } from "../controllers/auth.controller.js"
+import { Router } from "express";
+import { register, connect } from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import prisma from "../prismaClient.js";
 
-const router = Router()
 
-router.post("/register", register)
-router.post("/connect", connect)
+const router = Router();
+
+router.post("/register", register);
+router.post("/connect", connect);
 router.post("/logout", (req, res) => {
   res.clearCookie("token").json({ message: "Logged out" });
 });
@@ -14,11 +16,20 @@ router.get("/protected-data", authMiddleware, (req, res) => {
   res.json({ message: "This is protected", userId: req.user.userId });
 });
 
-router.get("/me", authMiddleware, (req, res) => {
+router.get("/me", authMiddleware, async (req, res) => {
+  const user = await prisma.T_Users.findUnique({
+    where: {
+      ID_User: req.user.userId,
+    },
+  });
+
   res.json({
-    userId: req.user.userId,
-    username: req.user.username,
-    role: req.user.role,
+    userId: user.ID_User,
+    username: user.Login_User,
+    role: user.Role_User,
+    Latitude_User: user.Latitude_User,
+    Longitude_User: user.Longitude_User,
+    City_User: user.City_User,
   });
 });
 

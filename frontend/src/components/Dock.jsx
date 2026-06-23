@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, Store, LogIn, LayoutDashboard, MessageSquareText } from "lucide-react";
+import { Home, Binoculars, LogIn, LayoutDashboard, ScrollText } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 
 
@@ -14,8 +14,8 @@ export default function Dock() {
 
   const dockLinks = [
     { to: "/", label: "Home", icon: Home, end: true },
-    { to: "/market", label: "Market", icon: Store },
-    { to: "/faq", label: "FAQ", icon: MessageSquareText },
+    { to: "/market", label: "Explore", icon: Binoculars },
+    { to: "/faq", label: "Request", icon: ScrollText },
   ];
   return (
     <footer className="h-16 fixed bottom-0 left-0 right-0 z-50 sm:hidden">

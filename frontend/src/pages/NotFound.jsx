@@ -3,7 +3,8 @@ import dessin from "../assets/dessin_jardin.png";
 
 export default function NotFound() {
   return (
-    <div className="
+    <div
+      className="
             items-center text-center
             relative flex flex-col min-h-screen
             bg-gradient-to-tl from-[#f8fbf7] via-[#e6f2ec] to-[#a5d6a7]
@@ -24,7 +25,8 @@ export default function NotFound() {
           z-0"
       />
       <div className="sm:mt-[15vh] px-6 z-10">
-        <div className="
+        <div
+          className="
           backdrop-blur-xs bg-white/60
           border border-white/40
           shadow-xl rounded-2xl
@@ -37,12 +39,10 @@ export default function NotFound() {
           <h1 className="text-5xl font-bold mb-4 text-green-900">
             It seems you got lost
           </h1>
-          <h1 className="text-5xl my-6 animate-bounce">
-            🌿
-          </h1>
+          <h1 className="text-5xl my-6 animate-bounce">🌿</h1>
           <p className="text-lg text-green-800">
             This page wandered off into the garden.
-          </p >
+          </p>
           <p className="text-lg text-green-800 mb-6">
             But don’t worry, there are plenty of good things growing back home.
           </p>

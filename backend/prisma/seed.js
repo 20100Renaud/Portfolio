@@ -2,7 +2,6 @@ import prisma from "../src/prismaClient.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 
-
 dotenv.config();
 
 async function main() {
@@ -45,7 +44,7 @@ async function main() {
         Email_User: adminEmail,
         Password_User: await bcrypt.hash(adminPassword, 10),
         Role_User: "ADMIN",
-        City_User: "Unknow",
+        City_User: "Unknown",
         Latitude_User: 0.0,
         Longitude_User: 0.0,
       },
@@ -56,17 +55,18 @@ async function main() {
     console.log("Admin already exists (password NOT modified)");
   }
 
-  // ------------------ CREATE DEPOT ------------------
+  // ------------------ CREATE DEPO ------------------
   await prisma.T_Depos.upsert({
     where: {
-      ID_Depo: "UNKNOWN_DEPOT_ID",
+      ID_Depo: "45g98ty32",
     },
     update: {},
     create: {
-      ID_Depo: "UNKNOWN_DEPOT_ID",
-      Title_Depo: "Unknown Depo",
-      Text_Depo: "This is a fallback Depo created by the system.",
-      ID_User: unknownUser.ID_User, // important !
+      ID_Depo: "45g98ty32",
+      Cat_Depo: "Plants",
+      Title_Depo: "Test Depo title",
+      Text_Depo: "Text for the test depo.",
+      ID_User: unknownUser.ID_User,
     },
   });
   // -------------------- VERIFY ---------------------
@@ -78,7 +78,6 @@ async function main() {
 }
 
 main()
-
   .then(() => {
     console.log("🌱 Seeding done");
     process.exit(0);

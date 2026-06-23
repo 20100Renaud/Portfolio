@@ -1,6 +1,7 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import prisma from "../prismaClient.js";
 
-export const authMiddleware = (req, res, next) => {
+export const authMiddleware = async(req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
@@ -8,11 +9,25 @@ export const authMiddleware = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.user = decoded
-    next()
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await prisma.T_Users.findUnique({
+      where: {
+        ID_User: decoded.userId,
+      },
+    });
+
+    if (!user) {
+      res.clearCookie("token");
+
+      return res.status(401).json({
+        error: "User no longer exists",
+      });
+    }
+
+    req.user = decoded;
+    next();
   } catch {
-    res.status(401).json({ error: "Invalid token" })
+    res.status(401).json({ error: "Invalid token" });
   }
 };
 

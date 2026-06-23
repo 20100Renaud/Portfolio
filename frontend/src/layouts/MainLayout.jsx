@@ -1,9 +1,8 @@
-import Navbar from "../components/Navbar"
-import Footer from "../components/Footer"
-import Dock from "../components/Dock"
-import { Outlet } from "react-router-dom"
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Dock from "../components/Dock";
+import { Outlet } from "react-router-dom";
 import dessin from "../assets/dessin_jardin.png";
-
 
 export default function MainLayout() {
   return (
@@ -36,8 +35,7 @@ export default function MainLayout() {
 
         <Footer />
         <Dock />
-
       </div>
     </div>
-  )
+  );
 }
