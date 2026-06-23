@@ -1,4 +1,5 @@
 import { useState } from "react";
+import CitySelect from "./CitySelect";
 
 export default function MarketLocationFilter({
   displayMode,
@@ -8,7 +9,7 @@ export default function MarketLocationFilter({
   activeLocation,
   setActiveLocation,
 }) {
-console.log("MarketLocationFilter displayMode =", displayMode);
+
 
   const [results, setResults] = useState([]);
 
@@ -64,7 +65,7 @@ console.log("MarketLocationFilter displayMode =", displayMode);
 
         <input
           type="checkbox"
-          className="toggle border bg-white p-1"
+          className="toggle border border-green-200 bg-green-50 p-1"
           checked={displayMode === "local"}
           onChange={(e) => {
             const next = e.target.checked ? "local" : "all";
@@ -88,19 +89,25 @@ console.log("MarketLocationFilter displayMode =", displayMode);
       {displayMode === "local" && (
         <div className="flex flex-wrap justify-center items-center gap-4">
           <div className="flex flex-col relative">
-            <label className="text-xs text-gray-600">City</label>
-
-            <input
-              type="text"
+            <CitySelect
               value={activeLocation?.city || ""}
-              onChange={(e) => handleCityChange(e.target.value)}
-              className="border p-2 rounded"
-              placeholder="Choose a city"
+              onChange={(city) =>
+                setActiveLocation((prev) => ({
+                  ...prev,
+                  city,
+                }))
+              }
+              setCoordinates={(coords) =>
+                setActiveLocation((prev) => ({
+                  ...prev,
+                  ...coords,
+                }))
+              }
             />
           </div>
 
           {results.length > 0 && (
-            <ul className="absolute z-50 bg-white border rounded-box shadow-lg max-h-60 overflow-y-auto">
+            <ul className="absolute z-50 bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
               {results.map((commune) => (
                 <li
                   key={commune.code}
@@ -127,7 +134,7 @@ console.log("MarketLocationFilter displayMode =", displayMode);
 
           {activeLocation?.lat && activeLocation?.lng && (
             <div className="flex flex-col">
-              <label className="text-xs text-gray-600">
+              <label className="text-xs text-green-900">
                 Radius: {radius} km
               </label>
 
@@ -137,7 +144,7 @@ console.log("MarketLocationFilter displayMode =", displayMode);
                 max="100"
                 value={radius}
                 onChange={(e) => setRadius(Number(e.target.value))}
-                className="w-48"
+                className="w-48 h-2 bg-green-200 rounded-full appearance-none cursor-pointer accent-green-600"
               />
             </div>
           )}

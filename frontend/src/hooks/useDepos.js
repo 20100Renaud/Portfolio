@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { deposConfig } from "../config/deposConfig";
 import { isWithinRadius } from "../utils/geo";
 import useAuth from "../hooks/useAuth";
@@ -7,46 +7,37 @@ import { apiFetch } from "../api";
 export default function useDepos(mode) {
   const config = deposConfig[mode];
   const [depos, setDepos] = useState([]);
+  const [radius, setRadius] = useState(10);
   const [loading, setLoading] = useState(true);
   const { user, isAuthenticated } = useAuth();
   const [filterType, setFilterType] = useState("");
   const [filterCat, setFilterCat] = useState("");
   const [filterUser, setFilterUser] = useState("");
-  const [radius, setRadius] = useState(10);
+  const [displayMode, setDisplayMode] = useState("all");
+
   const [activeLocation, setActiveLocation] = useState({
     city: "",
     lat: null,
     lng: null,
   });
 
-console.log("useDepos instance", mode);
+  // Fetch and refresh depos on load
+  const refreshDepos = useCallback(async () => {
+    setLoading(true);
 
-  useEffect(() => {
-    if (!user) return;
-
-    setActiveLocation({
-      city: user.City_User,
-      lat: user.Latitude_User,
-      lng: user.Longitude_User,
-    });
-  }, [user]);
-
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
+    try {
       const res = await apiFetch("/depos");
       const data = await res.json();
-      setDepos(Array.isArray(data) ? data : []);
-      setLoading(false);
-    };
 
-    load();
+      setDepos(Array.isArray(data) ? data : []);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // Save user data when logged in
-  const STORAGE_KEY = `depos_display_mode_${mode}`;
-
-  const [displayMode, setDisplayMode] = useState("all");
+  useEffect(() => {
+    refreshDepos();
+  }, [refreshDepos]);
 
   // Auto switch mode
   useEffect(() => {
@@ -133,13 +124,11 @@ console.log("useDepos instance", mode);
     setFilterUser("");
   };
 
-  useEffect(() => {
-    console.log("displayMode changed ->", displayMode);
-  }, [displayMode]);
   return {
     depos,
     filtered,
     loading,
+    refreshDepos,
     filterType,
     setFilterType,
     filterCat,

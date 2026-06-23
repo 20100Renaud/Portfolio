@@ -1,7 +1,7 @@
 export const deposConfig = {
   market: {
     title: "Treasure Island",
-    subtitle: "Share or discover, your next quest awaits!",
+    subtitle: "Share or discover your next quest !",
     icon: "🏝️",
     allowedTypes: ["OFFER", "REQUEST"],
     filters: {

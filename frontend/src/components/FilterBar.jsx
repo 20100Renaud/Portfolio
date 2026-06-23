@@ -1,10 +1,14 @@
-import { useState } from "react";
-import MarketLocationFilter from "./MarketLocationFilter";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ChevronUp, Shovel } from "lucide-react";
-
+import SearchableSelect from "./SearchableSelect";
+import MarketLocationFilter from "./MarketLocationFilter";
+import FilterSelectMobile from "./filters/FilterSelectMobile";
+import FilterSelectDesktop from "./filters/FilterSelectDesktop";
 
 export default function FilterBar({
   mode,
+  filtersOpen,
+  setFiltersOpen,
   filterType,
   setFilterType,
   filterCat,
@@ -23,132 +27,192 @@ export default function FilterBar({
   setActiveLocation,
   radius,
   setRadius,
+  onCollapse,
+  toggleFilters,
 }) {
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const ignoreNextScroll = useRef(false);
+  const containerRef = useRef(null);
   const label = config.label || "items";
-
   const isLocal = displayMode === "local" && activeLocation?.city;
+
   const summary = isLocal
     ? `${resultCount} ${label} in ${radius} km around ${activeLocation.city}`
     : `${resultCount} ${label} in France`;
 
-  function buildSummary() {
-    const filters = [filterType, filterCat, filterUser].filter(Boolean);
+  const filters = [filterType, filterCat, filterUser].filter(Boolean);
+  const filtersText = filters.length ? `(${filters.join(", ")})` : "";
 
-    return filters.length ? `${summary} (${filters.join(", ")})` : summary;
-  }
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-green-100 overflow-hidden">
+    <div className="max-w-full bg-white rounded-2xl shadow-lg border border-green-100 overflow-y-hidden">
       <button
-        onClick={() => setFiltersOpen(!filtersOpen)}
+        onClick={toggleFilters}
         className="w-full flex items-center justify-between px-4 py-3 bg-green-100"
       >
         <div className="flex items-center gap-2">
           <Shovel size={24} className="text-green-800" />
 
-          <span className="font-medium text-green-900">{buildSummary()}</span>
+          <span className="font-medium text-green-900">
+            {summary}
+            {filtersText && (
+              <>
+                <br className="sm:hidden" />
+                <span className="sm:ml-1">{filtersText}</span>
+              </>
+            )}
+          </span>
         </div>
 
-        {filtersOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        {filtersOpen ? "" : <ChevronDown size={20} />}
       </button>
 
       <div
-        className={`overflow-hidden transition-all duration-300 ${
-          filtersOpen ? "max-h-[500px] p-4" : "max-h-0"
+        className={`bg-green-100 flex transition-all duration-300 ${
+          filtersOpen ? "max-h-[500px]" : "max-h-0"
         }`}
       >
-        <p className="">Find the right place to dig</p>
-        <div className="mt-4 p-4 border-t border-green-100">
-          {/* BLOCK 1: dropdowns + reset btn */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-4">
-            {/* Type */}
-            {config.filters.type && (
-              <div className="flex flex-col w-full">
-                <label className="text-xs">Type</label>
+        <div className="p-4 flex-1 border-t border-r border-green-200 rounded-tr-3xl bg-white ">
+          <p className="">Find the right place to dig</p>
+          <div className="mt-4 p-4 border-t border-green-100">
+            {/* BLOCK 1: dropdowns + reset btn */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full mb-4">
+              {/* Type */}
+              {config.filters.type && (
+                <>
+                  {/* Mobile */}
+                  <div className="sm:hidden">
+                    <FilterSelectMobile
+                      label="Type"
+                      value={filterType}
+                      onChange={setFilterType}
+                      options={typeOptions}
+                      defaultLabel="All"
+                    />
+                  </div>
 
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className="border p-2 rounded w-full"
+                  {/* Desktop */}
+                  <div className="hidden sm:block">
+                    <SearchableSelect
+                      label="Type"
+                      value={filterType}
+                      onChange={setFilterType}
+                      options={typeOptions}
+                      defaultLabel="All"
+                      defaultValue=""
+                      showCount={true}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Category */}
+              {config.filters.category && (
+                <>
+                  {/* Mobile */}
+                  <div className="sm:hidden">
+                    <FilterSelectMobile
+                      label="Category"
+                      value={filterCat}
+                      onChange={setFilterCat}
+                      options={categoryOptions}
+                    />
+                  </div>
+                  {/* Desktop */}
+                  <div className="hidden sm:block">
+                    <SearchableSelect
+                      label="Category"
+                      value={filterCat}
+                      onChange={setFilterCat}
+                      options={categoryOptions}
+                      defaultLabel="All"
+                      defaultValue=""
+                      showCount={true}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Username */}
+              {config.filters.user && (
+                <>
+                  {/* Mobile */}
+                  <div className="sm:hidden">
+                    <FilterSelectMobile
+                      label="User"
+                      value={filterUser}
+                      onChange={setFilterUser}
+                      options={usersOptions}
+                      defaultLabel="All"
+                    />
+                  </div>
+
+                  {/* Desktop */}
+                  <div className="hidden sm:block">
+                    <SearchableSelect
+                      label="User"
+                      value={filterUser}
+                      onChange={setFilterUser}
+                      options={usersOptions}
+                      defaultLabel="All"
+                      defaultValue=""
+                      showCount={true}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Reset btn */}
+              <div className="flex justify-center mt-3 w-full">
+                <button
+                  onClick={() => {
+                    resetFilters();
+                    setFiltersOpen(false);
+                  }}
+                  className=" bg-green-600 text-white px-3 py-1 text-sm rounded-2xl hover:bg-green-500"
                 >
-                  <option value="">All</option>
-
-                  {typeOptions.map(([type, count]) => (
-                    <option key={type} value={type}>
-                      {type} ({count})
-                    </option>
-                  ))}
-                </select>
+                  Reset filters
+                </button>
               </div>
+            </div>
+
+            {/* BLOCK 2: Switch btn (All / Local) */}
+            {config.filters.radius && (
+              <MarketLocationFilter
+                displayMode={displayMode}
+                setDisplayMode={setDisplayMode}
+                radius={radius}
+                setRadius={setRadius}
+                activeLocation={activeLocation}
+                setActiveLocation={setActiveLocation}
+              />
             )}
+          </div>
+        </div>
 
-            {/* Category */}
-            {config.filters.category && (
-              <div className="flex flex-col w-full">
-                <label className="text-xs">Category</label>
-
-                <select
-                  value={filterCat}
-                  onChange={(e) => setFilterCat(e.target.value)}
-                  className="border p-2 rounded w-full"
-                >
-                  <option value="">All</option>
-                  {categoryOptions.map(([cat, count]) => (
-                    <option key={cat} value={cat}>
-                      {cat} ({count})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Username */}
-            {config.filters.user && (
-              <div className="flex flex-col w-full">
-                <label className="text-xs">User</label>
-
-                <select
-                  value={filterUser}
-                  onChange={(e) => setFilterUser(e.target.value)}
-                  className="border p-2 rounded w-full"
-                >
-                  <option value="">All</option>
-
-                  {usersOptions.map(([user, count]) => (
-                    <option key={user} value={user}>
-                      {user} ({count})
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Reset btn */}
-            <div className="flex justify-center mt-3 w-full">
-              <button
-                onClick={() => {
-                  resetFilters();
-                  setFiltersOpen(false);
-                }}
-                className=" bg-green-600 text-white px-3 py-1 text-sm rounded hover:bg-green-500"
-              >
-                Reset filters
-              </button>
+        <button onClick={toggleFilters}>
+          <div className="bg-green-100 w-12 h-full flex items-center justify-center relative">
+            <div className="absolute inset-0 flex flex-col items-center justify-between transform -translate-y-8 transition-all duration-300 mr-1">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <ChevronUp
+                  key={index}
+                  size={16}
+                  className={`text-green-900 w-4 h-4 sm:w-5 sm:h-5 ${
+                    index >= 3 ? "sm:hidden" : ""
+                  }`}
+                />
+              ))}
+              {filtersOpen ? "Done" : ""}
+              {Array.from({ length: 5 }).map((_, index) => (
+                <ChevronUp
+                  key={index}
+                  size={16}
+                  className={`text-green-900 w-4 h-4 sm:w-5 sm:h-5 ${
+                    index >= 3 ? "sm:hidden" : ""
+                  }`}
+                />
+              ))}
             </div>
           </div>
-
-          {/* BLOCK 2: Switch btn (All / Local) */}
-          {config.filters.radius && (
-            <MarketLocationFilter
-              displayMode={displayMode}
-              setDisplayMode={setDisplayMode}
-              radius={radius}
-              setRadius={setRadius}
-              activeLocation={activeLocation}
-              setActiveLocation={setActiveLocation}
-            />
-          )}
-        </div>
+        </button>
       </div>
     </div>
   );
