@@ -10,7 +10,9 @@
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "build": "tsc && npx prisma generate",
     "migrate": "prisma migrate deploy --schema=prisma/schema.prisma",
-    "studio": "dotenv -e .env.studio -- prisma studio"
+    "studio": "dotenv -e .env.studio -- prisma studio",
+    "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "jest --watch"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -38,7 +40,9 @@
   "devDependencies": {
     "@types/node": "^25.3.5",
     "dotenv-cli": "^11.0.0",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.14",
+    "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
