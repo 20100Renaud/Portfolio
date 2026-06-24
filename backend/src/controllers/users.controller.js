@@ -30,6 +30,7 @@ export const deleteUser = async (req, res) => {
     await prisma.T_Users.delete({ where: { ID_User: userId } });
 
     res.json({ message: "Account deleted, answers reassigned" });
+    res.status(201);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
