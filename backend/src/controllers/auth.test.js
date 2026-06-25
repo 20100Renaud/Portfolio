@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../app.js";
 import prisma from "../prismaClient.js";
 
-describe("Update user", () => {
+describe("Flow of a User  ", () => {
   const email = `test_${Date.now()}@gmail.com`;
   const password = "test1234";
 
