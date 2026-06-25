@@ -3,6 +3,7 @@ import app from "../app.js";
 import prisma from "../prismaClient.js";
 
 describe("Flow of a Depository", () => {
+    // DELETE all the depos and user created
     afterAll(async () => {
         await prisma.t_Depos.deleteMany({
             where: {
@@ -29,6 +30,7 @@ describe("Flow of a Depository", () => {
     });
 
     test("Create -> Read -> Update -> Delete a Depository", async () => {
+        // CREATE a test user
         const registerResponse = await request(app)
             .post("/api/auth/register")
             .send({
@@ -41,7 +43,7 @@ describe("Flow of a Depository", () => {
             });
             expect(registerResponse.status).toBe(201);
 
-        // Log unknow User
+        // Log with the test user
         const loginResponse = await request(app)
             .post("/api/auth/connect")
             .send({

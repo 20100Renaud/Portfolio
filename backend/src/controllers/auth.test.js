@@ -6,6 +6,7 @@ describe("Flow of a User  ", () => {
   const email = `test_${Date.now()}@gmail.com`;
   const password = "test1234";
 
+  // DELETE all the users created
   afterAll(async () => {
     await prisma.t_Users.deleteMany({
       where: {
