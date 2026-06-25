@@ -41,6 +41,7 @@ describe("Flow of a Depository", () => {
                 latitude_user: 0,
                 longitude_user: 0,
             });
+
             expect(registerResponse.status).toBe(201);
 
         // Log with the test user
@@ -55,16 +56,54 @@ describe("Flow of a Depository", () => {
 
         const cookie = loginResponse.headers["set-cookie"];
 
-        // CREATE
-        const response = await request(app)
+        // CREATE a Depository
+        const CreateResponse1 = await request(app)
             .post("/api/depos/")
             .set("Cookie", cookie)
             .send({
-                title: "test_depo",
+                title: "test_depo_1",
                 description: "This is a test Depo"
             });
 
-            expect(response.status).toBe(201);
-            expect(response.body.Title_Depo).toBe("test_depo");
+            expect(CreateResponse1.status).toBe(201);
+            expect(CreateResponse1.body.Title_Depo).toBe("test_depo_1");
+
+            const ID_Depo = CreateResponse1.body.ID_Depo;
+
+        const CreateResponse2 = await request(app)
+            .post("/api/depos/")
+            .set("Cookie", cookie)
+            .send({
+                title: "test_depo_2",
+                description: "This is a second test Depo"
+            });
+
+            expect(CreateResponse2.status).toBe(201);
+            expect(CreateResponse2.body.Title_Depo).toBe("test_depo_2");
+
+        //LIST all the depos
+        const GetResponse = await request(app)
+            .get("/api/depos/")
+
+            expect(GetResponse.status).toBe(200);
+
+        //UPDATE one depo
+        const UpdateResponse = await request(app)
+            .put(`/api/depos/${ID_Depo}`)
+            .set("Cookie", cookie)
+            .send({
+                title: "test_depo_3",
+                description: "This is a new description"
+            })
+
+        expect(UpdateResponse.body.Title_Depo).toBe("test_depo_3");
+        expect(UpdateResponse.body.Text_Depo).toBe("This is a new description");
+
+        //DELETE a depo
+        const DeleteResponse = await request(app)
+            .delete(`/api/depos/${ID_Depo}`)
+            .set("Cookie", cookie)
+
+        expect(DeleteResponse.status).toBe(200);
     })
 })
