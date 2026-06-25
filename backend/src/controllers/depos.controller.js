@@ -114,8 +114,6 @@ export const createAnswer = async (req, res) => {
         ID_User: req.user.userId,
       },
     });
-    console.log("USER:", req.user);
-    console.log("DEPO:", req.depo);
     res.status(201).json(answer);
   } catch (err) {
     console.error(err);
@@ -132,7 +130,7 @@ export const updateAnswer = async (req, res) => {
       where: { ID_Answer: req.params.id },
       data: { Text_Answer: req.body.description },
     });
-    res.json(updated);
+    res.status(200).json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -145,7 +143,7 @@ export const deleteAnswer = async (req, res) => {
     if (!answer) return res.status(404).json({ error: "Answer not found" });
 
     await prisma.T_Answers.delete({ where: { ID_Answer: req.params.id } });
-    res.json({ message: "Deleted" });
+    res.status(200).json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
