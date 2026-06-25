@@ -1,3 +1,4 @@
+import { email } from "zod";
 import prisma from "../prismaClient.js";
 
 export const deleteUser = async (req, res) => {
@@ -34,5 +35,36 @@ export const deleteUser = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try{
+    const user = req.user;
+    if (!user) return res.status(404).json({ error: "User not found"});
+
+    const data = {};
+
+    if (req.body.username) {
+      data.Login_User = req.body.username;
+    }
+
+    if (req.body.email) {
+      data.Email_User = email;
+    }
+
+    const updated = await prisma.t_Users.update({
+      where: { ID_User: user.ID_User },
+      data,
+    });
+    res.status(200).json(updated);
+  } catch (err) {
+    if (err.code === "P2002") {
+      return res.status(409).json({
+        error: "Username or Email already exists",
+      });
+    }
+
+    res.status(500).json({ error: err.message});
   }
 };
