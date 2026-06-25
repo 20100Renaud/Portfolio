@@ -50,15 +50,17 @@ export const updateUser = async (req, res) => {
     }
 
     if (req.body.email) {
-      data.Email_User = email;
+      data.Email_User = req.body.email;
     }
 
+    console.log("req.user =", req.user);
     const updated = await prisma.t_Users.update({
-      where: { ID_User: user.ID_User },
+      where: { ID_User: user.userId },
       data,
     });
     res.status(200).json(updated);
   } catch (err) {
+    console.error(err);
     if (err.code === "P2002") {
       return res.status(409).json({
         error: "Username or Email already exists",
