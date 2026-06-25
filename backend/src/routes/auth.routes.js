@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { register, connect } from "../controllers/auth.controller.js";
-import { deleteUser } from "../controllers/users.controller.js";
+import { deleteUser, updateUser } from "../controllers/users.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
 
@@ -9,6 +9,7 @@ const router = Router();
 
 router.post("/register", register);
 router.post("/connect", connect);
+router.put("/update", authMiddleware, updateUser);
 router.delete("/delete", authMiddleware, deleteUser);
 router.post("/logout", (req, res) => {
   res.clearCookie("token").json({ message: "Logged out" });
