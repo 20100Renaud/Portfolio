@@ -54,7 +54,7 @@ export const getAllDepos = async (req, res) => {
         },
       },
     });
-    res.json(depos);
+    res.status(200).json(depos);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -78,7 +78,7 @@ export const updateDepo = async (req, res) => {
           : undefined,
       },
     });
-    res.json(updated);
+    res.status(200).json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -94,7 +94,7 @@ export const deleteDepo = async (req, res) => {
       where: { ID_Depo: depo.ID_Depo },
     });
 
-    res.json({ message: "Deleted" });
+    res.status(200).json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
