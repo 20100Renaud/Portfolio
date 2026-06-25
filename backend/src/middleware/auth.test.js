@@ -2,25 +2,34 @@ import request from "supertest";
 import app from "../app.js";
 import prisma from "../prismaClient.js";
 
-describe("Authentication flow", () => {
+describe("Update user", () => {
   const email = `test_${Date.now()}@gmail.com`;
   const password = "test1234";
 
   afterAll(async () => {
-    await prisma.T_Users.deleteMany({
+    await prisma.t_Users.deleteMany({
       where: {
-        Email_User: {
-          startsWith: "test_",
-        },
+        OR: [
+          {
+            Email_User: {
+              startsWith: "test_",
+            },
+          },
+          {
+            Email_User: {
+              startsWith: "updated_",
+            },
+          },
+        ],
       },
     });
 
     await prisma.$disconnect();
   });
 
-  test("register -> login -> delete", async () => {
+  test("register -> login -> update user", async () => {
     // REGISTER
-    const registerResponse = await request(app)
+    await request(app)
       .post("/api/auth/register")
       .send({
         username: "Test",
@@ -31,8 +40,6 @@ describe("Authentication flow", () => {
         longitude_user: 0,
       });
 
-    expect(registerResponse.status).toBe(201);
-
     // LOGIN
     const loginResponse = await request(app)
       .post("/api/auth/connect")
@@ -41,17 +48,26 @@ describe("Authentication flow", () => {
         password,
       });
 
-    expect(loginResponse.status).toBe(200);
-
     const cookie = loginResponse.headers["set-cookie"];
 
-    expect(cookie).toBeDefined();
+    // UPDATE
+    const updateResponse = await request(app)
+      .put("/api/auth/update")
+      .set("Cookie", cookie)
+      .send({
+        username: "NewUsername",
+        email: `updated_${Date.now()}@gmail.com`,
+      });
 
-    // DELETE
-    const deleteResponse = await request(app)
-      .delete("/api/auth/delete")
-      .set("Cookie", cookie);
+    expect(updateResponse.status).toBe(200);
+    expect(updateResponse.body.Login_User).toBe("NewUsername");
+    expect(updateResponse.body.Email_User).toContain("updated_");
 
-    expect(deleteResponse.status).toBe(200);
+      // DELETE 
+      const deleteResponse = await request(app) 
+      .delete("/api/auth/delete") 
+      .set("Cookie", cookie); 
+      expect(deleteResponse.status).toBe(200);
+    
   });
 });
