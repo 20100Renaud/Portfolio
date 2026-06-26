@@ -6,6 +6,21 @@ describe("Flow of a User  ", () => {
   const email = `test_${Date.now()}@gmail.com`;
   const password = "test1234";
 
+  //CREATE the unknow user
+  beforeAll(async () => {
+
+    await prisma.T_Users.create({
+      data: {
+        Login_User: "unknow",
+        Email_User: process.env.UNKNOWN_EMAIL,
+        Password_User: "DISABLE",
+        City_User: "unknow",
+        Latitude_User: 0,
+        Longitude_User: 0,
+      },
+    });
+  });
+
   // DELETE all the users created
   afterAll(async () => {
     await prisma.t_Users.deleteMany({
@@ -19,6 +34,11 @@ describe("Flow of a User  ", () => {
           {
             Email_User: {
               startsWith: "updated_",
+            },
+          },
+          {
+            Email_User: {
+              startsWith: "un@",
             },
           },
         ],
