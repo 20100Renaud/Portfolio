@@ -57,8 +57,6 @@ export const register = async (req, res) => {
 
 export const connect = async (req, res) => {
   try {
-    console.log("\n[AUTH] --- LOGIN REQUEST START ---");
-
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -67,27 +65,21 @@ export const connect = async (req, res) => {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    console.log("[AUTH] searching user...");
     const user = await prisma.T_Users.findUnique({
       where: { Email_User: normalizedEmail },
     });
 
     if (!user) {
-      console.log("[AUTH] user not found");
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    console.log("[AUTH] comparing password...");
     const valid = await bcrypt.compare(password, user.Password_User);
 
-    console.log("[AUTH] password valid:", valid);
 
     if (!valid) {
-      console.log("[AUTH] wrong password");
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    console.log("[AUTH] generating JWT...");
     const token = jwt.sign(
       {
         userId: user.ID_User,
@@ -97,8 +89,6 @@ export const connect = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
-
-    console.log("[AUTH] sending response");
 
     res
       .status(200)
@@ -112,9 +102,7 @@ export const connect = async (req, res) => {
         username: user.Login_User,
       });
 
-    console.log("[AUTH] --- LOGIN COMPLETE ---");
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };

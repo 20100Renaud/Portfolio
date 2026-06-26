@@ -106,6 +106,5 @@ describe("Flow of a Depository", () => {
             .set("Cookie", cookie)
 
             expect(DeleteAnswer.status).toBe(200)
-            console.log("Body: ", UpdateAnswer.body)
     });
 });

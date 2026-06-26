@@ -3,7 +3,6 @@ import prisma from "../prismaClient.js";
 export const preloadDepo = async (req, res, next) => {
 
   try {
-    console.log("Looking for depo:", req.params.id);
     const depo = await prisma.T_Depos.findUnique({
       where: { ID_Depo: req.params.id },
       include: {
@@ -14,7 +13,6 @@ export const preloadDepo = async (req, res, next) => {
       },
     });
 
-    console.log("Looking for depo:", req.params.id);
     
     if (!depo) {
       return res.status(404).json({ error: "Depo not found" });
