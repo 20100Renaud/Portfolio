@@ -45,17 +45,52 @@ export const createDepo = async (req, res) => {
   }
 };
 
+// Display all depos in the db
 export const getAllDepos = async (req, res) => {
   try {
+    const { userId } = req.query;
+
     const depos = await prisma.T_Depos.findMany({
+      where: userId ? { ID_User: userId } : undefined,
       include: {
         User_Depos: true,
         Answers_Depos: {
           include: { User_Answers: true },
         },
       },
+      orderBy: {
+        Date_Depo: "desc",
+      },
     });
-    res.status(200).json(depos);
+
+    res.json(depos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Display depos owned by the user
+export const getMyDepos = async (req, res) => {
+  try {
+    const depos = await prisma.T_Depos.findMany({
+      where: {
+        ID_User: req.user.userId,
+      },
+      include: {
+        User_Depos: true,
+        Answers_Depos: {
+          include: {
+            User_Answers: true,
+          },
+        },
+      },
+      orderBy: {
+        Date_Depo: "desc",
+      },
+    });
+
+    res.json(depos);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -79,7 +114,7 @@ export const updateDepo = async (req, res) => {
           : undefined,
       },
     });
-    res.status(200).json(updated);
+    res.json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -95,7 +130,7 @@ export const deleteDepo = async (req, res) => {
       where: { ID_Depo: depo.ID_Depo },
     });
 
-    res.status(200).json({ message: "Deleted" });
+    res.json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -131,7 +166,7 @@ export const updateAnswer = async (req, res) => {
       where: { ID_Answer: req.params.id },
       data: { Text_Answer: req.body.description },
     });
-    res.status(200).json(updated);
+    res.json(updated);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -144,7 +179,7 @@ export const deleteAnswer = async (req, res) => {
     if (!answer) return res.status(404).json({ error: "Answer not found" });
 
     await prisma.T_Answers.delete({ where: { ID_Answer: req.params.id } });
-    res.status(200).json({ message: "Deleted" });
+    res.json({ message: "Deleted" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
