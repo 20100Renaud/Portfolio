@@ -1,4 +1,5 @@
 import prisma from "../prismaClient.js";
+import { uploadToCloudinary } from "../../services/cloudinary.service.js";
 
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
