@@ -5,9 +5,7 @@ import { registerSchema } from "../validators/auth.schema.js";
 
 export const register = async (req, res) => {
   try {
-    console.log("req: ", req.body);
     const data = registerSchema.parse(req.body);
-    console.log("data: ", data);
     const normalizedEmail = data.email.toLowerCase().trim();
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
@@ -59,7 +57,6 @@ export const register = async (req, res) => {
 
 export const connect = async (req, res) => {
   try {
-    console.log("req.body: ", req.body);
     console.log("\n[AUTH] --- LOGIN REQUEST START ---");
 
     const { email, password } = req.body;
@@ -77,7 +74,7 @@ export const connect = async (req, res) => {
 
     if (!user) {
       console.log("[AUTH] user not found");
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     console.log("[AUTH] comparing password...");
@@ -87,7 +84,7 @@ export const connect = async (req, res) => {
 
     if (!valid) {
       console.log("[AUTH] wrong password");
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     console.log("[AUTH] generating JWT...");
