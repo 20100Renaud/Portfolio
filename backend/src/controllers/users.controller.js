@@ -23,25 +23,27 @@ export const deleteUser = async (req, res) => {
     if (user.Role_User === "ADMIN") {
       return res.status(403).json({ error: "Cannot delete admin account" });
     }
-
     await prisma.T_Answers.updateMany({
       where: { ID_User: req.user.userId },
       data: { ID_User: unknown.ID_User },
     });
+    await prisma.t_Depos.deleteMany({
+      where: {ID_User: req.user.userId}
+    })
+
 
     await prisma.T_Users.delete({ where: { ID_User: userId } });
 
-    res.json({ message: "Account deleted, answers reassigned" });
-    res.status(201);
+  return res.status(200).json({
+    message: "Account deleted, answers reassigned",
+  });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
 export const updateUser = async (req, res) => {
   try{
-    console.log("BODY: ", req.body);
     const datat = UpdateSchema.parse(req.body);
     const normalizedEmail = datat.email.toLowerCase().trim();
 
@@ -65,7 +67,6 @@ export const updateUser = async (req, res) => {
       data.Email_User = req.body.email;
     }
 
-    console.log("req.user =", req.user);
     const updated = await prisma.t_Users.update({
       where: { ID_User: user.userId },
       data,
