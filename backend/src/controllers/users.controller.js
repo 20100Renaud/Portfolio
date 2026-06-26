@@ -1,5 +1,6 @@
 import { email } from "zod";
 import prisma from "../prismaClient.js";
+import { UpdateSchema } from "../validators/auth.schema.js";
 
 export const deleteUser = async (req, res) => {
   try {
@@ -40,6 +41,17 @@ export const deleteUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try{
+    console.log("BODY: ", req.body);
+    const datat = UpdateSchema.parse(req.body);
+    const normalizedEmail = datat.email.toLowerCase().trim();
+
+    const existingUser = await prisma.T_Users.findUnique({
+      where: { Email_User: normalizedEmail },
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already used" });
+    }
     const user = req.user;
     if (!user) return res.status(404).json({ error: "User not found"});
 
@@ -60,13 +72,6 @@ export const updateUser = async (req, res) => {
     });
     res.status(200).json(updated);
   } catch (err) {
-    console.error(err);
-    if (err.code === "P2002") {
-      return res.status(409).json({
-        error: "Username or Email already exists",
-      });
-    }
-
     res.status(500).json({ error: err.message});
   }
 };
