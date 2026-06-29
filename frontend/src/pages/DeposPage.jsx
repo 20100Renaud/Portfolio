@@ -1,31 +1,40 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
-import SearchableSelect from "../components/SearchableSelect";
-import { CATEGORIES } from "../constants/categories";
+import { useState, useEffect, useRef, useMemo } from "react";
+import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
+import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
+import MarketLocationFilter from "../components/MarketLocationFilter";
+import { CATEGORIES_MARKET } from "../constants/categories_market";
+import { CATEGORIES_FAQ } from "../constants/categories_faq";
+import ValidationCheck from "../components/ValidationCheck";
+import useFilterSummary from "../hooks/useFilterSummary";
+import CustomSelect from "../components/CustomSelect";
+import CustomButton from "../components/CustomButton";
+import { TYPES_DEPOS } from "../config/deposConfig";
 import { deposConfig } from "../config/deposConfig";
 import { getDefaultLifetime } from "../utils/date";
+import { normalizeOptions } from "../utils/select";
 import DeposList from "../components/DeposList";
 import FilterBar from "../components/FilterBar";
 import useDepos from "../hooks/useDepos";
-import useAuth from "../hooks/useAuth";
 import Modal from "../components/Modal";
+import useAuth from "../hooks/useAuth";
 import { apiFetch } from "../api";
 
 export default function DeposPage({ mode }) {
-  const [showUndefinedWarning, setShowUndefinedWarning] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [date, setDate] = useState(() => new Date().toISOString());
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
-  const [cat, setCat] = useState("Undefined");
+  const isDashboard = mode === "dashboard";
   const [title, setTitle] = useState("");
   const { isAuthenticated } = useAuth();
-  const ignoreScrollRef = useRef(false);
   const [type, setType] = useState("");
+  const [cat, setCat] = useState("");
   const config = deposConfig[mode];
   const navigate = useNavigate();
-  const listRef = useRef(null);
+  const { user } = useAuth();
 
   const {
     filtered,
@@ -46,7 +55,24 @@ export default function DeposPage({ mode }) {
     activeLocation,
     setActiveLocation,
     resetFilters,
+    resetCity,
+    cityIsSelected,
   } = useDepos(mode);
+
+  const { summary, filtersText } = useFilterSummary({
+    mode,
+    filterType,
+    filterCat,
+    filterUser,
+    typeOptions,
+    categoryOptions,
+    usersOptions,
+    displayMode,
+    activeLocation,
+    radius,
+    label: config.label,
+    resultCount: filtered.length,
+  });
 
   // Create a new Depo
   const handleCreateDepo = async () => {
@@ -72,15 +98,31 @@ export default function DeposPage({ mode }) {
     await refreshDepos();
   };
 
-  // Toast on create depo if type = Undefined
-  const handleCreateClick = () => {
-    if (!cat || cat === "Undefined") {
-      setShowUndefinedWarning(true);
-      return;
+  // Validation for creating a new depo
+  const isFormValid = type && cat && title.trim() && description.trim();
+
+  // Manage allowed type options
+  const allowedTypeOptions = useMemo(() => {
+    return TYPES_DEPOS.filter((t) => config.allowedTypes.includes(t.value));
+  }, [config.allowedTypes]);
+
+  // Update Category options % Type
+  const getCategoryOptions = () => {
+    if (type === "QUESTION") {
+      return CATEGORIES_FAQ;
     }
 
-    handleCreateDepo();
+    if (type === "OFFER" || type === "REQUEST") {
+      return CATEGORIES_MARKET;
+    }
+
+    return [];
   };
+
+  // Reset Category when Type changes
+  useEffect(() => {
+    setCat("");
+  }, [type]);
 
   // Date formating
   const formatDate = (date) =>
@@ -92,25 +134,19 @@ export default function DeposPage({ mode }) {
 
   const isLoggedIn = isAuthenticated;
 
-const toggleFilters = () => {
-  setFiltersOpen((prev) => {
-    const next = !prev;
-    if (next) ignoreScrollRef.current = true;
-    return next;
-  });
-};
+  // Manage ALL/Local in filter
+  const openFilters = () => setIsFilterModalOpen(true);
 
-const handleScroll = (e) => {
-  if (ignoreScrollRef.current) {
-    ignoreScrollRef.current = false;
-    return;
-  }
+  // Manage page title and sub if admin
+  const pageTitle =
+    mode === "dashboard" && user?.role === "ADMIN"
+      ? "Depos Management"
+      : config.title;
 
-  if (filtersOpen) {
-    setFiltersOpen(false);
-  }
-};
-
+  const pageSubtitle =
+    mode === "dashboard" && user?.role === "ADMIN"
+      ? "Manage all deposits"
+      : config.subtitle;
 
   return (
     <div className="flex flex-col h-full max-w-3xl mx-auto min-h-0 text-center text-green-900 py-8 px-4">
@@ -118,218 +154,260 @@ const handleScroll = (e) => {
       <div className="shrink-0">
         <h1 className="text-3xl sm:text-5xl font-bold">
           <span className="animate-pulse text-4xl">{config.icon}</span>
-          {config.title}
+          {pageTitle}
           <span className="animate-pulse text-4xl">{config.icon}</span>
         </h1>
 
-        <p className="text-sm sm:text-lg text-green-800">{config.subtitle}</p>
-        <button
-          onClick={() => {
-            if (!isLoggedIn) {
-              navigate("/login");
-              return;
-            }
+        <p className="text-sm sm:text-lg">{pageSubtitle}</p>
 
-            setIsCreateOpen(true);
-            setType("OFFER");
-            setCat("");
-            setTitle("");
-            setDescription("");
-            setDate(new Date().toISOString());
-            setLifetime(getDefaultLifetime());
-          }}
-          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-2xl mb-4"
-        >
-          Buried a deposit
-        </button>
+        <div className="flex justify-center gap-3 m-4">
+          {/* Create a depo btn */}
+          <CustomButton
+            onClick={() => {
+              if (!isLoggedIn) {
+                navigate("/login");
+                return;
+              }
 
-        <FilterBar
-          mode={mode}
-          config={config}
-          filterType={filterType}
-          setFilterType={setFilterType}
-          filterCat={filterCat}
-          setFilterCat={setFilterCat}
-          filterUser={filterUser}
-          setFilterUser={setFilterUser}
-          typeOptions={typeOptions}
-          categoryOptions={categoryOptions}
-          usersOptions={usersOptions}
-          resultCount={filtered.length}
-          resetFilters={resetFilters}
-          displayMode={displayMode}
-          setDisplayMode={setDisplayMode}
-          radius={radius}
-          setRadius={setRadius}
-          activeLocation={activeLocation}
-          setActiveLocation={setActiveLocation}
-          filtersOpen={filtersOpen}
-          setFiltersOpen={setFiltersOpen}
-          toggleFilters={toggleFilters}
-        />
+              setIsCreateOpen(true);
+              setType("");
+              setCat("");
+              setTitle("");
+              setDescription("");
+              setDate(new Date().toISOString());
+              setLifetime(getDefaultLifetime());
+            }}
+          >
+            {config.createButtonLabel}
+          </CustomButton>
+        </div>
+
+        {/* FILTER BAR AND MODAL CONFIG */}
+        {config.showFilters && (
+          <FilterBar
+            mode={mode}
+            config={config}
+            filterType={filterType}
+            setFilterType={setFilterType}
+            filterCat={filterCat}
+            setFilterCat={setFilterCat}
+            filterUser={filterUser}
+            setFilterUser={setFilterUser}
+            typeOptions={typeOptions}
+            categoryOptions={categoryOptions}
+            usersOptions={usersOptions}
+            resultCount={filtered.length}
+            resetFilters={resetFilters}
+            displayMode={displayMode}
+            setDisplayMode={setDisplayMode}
+            radius={radius}
+            setRadius={setRadius}
+            activeLocation={activeLocation}
+            setActiveLocation={setActiveLocation}
+            toggleFilters={openFilters}
+            summary={summary}
+            filtersText={filtersText}
+          />
+        )}
       </div>
 
       {/* DEPOS LIST */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
-        <div
-
-          onScroll={handleScroll}
+      <div
+        className={
+          isDashboard
+            ? "flex-col sm:flex-1 min-h-0 px-6 "
+            : "flex-1 min-h-0 m-2 sm:mx-6"
+        }
+      >
+        <DeposList
+          layout={isDashboard ? "Dashboard_table" : "No_dashboard_list"}
+          deposits={filtered}
         >
-          <DeposList
-            deposits={filtered}
-            renderItem={(depo) => (
-              <Link key={depo.ID_Depo} to={`/depo/${depo.ID_Depo}`}>
-                <div className="flex justify-between bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl hover:bg-green-100 transition-all duration-300 mt-4 border border-green-100">
-                  <div className="flex flex-col text-left">
-                    <p className="text-green-700 flex items-center gap-2">
-                      <span className="text-green-900">
-                        {depo.User_Depos?.Login_User}
-                        {" - "}
-                      </span>
-                      <span className="text-green-900">
-                        {depo.User_Depos?.City_User}
-                        {" - "}
-                      </span>
-                      <span className="text-xs text-green-700">
-                        {formatDate(depo.Date_Depo)}
-                      </span>
-                    </p>
-                    <h3 className="text-xl font-semibold text-green-900">
-                      {depo.Title_Depo}
-                    </h3>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <span className="text-sm bg-green-100 px-2 py-1 rounded-2xl">
-                      {depo.Type_Depo}
-                    </span>
-                    <span className="text-sm bg-green-100 px-2 py-1 rounded-2xl">
-                      {depo.Cat_Depo}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            )}
-          />
-        </div>
+          {(depo) => (
+            <Link
+              to={`/depo/${depo.ID_Depo}`}
+              className={
+                isDashboard
+                  ? "flex-1 w-full"
+                  : "flex-1 w-full rounded-2xl bg-white"
+              }
+            >
+              {isDashboard ? (
+                <DashboardDepoCard depo={depo} formatDate={formatDate} />
+              ) : (
+                <PublicDepoCard depo={depo} formatDate={formatDate} />
+              )}
+            </Link>
+          )}
+        </DeposList>
       </div>
 
-      {/* Create a new Deposit */}
+      {/* Create a new Deposit modal*/}
       <Modal open={isCreateOpen} onClose={() => setIsCreateOpen(false)}>
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-green-900">
-            Create a new Deposit
-          </h2>
+          <h2 className="text-xl font-bold">Create a new Deposit</h2>
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm ">
             Deposits last 1 month by default, you can change it later.
           </p>
 
-          <div className="flex">
+          <div className="flex gap-4">
             {/* TYPE */}
-            <div>
-              <label className="text-xs text-gray-600">Type</label>
-              <select
+            <div className="relative flex-1">
+              <CustomSelect
+                label="Type"
                 value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="w-full border p-2 rounded-2xl"
-              >
-                <option value="OFFER">Offer</option>
-                <option value="REQUEST">Request</option>
-              </select>
+                onChange={setType}
+                options={allowedTypeOptions}
+              />
+
+              {type && <ValidationCheck />}
             </div>
 
             {/* CATEGORY */}
-            <SearchableSelect
-              label="Category"
-              value={cat}
-              onChange={setCat}
-              options={CATEGORIES}
-              defaultLabel="Undefined"
-            />
+            <div className="relative flex-1">
+              <CustomSelect
+                label="Category"
+                value={cat}
+                onChange={setCat}
+                options={getCategoryOptions()}
+                disabled={!type}
+              />
+
+              {cat && <ValidationCheck />}
+            </div>
           </div>
 
           {/* TITLE */}
           <div>
-            <label className="text-xs text-gray-600">Title</label>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Fresh tomatoes available"
-              className="border p-2 w-full rounded-2xl"
-            />
+            <label className="text-xs ">Title</label>
+            <div className="relative">
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Fresh tomatoes available"
+                className="border border-green-300 p-2 w-full rounded-2xl shadow outline-none focus:placeholder-transparent focus:border-green-700 focus:ring-1 focus:ring-green-700"
+              />
+              {title.trim() && <ValidationCheck />}
+            </div>
           </div>
 
           {/* DESCRIPTION */}
           <div>
-            <label className="text-xs text-gray-600">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe your offer/request..."
-              className="border p-2 w-full rounded-2xl resize-none h-24"
-            />
+            <label className="text-xs ">Description</label>
+            <div className="relative">
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe your offer/request..."
+                className="border border-green-300 p-2 w-full rounded-2xl resize-none h-24 shadow outline-none focus:placeholder-transparent focus:border-green-700 focus:ring-1 focus:ring-green-700"
+              />
+              {description.trim() && <ValidationCheck />}
+            </div>
           </div>
 
           {/* BUTTONS */}
           <div className="flex justify-end gap-2 pt-2">
-            <button
+            <CustomButton
+              variant="secondary"
               onClick={() => setIsCreateOpen(false)}
-              className="px-4 py-2 text-gray-600"
             >
               Cancel
-            </button>
+            </CustomButton>
 
-            <button
-              onClick={handleCreateClick}
-              disabled={!title || !description}
-              className="bg-green-600 text-white px-4 py-2 rounded-2xl disabled:opacity-50"
-            >
+            <CustomButton onClick={handleCreateDepo} disabled={!isFormValid}>
               Create
-            </button>
+            </CustomButton>
           </div>
         </div>
       </Modal>
 
-      {/* Warning: Toast on create depo if type = Undefined */}
-      <Modal
-        open={showUndefinedWarning}
-        onClose={() => setShowUndefinedWarning(false)}
-      >
-        <h3 className="text-lg font-bold mb-2">Category not selected</h3>
+      {/* Filter modal */}
+      {config.showFilters && (
+        <Modal
+          open={isFilterModalOpen}
+          onClose={() => setIsFilterModalOpen(false)}
+        >
+          <div className="space-y-6 w-full">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold">Filters</h2>
 
-        <p className="mb-4">
-          Please choose a category before creating your deposit.
-        </p>
+              <p className="text-sm text-green-700 mt-1 ">{summary}</p>
+            </div>
 
-        <SearchableSelect
-          label="Category"
-          value={cat}
-          onChange={setCat}
-          options={CATEGORIES}
-          defaultLabel="Undefined"
-        />
+            {/* Type filter */}
+            <div className="grid grid-cols-1 gap-2">
+              {config.filters.type && (
+                <CustomSelect
+                  value={filterType}
+                  onChange={setFilterType}
+                  options={typeOptions}
+                  defaultLabel="Type"
+                  defaultValue=""
+                  showCount
+                  showValid={filterType !== ""}
+                />
+              )}
 
-        <div className="flex justify-end gap-2 mt-6">
-          <button
-            onClick={() => setShowUndefinedWarning(false)}
-            className="px-4 py-2"
-          >
-            Cancel
-          </button>
+              {/* Cat filter */}
+              {config.filters.category && (
+                <CustomSelect
+                  value={filterCat}
+                  onChange={setFilterCat}
+                  options={categoryOptions}
+                  defaultLabel="Category"
+                  defaultValue=""
+                  showCount
+                  showValid={filterCat !== ""}
+                />
+              )}
 
-          <button
-            disabled={!cat || cat === "Undefined"}
-            onClick={async () => {
-              setShowUndefinedWarning(false);
-              await handleCreateDepo();
-            }}
-            className="bg-green-600 text-white px-4 py-2 rounded-2xl disabled:opacity-50"
-          >
-            Create
-          </button>
-        </div>
-      </Modal>
+              {/* User filter */}
+              {config.filters.user && (
+                <CustomSelect
+                  value={filterUser}
+                  onChange={setFilterUser}
+                  options={usersOptions}
+                  defaultLabel="Owner"
+                  defaultValue=""
+                  showCount
+                  showValid={filterUser !== ""}
+                />
+              )}
+            </div>
+
+            {/* City search + Radius bar */}
+            {config.filters.radius && (
+              <MarketLocationFilter
+                displayMode={displayMode}
+                setDisplayMode={setDisplayMode}
+                radius={radius}
+                setRadius={setRadius}
+                activeLocation={activeLocation}
+                setActiveLocation={setActiveLocation}
+                resetCity={resetCity}
+                cityIsSelected={cityIsSelected}
+              />
+            )}
+
+            {/* Buttons*/}
+            <div className="flex justify-end gap-3">
+              <CustomButton
+                variant="secondary"
+                onClick={() => {
+                  resetFilters();
+                }}
+              >
+                Reset
+              </CustomButton>
+
+              <CustomButton onClick={() => setIsFilterModalOpen(false)}>
+                Done
+              </CustomButton>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

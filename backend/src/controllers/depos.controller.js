@@ -78,10 +78,25 @@ export const getMyDepos = async (req, res) => {
         ID_User: req.user.userId,
       },
       include: {
-        User_Depos: true,
+        User_Depos: {
+          select: {
+            ID_User: true,
+            Login_User: true,
+            City_User: true,
+            Latitude_User: true,
+            Longitude_User: true,
+          },
+        },
         Answers_Depos: {
           include: {
-            User_Answers: true,
+            User_Answers: {
+              select: {
+                ID_User: true,
+                Login_User: true,
+                City_User: true,
+                Email_User: true,
+              },
+            },
           },
         },
       },

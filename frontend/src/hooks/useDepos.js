@@ -10,55 +10,86 @@ export default function useDepos(mode) {
   const [radius, setRadius] = useState(10);
   const [loading, setLoading] = useState(true);
   const { user, isAuthenticated } = useAuth();
-  const [filterType, setFilterType] = useState("");
+  const [cityInput, setCityInput] = useState("");
   const [filterCat, setFilterCat] = useState("");
+  const [filterType, setFilterType] = useState("");
   const [filterUser, setFilterUser] = useState("");
   const [displayMode, setDisplayMode] = useState("all");
 
+  // Initialize Active location
   const [activeLocation, setActiveLocation] = useState({
     city: "",
     lat: null,
     lng: null,
   });
 
+  // When city is selected behavior
+  const cityIsSelected =
+    activeLocation.lat != null && activeLocation.lng != null;
+
   // Fetch and refresh depos on load
   const refreshDepos = useCallback(async () => {
     setLoading(true);
 
     try {
-      const res = await apiFetch("/depos");
+      const endpoint =
+        mode === "dashboard"
+          ? user?.role === "ADMIN"
+            ? "/depos"
+            : "/depos/dashboard"
+          : "/depos";
+
+      const res = await apiFetch(endpoint);
       const data = await res.json();
 
       setDepos(Array.isArray(data) ? data : []);
+
+      console.log("[DATA]", data);
+
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mode, user]);
 
   useEffect(() => {
     refreshDepos();
   }, [refreshDepos]);
 
+  //  Retrive user location
+  const getUserLocation = () => ({
+    city: user?.City_User || "",
+    lat: user?.Latitude_User || null,
+    lng: user?.Longitude_User || null,
+  });
+
   // Auto switch mode
   useEffect(() => {
     if (isAuthenticated && user) {
-      setDisplayMode("local");
-
-      setActiveLocation({
-        city: user.City_User,
-        lat: user.Latitude_User,
-        lng: user.Longitude_User,
-      });
+      if (mode === "faq") {
+        setDisplayMode("all");
+        setActiveLocation({
+          city: "",
+          lat: null,
+          lng: null,
+        });
+      } else {
+        setDisplayMode("local");
+        setActiveLocation(getUserLocation());
+      }
     } else {
       setDisplayMode("all");
-
       setActiveLocation({
         city: "",
         lat: null,
         lng: null,
       });
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, mode]);
+
+  // Restore city user in search input
+  const resetCity = () => {
+    setActiveLocation(getUserLocation());
+  };
 
   // Handle deposit loading and filtering
   const filtered = useMemo(() => {
@@ -67,6 +98,7 @@ export default function useDepos(mode) {
       if (filterType && d.Type_Depo !== filterType) return false;
       if (filterCat && d.Cat_Depo !== filterCat) return false;
       if (filterUser && d.User_Depos?.Login_User !== filterUser) return false;
+
       if (
         mode === "market" &&
         displayMode === "local" &&
@@ -144,6 +176,8 @@ export default function useDepos(mode) {
     setRadius,
     activeLocation,
     setActiveLocation,
+    cityIsSelected,
     resetFilters,
+    resetCity,
   };
 }

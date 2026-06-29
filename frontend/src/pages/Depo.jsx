@@ -3,12 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../api";
 import Modal from "../components/Modal";
 import { getDefaultLifetime } from "../utils/date";
+import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 
 export default function Depo() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [depo, setDepo] = useState(null);
   const [user, setUser] = useState(null);
+
   const [answerText, setAnswerText] = useState("");
   const [type, setType] = useState("");
   const [cat, setCat] = useState("");
@@ -18,9 +20,19 @@ export default function Depo() {
   const [isDepoModalOpen, setDepoModalOpen] = useState(false);
   const [isAnswerModalOpen, setAnswerModalOpen] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [files, setFiles] = useState([]);
+
+  // Answer count
+  const [answerCount, setAnswerCount] = useState(0);
+
+  useEffect(() => {
+    if (depo) {
+      setAnswerCount(depo.Answers_Depos?.length || 0);
+    }
+  }, [depo]);
 
   // Load the current user
   useEffect(() => {
@@ -47,6 +59,9 @@ export default function Depo() {
       const data = await response.json();
 
       setDepo(data);
+
+      console.log("[DATA FRONT]", data)
+
     } catch {
       setError("Failed to load depo");
       setDepo(null);
@@ -55,17 +70,15 @@ export default function Depo() {
     }
   };
 
-    useEffect(() => {
-      loadDepo();
-    }, [id]);
+  useEffect(() => {
+    loadDepo();
+  }, [id]);
 
   if (loading) {
     return (
       <div className="flex justify-center p-10 text-green-900">Loading...</div>
     );
   }
-
-
 
   if (error) {
     return (
@@ -123,7 +136,7 @@ export default function Depo() {
     }
   };
 
-  //send a FormData instead of JSON
+  // send a FormData instead of JSON
   //   const formData = new FormData();
 
   // formData.append("title", title);
@@ -173,27 +186,31 @@ export default function Depo() {
     await loadDepo();
   };
 
+  // Date formating
+  const formatDate = (date) =>
+    new Intl.DateTimeFormat("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    }).format(new Date(date));
+
   return (
     <div className="relative text-center text-green-900 overflow-hidden my-10 mx-auto px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-green-100">
-        <h1 className="text-3xl sm:text-5xl font-bold mb-4">
-          {depo.Title_Depo}
-        </h1>
-        <h2>{depo.Cat_Depo}</h2>
+        {/* HEADER */}
+        <PublicDepoCard
+          depo={depo}
+          formatDate={(date) =>
+            new Intl.DateTimeFormat("fr-FR", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            }).format(new Date(date))
+          }
+          isDetail
+        />
 
-        <div className="flex flex-col sm:flex-row justify-center gap-4 text-green-700 mb-8">
-          <p>👤 {depo.User_Depos?.Login_User}</p>
-
-          <p>📅 {new Date(depo.Date_Depo).toLocaleDateString()}</p>
-        </div>
-
-        <div className="border-t border-green-100 pt-6">
-          <h2 className="text-xl font-semibold mb-4">Description</h2>
-
-          <p className="text-lg text-green-800 leading-relaxed">
-            {depo.Text_Depo}
-          </p>
-        </div>
+        {/* Btns Edit/delet if user or admin */}
         {(user?.userId === depo.ID_User || user?.role === "ADMIN") && (
           <>
             <button
@@ -223,38 +240,54 @@ export default function Depo() {
         )}
       </div>
 
-      <div className="max-w-3xl mx-auto rounded-2xl bg-white border border-green-100 p-2 mt-4">
-        {depo.Answers_Depos?.map((a) => (
-          <div
-            key={a.ID_Answer}
-            className="flex justify-between items-start max-w-3xl mx-auto bg-white border-b border-green-100 p-2 mt-2 w-full"
-          >
-            <p>{a.Text_Answer}</p>
+      {/* Answers list */}
+      {depo.Answers_Depos?.length > 0 ? (
+        <div className="max-w-3xl mx-auto rounded-2xl bg-white border border-green-100 p-2 mt-4">
+          {depo.Answers_Depos?.map((a) => (
+            <div
+              key={a.ID_Answer}
+              className="flex justify-between items-start max-w-3xl mx-auto bg-white border-b border-green-100 p-2 mt-2 w-full"
+            >
+              <p>{a.Text_Answer}</p>
 
-            <div className="flex flex-col items-end ml-4">
-              <p className="flex-1">{a.ID_User}</p>
-              {(user?.userId === a.ID_User || user?.role === "ADMIN") && (
-                <>
-                  <button
-                    onClick={() => {
-                      setSelectedAnswer(a);
-                      setAnswerText(a.Text_Answer);
-                      setAnswerModalOpen(true);
-                    }}
-                  >
-                    Edit
-                  </button>
+              <div className="flex gap-2 flex-col justify-end">
+                <span className="text-xs text-green-900">
+                  {a.User_Answers?.Login_User} - {a.User_Answers?.City_User} -{" "}
+                  {formatDate(a.Date_Answer)}
+                </span>
 
-                  <button onClick={() => handleDeleteAnswer(a.ID_Answer)}>
-                    Delete
-                  </button>
-                </>
-              )}
+                {(user?.userId === a.ID_User || user?.role === "ADMIN") && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setSelectedAnswer(a);
+                        setAnswerText(a.Text_Answer);
+                        setAnswerModalOpen(true);
+                      }}
+                      className="text-xs text-blue-600 border border-blue-300 px-4 py-2 rounded-2xl"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => handleDeleteAnswer(a.ID_Answer)}
+                      className="text-xs text-red-600 border border-red-300 px-4 py-2 rounded-2xl"
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="max-w-3xl mx-auto text-sm text-green-700 mt-4">
+          No answers yet. Be the first to respond.
+        </div>
+      )}
 
+      {/* Write an answer */}
       <div className="max-w-3xl mx-auto rounded-2xl bg-white border border-green-100 p-2 mt-6 gap-4">
         <textarea
           value={answerText}
@@ -273,6 +306,7 @@ export default function Depo() {
         </div>
       </div>
 
+      {/* Edit depo modal */}
       <Modal open={isDepoModalOpen} onClose={() => setDepoModalOpen(false)}>
         <h2>Edit Depo</h2>
 
@@ -321,6 +355,7 @@ export default function Depo() {
         </button>
       </Modal>
 
+      {/* Edit answer modal */}
       <Modal open={isAnswerModalOpen} onClose={() => setAnswerModalOpen(false)}>
         <h2>Edit Answer</h2>
 

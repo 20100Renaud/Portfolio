@@ -44,6 +44,7 @@ export function AuthProvider({ children }) {
       method: "POST",
       credentials: "include",
     });
+
     setIsAuthenticated(false);
     setUsername(null);
     setUser(null);
@@ -59,7 +60,14 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, username, user, login: refreshUser, logout, loading }}
+      value={{
+        isAuthenticated,
+        username,
+        user,
+        login: refreshUser,
+        logout,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

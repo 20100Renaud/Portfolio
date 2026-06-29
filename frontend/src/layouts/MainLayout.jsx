@@ -8,7 +8,7 @@ export default function MainLayout() {
   return (
     <div
       className="
-        relative flex flex-col h-screen w-full bg-[#e3f1e9]"
+        relative flex flex-col min-h-screen w-full bg-[#e3f1e9]"
     >
       <div className="absolute top-0 left-0 w-full h-[600px] sm:h-[900px] bg-gradient-to-br from-[#a5d6a7] via-[#e6f2ec] to-transparent z-0" />
       <img
