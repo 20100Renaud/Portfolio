@@ -11,6 +11,7 @@ import {
   updateDepo,
   deleteDepo,
   getAllDepos,
+  getMyDepos,
   createAnswer,
   updateAnswer,
   deleteAnswer,
@@ -19,13 +20,16 @@ import {
 
 const router = express.Router();
 
-//---------------------------------------CRUD DEPOS-----------------------------------------------
-router.post("/", authMiddleware, upload.array("images", 5), createDepo);
+//--------------------CRUD DEPOS-----------------
 router.get("/", getAllDepos);
-
+router.get("/dashboard", authMiddleware, getMyDepos);
 router.get("/:id", preloadDepo, (req, res) => {
   res.json(req.depo);
 });
+
+router.post("/", authMiddleware, upload.array("images", 5), createDepo);
+router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
+
 router.put(
   "/:id",
   authMiddleware,
@@ -33,6 +37,7 @@ router.put(
   isOwnerOrAdmin((req) => req.depo.ID_User),
   updateDepo,
 );
+
 router.delete(
   "/:id",
   authMiddleware,
@@ -41,9 +46,9 @@ router.delete(
   deleteDepo,
 );
 
-router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
 
-//---------------------------------------CRUD ANSWERS-----------------------------------------------
+
+//------------------CRUD ANSWERS--------------------------
 const preloadAnswer = async (req, res, next) => {
   const answer = await prisma.T_Answers.findUnique({
     where: { ID_Answer: req.params.id },

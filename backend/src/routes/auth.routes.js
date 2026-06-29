@@ -12,10 +12,6 @@ router.post("/logout", (req, res) => {
   res.clearCookie("token").json({ message: "Logged out" });
 });
 
-router.get("/protected-data", authMiddleware, (req, res) => {
-  res.json({ message: "This is protected", userId: req.user.userId });
-});
-
 router.get("/me", authMiddleware, async (req, res) => {
   const user = await prisma.T_Users.findUnique({
     where: {
@@ -30,6 +26,7 @@ router.get("/me", authMiddleware, async (req, res) => {
     Latitude_User: user.Latitude_User,
     Longitude_User: user.Longitude_User,
     City_User: user.City_User,
+    email: user.Email_User,
   });
 });
 

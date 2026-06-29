@@ -1,4 +1,4 @@
-export const CATEGORIES = [
+export const CATEGORIES_MARKET = [
   "Vegetables",
   "Plants",
   "Organic matter",

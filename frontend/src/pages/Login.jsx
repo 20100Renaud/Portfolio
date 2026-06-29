@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
+import CustomButton from "../components/CustomButton";
+import InputField from "../components/InputField";
 import { useAuth } from "../context/useAuth";
 
 export default function Login() {
@@ -113,106 +115,102 @@ export default function Login() {
           <AnimatedFlatLogoInfinite size={120} />
         </div>
 
-        <h2 className="text-2xl font-bold text-center mb-8">Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-8">Enter you field</h2>
 
         <form onSubmit={handleSubmit} noValidate className="w-full space-y-4">
-          <div>
-            <label className="block">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                const value = e.target.value.toLowerCase();
-                setEmail(value);
-                setErrors((prev) => ({
-                  ...prev,
-                  email: isValidEmail(value) ? "" : "Invalid email address",
-                }));
-              }}
-              onBlur={() => {
-                setTouched((prev) => ({ ...prev, email: true }));
-              }}
-              className={`
-                input input-bordered w-full bg-white pl-4
-                focus:placeholder-transparent
-                focus:outline-none
-                focus:ring-2 focus:ring-green-700
-                ${touched.email && errors.email ? "border-red-500" : ""}
-                `}
-              placeholder="you@example.com"
-              required
-            />
-            <div className="h-2">
-              {touched.email && errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
-              )}
-            </div>
-          </div>
+          {/* Email field*/}
+          <InputField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => {
+              const value = e.target.value.toLowerCase();
 
-          <div>
-            <label className="block">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                const value = e.target.value;
-                setPassword(value);
-                setErrors((prev) => ({
-                  ...prev,
-                  password: isValidPassword(value)
-                    ? ""
-                    : "Password must be at least 4 characters",
-                }));
-              }}
-              onBlur={() => {
-                setTouched((prev) => ({ ...prev, password: true }));
-              }}
-              className={`
-                input input-bordered w-full bg-white pl-4
-                focus:placeholder-transparent
-                focus:outline-none
-                focus:ring-2 focus:ring-green-700
-                ${touched.password && errors.password ? "border-red-500" : ""}
-              `}
-              placeholder="********"
-              required
-            />
-            <div className="h-2">
-              {touched.password && errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
-            </div>
-          </div>
+              setEmail(value);
 
-          <button
+              setErrors((prev) => ({
+                ...prev,
+                email: isValidEmail(value) ? "" : "Invalid email address",
+              }));
+            }}
+            onBlur={() =>
+              setTouched((prev) => ({
+                ...prev,
+                email: true,
+              }))
+            }
+            placeholder="you@example.com"
+            error={errors.email}
+            touched={touched.email}
+            required
+          />
+
+          {/* Password field*/}
+          <InputField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              setPassword(value);
+
+              setErrors((prev) => ({
+                ...prev,
+                password: isValidPassword(value)
+                  ? ""
+                  : "Password must be at least 4 characters",
+              }));
+            }}
+            onBlur={() =>
+              setTouched((prev) => ({
+                ...prev,
+                password: true,
+              }))
+            }
+            placeholder="********"
+            error={errors.password}
+            touched={touched.password}
+            required
+          />
+
+          {/* SignIn Btn */}
+          <CustomButton
             type="submit"
             disabled={!isFormValid}
-            className={`
-              px-6 py-3 w-full rounded-full
-              transition
-              shadow-md
-              ${
-                isFormValid
-                  ? "bg-green-700 text-white hover:bg-green-800"
-                  : "bg-gray-400 text-gray-200 cursor-not-allowed"
-              }
-            `}
+            className="flex justify-center w-full"
           >
-            Sign In
-          </button>
+            Login
+          </CustomButton>
         </form>
 
-        <p className="mt-4 text-center text-sm">
-          Don’t have an account yet?{"    "}
+        {/* SignUp page link Btn */}
+
+        <div className="mt-4 flex items-center justify-center gap-2 text-sm">
+          <span>Don’t have an account yet?</span>
+
           <Link
-            to="/signup"
-            className="text-primary font-medium hover:underline ml-2"
+            to="/SignUp"
+            className="
+              text-sm
+              px-2 py-1
+              rounded-full
+              border border-green-300
+              text-green-700
+              bg-green-50
+              hover:bg-green-100
+              transition
+              flex items-center
+              active:scale-95
+              active:opacity-80
+            "
           >
             Sign up
           </Link>
-        </p>
+        </div>
       </div>
 
+      {/* Toast message (error or confirm) */}
       {toast && (
         <div
           className="

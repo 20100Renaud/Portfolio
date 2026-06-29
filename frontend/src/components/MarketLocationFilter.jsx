@@ -1,5 +1,6 @@
-import { useState } from "react";
 import CitySelect from "./CitySelect";
+import useDepos from "../hooks/useDepos";
+import { RotateCcw } from "lucide-react";
 
 export default function MarketLocationFilter({
   displayMode,
@@ -8,47 +9,9 @@ export default function MarketLocationFilter({
   setRadius,
   activeLocation,
   setActiveLocation,
+  resetCity,
+  cityIsSelected,
 }) {
-
-
-  const [results, setResults] = useState([]);
-
-  const handleCityChange = async (value) => {
-    if (value === "") {
-      setActiveLocation({
-        city: "",
-        lat: null,
-        lng: null,
-      });
-
-      setResults([]);
-      return;
-    }
-
-    setActiveLocation((prev) => ({
-      ...prev,
-      city: value,
-      lat: null,
-      lng: null,
-    }));
-
-    if (value.length < 2) {
-      setResults([]);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://geo.api.gouv.fr/communes?nom=${value}&fields=centre,codesPostaux`,
-      );
-
-      const data = await response.json();
-      setResults(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <>
       {/* Search mode switch */}
@@ -88,66 +51,71 @@ export default function MarketLocationFilter({
       {/* Location filters */}
       {displayMode === "local" && (
         <div className="flex flex-wrap justify-center items-center gap-4">
-          <div className="flex flex-col relative">
+          {/* City search */}
+          <div className="flex flex-col relative w-full">
             <CitySelect
+              selected={cityIsSelected}
+              showClear={true}
               value={activeLocation?.city || ""}
               onChange={(city) =>
                 setActiveLocation((prev) => ({
                   ...prev,
                   city,
+                  lat: null,
+                  lng: null,
                 }))
               }
-              setCoordinates={(coords) =>
-                setActiveLocation((prev) => ({
-                  ...prev,
-                  ...coords,
-                }))
+              onSelect={({ city, lat, lng }) =>
+                setActiveLocation({
+                  city,
+                  lat,
+                  lng,
+                })
               }
             />
           </div>
 
-          {results.length > 0 && (
-            <ul className="absolute z-50 bg-white border rounded shadow-lg max-h-60 overflow-y-auto">
-              {results.map((commune) => (
-                <li
-                  key={commune.code}
-                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between"
-                  onClick={() => {
-                    setActiveLocation({
-                      city: commune.nom,
-                      lat: commune.centre.coordinates[1],
-                      lng: commune.centre.coordinates[0],
-                    });
+          <div className="flex justify-around w-full">
+            {/* Reset City Btn */}
+            <button
+              type="button"
+              onClick={resetCity}
+              className="
+                text-xs
+                px-2 py-1
+                rounded-full
+                border border-green-300
+                text-green-700
+                bg-green-50
+                hover:bg-green-100
+                transition
+                flex gap-2
+                active:scale-95
+                active:opacity-80
+              "
+            >
+              <RotateCcw className="w-3 h-3" />
+              Reset city
+            </button>
 
-                    setResults([]);
-                  }}
-                >
-                  <span>{commune.nom}</span>
+            {/* Radius bar */}
+            {activeLocation?.lat && activeLocation?.lng && (
+              <div className="flex flex-col">
+                <label className="text-xs text-green-900">
+                  Radius: {radius} km
+                </label>
 
-                  <span className="text-xs text-gray-500">
-                    {commune.codesPostaux?.[0]}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {activeLocation?.lat && activeLocation?.lng && (
-            <div className="flex flex-col">
-              <label className="text-xs text-green-900">
-                Radius: {radius} km
-              </label>
-
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={radius}
-                onChange={(e) => setRadius(Number(e.target.value))}
-                className="w-48 h-2 bg-green-200 rounded-full appearance-none cursor-pointer accent-green-600"
-              />
-            </div>
-          )}
+                <input
+                  type="range"
+                  min="1"
+                  max="100"
+                  value={radius}
+                  onChange={(e) => setRadius(Number(e.target.value))}
+                  className=" h-2 bg-green-200 rounded-full appearance-none cursor-pointer accent-green-600"
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
     </>

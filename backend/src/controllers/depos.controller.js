@@ -44,16 +44,66 @@ export const createDepo = async (req, res) => {
   }
 };
 
+// Display all depos in the db
 export const getAllDepos = async (req, res) => {
   try {
+    const { userId } = req.query;
+
     const depos = await prisma.T_Depos.findMany({
+      where: userId ? { ID_User: userId } : undefined,
       include: {
         User_Depos: true,
         Answers_Depos: {
           include: { User_Answers: true },
         },
       },
+      orderBy: {
+        Date_Depo: "desc",
+      },
     });
+
+    res.json(depos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Display depos owned by the user
+export const getMyDepos = async (req, res) => {
+  try {
+    const depos = await prisma.T_Depos.findMany({
+      where: {
+        ID_User: req.user.userId,
+      },
+      include: {
+        User_Depos: {
+          select: {
+            ID_User: true,
+            Login_User: true,
+            City_User: true,
+            Latitude_User: true,
+            Longitude_User: true,
+          },
+        },
+        Answers_Depos: {
+          include: {
+            User_Answers: {
+              select: {
+                ID_User: true,
+                Login_User: true,
+                City_User: true,
+                Email_User: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        Date_Depo: "desc",
+      },
+    });
+
     res.json(depos);
   } catch (err) {
     console.error(err);

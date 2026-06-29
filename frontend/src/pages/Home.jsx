@@ -14,6 +14,7 @@ export default function Home() {
   const basketScale = useScrollScale(basketRef);
   const notebookScale = useScrollScale(notebookRef);
   const questionScale = useScrollScale(questionRef);
+  
   return (
     <div
       className="
