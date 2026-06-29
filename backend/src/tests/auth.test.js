@@ -87,7 +87,7 @@ describe("Flow of a User  ", () => {
         latitude_user: 0,
         longitude_user: 0,
       });
-      expect(UsernameLongResponse.status).toBe(500)
+      expect(UsernameLongResponse.status).toBe(400)
 
       // Bad Register
       const BadRegisterResponse = await request(app)
@@ -100,7 +100,7 @@ describe("Flow of a User  ", () => {
         latitude_user: 0,
         longitude_user: 0,
       });
-      expect(BadRegisterResponse.status).toBe(500)
+      expect(BadRegisterResponse.status).toBe(400)
 
     //Bad Login (invalid Credentials or user not found)
     //We put the same error for the two so that other can't know if it exists or no

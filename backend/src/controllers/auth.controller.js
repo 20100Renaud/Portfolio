@@ -5,7 +5,13 @@ import { registerSchema } from "../validators/auth.schema.js";
 
 export const register = async (req, res) => {
   try {
-    const data = registerSchema.parse(req.body);
+    const result = registerSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({
+        errors: result.error.flatten().fieldErrors,
+      });
+    }
+    const data = result.data;
     const normalizedEmail = data.email.toLowerCase().trim();
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
