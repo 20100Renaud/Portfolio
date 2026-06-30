@@ -145,6 +145,18 @@ describe("Flow of a User  ", () => {
     expect(updateResponse.body.Login_User).toBe("NewUsername");
     expect(updateResponse.body.Email_User).toContain("updated_");
 
+    //UPDATE Password
+    const PasswordResponse = await request(app)
+      .put("/api/auth/changePassword")
+      .set("Cookie", cookie)
+      .send({
+        oldPassword: password,
+        newPassword: "test1212",
+        confirmPassword: "test1212",
+      });
+
+      expect(PasswordResponse.status).toBe(200);
+
       // DELETE 
       const deleteResponse = await request(app) 
       .delete("/api/auth/delete") 
