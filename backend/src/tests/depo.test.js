@@ -59,8 +59,11 @@ describe("Flow of a Depository", () => {
             .post("/api/depos/")
             .set("Cookie", cookie)
             .send({
+                type: "OFFER",
+                cat: "Vegetable",
                 title: "test_depo_1",
-                description: "This is a test Depo"
+                description: "This is a test Depo",
+                lifetime: new Date(),
             });
 
             expect(CreateResponse1.status).toBe(201);
@@ -71,8 +74,11 @@ describe("Flow of a Depository", () => {
         const CreateRepoImageresponse = await request(app)
             .post("/api/depos")
             .set("Cookie", cookie)
+            .field("type", "REQUEST")
+            .field("cat", "Potatoes")
             .field("title", "test_depo_image")
             .field("description", "Depo with image")
+            .field("lifetime", '2026-06-30T08:23:42.486Z')
             .attach(
                 "images",
                 path.join(process.cwd(), "src/tests/assets/test-image.jpg")

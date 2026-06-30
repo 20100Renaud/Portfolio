@@ -1,9 +1,22 @@
 import prisma from "../prismaClient.js";
 import { uploadToCloudinary } from "../../services/cloudinary.service.js";
+import { error } from "node:console";
+import { CreateDepoSchema, UpdateDepoSchema } from "../validators/depo.schema.js";
+import { resourceLimits } from "node:worker_threads";
 
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
   try {
+    console.log("[BODY]", req.body);
+    const result = CreateDepoSchema.safeParse(req.body);
+    if (!result.success) {
+      console.log(result.error)
+      return res.status(400).json({
+          errors: result.error.flatten().fieldErrors
+      })
+    }
+
+    const data = result.data;
     const { type, cat, title, description, lifetime } = req.body;
 
     const lifetimeDate =
@@ -14,10 +27,10 @@ export const createDepo = async (req, res) => {
     const depo = await prisma.T_Depos.create({
       data: {
         ID_User: req.user.userId,
-        Type_Depo: type,
-        Cat_Depo: cat,
-        Title_Depo: title,
-        Text_Depo: description,
+        Type_Depo: data.type,
+        Cat_Depo: data.cat,
+        Title_Depo: data.title,
+        Text_Depo: data.description,
         Lifetime_Depo: lifetimeDate,
       },
     });
@@ -41,6 +54,7 @@ export const createDepo = async (req, res) => {
 
     res.status(201).json(depo);
   } catch (err) {
+    console.error(err)
     res.status(500).json({ error: err.message });
   }
 };
@@ -114,18 +128,27 @@ export const getMyDepos = async (req, res) => {
 
 export const updateDepo = async (req, res) => {
   try {
+    result = UpdateDepoSchema.safeParse(req.body);
+    if (!result.success) {
+      console.log(result.error);
+      return res.status(400).json({
+        errors: result.error.flatten().fieldErrors,
+    });
+    }
+
+    const data = result.data;
     const depo = req.depo;
     if (!depo) return res.status(404).json({ error: "Depo not found" });
 
     const updated = await prisma.T_Depos.update({
       where: { ID_Depo: depo.ID_Depo },
       data: {
-        Type_Depo: req.body.type,
-        Cat_Depo: req.body.cat,
-        Title_Depo: req.body.title,
-        Text_Depo: req.body.description,
-        Lifetime_Depo: req.body.lifetime
-          ? new Date(req.body.lifetime)
+        Type_Depo: data.type,
+        Cat_Depo: data.cat,
+        Title_Depo: data.title,
+        Text_Depo: data.description,
+        Lifetime_Depo: data.lifetime
+          ? new Date(data.lifetime)
           : undefined,
       },
     });
