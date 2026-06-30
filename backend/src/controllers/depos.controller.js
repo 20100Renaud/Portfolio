@@ -3,6 +3,7 @@ import { uploadToCloudinary } from "../../services/cloudinary.service.js";
 import { error } from "node:console";
 import { CreateDepoSchema, UpdateDepoSchema } from "../validators/depo.schema.js";
 import { resourceLimits } from "node:worker_threads";
+import { CreateAnswersSchema, UpdateAnswersSchema } from "../validators/answers.schema.js";
 
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
@@ -178,12 +179,20 @@ export const deleteDepo = async (req, res) => {
 // -----------------------------------------------CRUD ANSWERS-----------------------------------------------------------
 export const createAnswer = async (req, res) => {
   try {
-    const { description } = req.body;
+    const result = CreateAnswersSchema.safeParse(req.body);
+    if (!result.success) {
+      console.log(result.error);
+      return res.status(400).json({
+        errors: result.error.flatten().fieldErrors,
+      });
+    }
+
+    const data = result.data;
     const depo = req.depo;
     if (!depo) return res.status(404).json({ error: "Depo not found" });
     const answer = await prisma.T_Answers.create({
       data: {
-        Text_Answer: description,
+        Text_Answer: data.description,
         ID_Depo: depo.ID_Depo,
         ID_User: req.user.userId,
       },
@@ -197,12 +206,20 @@ export const createAnswer = async (req, res) => {
 
 export const updateAnswer = async (req, res) => {
   try {
-    const answer = req.answer;
-    if (!answer) return res.status(404).json({ error: "Answer not found" });
+    const result = UpdateAnswersSchema.safeParse(req.body);
+    if (!result.success) {
+      console.log(result.error);
+      return res.status(400).json({
+        errors: result.error.flatten().fieldErrors,
+      });
+    }
+
+    data = result.data;
+    if (!data) return res.status(404).json({ error: "Answer not found" });
 
     const updated = await prisma.T_Answers.update({
       where: { ID_Answer: req.params.id },
-      data: { Text_Answer: req.body.description },
+      data: { Text_Answer: data.description },
     });
     res.json(updated);
   } catch (err) {

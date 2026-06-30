@@ -1,6 +1,7 @@
 import request from "supertest";
 import app from "../app.js";
 import prisma from "../prismaClient.js";
+import { date } from "zod";
 
 describe("Flow of a Depository", () => {
     // DELETE all the depos and user created
@@ -63,18 +64,22 @@ describe("Flow of a Depository", () => {
 
         const cookie = loginResponse.headers["set-cookie"];
 
-        const CreateResponse = await request(app)
+        //CREATE a depo
+        const CreateDepo = await request(app)
             .post("/api/depos/")
             .set("Cookie", cookie)
             .send({
+                type: "OFFER",
+                cat: "Tomatoes",
                 title: "test_depo_1",
-                description: "This is a test Depo"
+                description: "This is a test Depo",
+                lifetime: new Date(),
             });
 
-        expect(CreateResponse.status).toBe(201);
-        expect(CreateResponse.body.Title_Depo).toBe("test_depo_1");
+        expect(CreateDepo.status).toBe(201);
+        expect(CreateDepo.body.Title_Depo).toBe("test_depo_1");
 
-        const ID_Depo = CreateResponse.body.ID_Depo;
+        const ID_Depo = CreateDepo.body.ID_Depo;
 
         //Create an answer
         const CreateAnswer = await request(app)
