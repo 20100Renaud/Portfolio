@@ -100,17 +100,19 @@ export default function DeposPage({ mode }) {
 
   // Restore the scroll on going back to the previous page
   useEffect(() => {
-    const saved = sessionStorage.getItem(`scroll-${mode}`);
+  const saved = sessionStorage.getItem(`scroll-${mode}`);
 
-    if (!saved) return;
+  if (!saved) return;
 
-    requestAnimationFrame(() => {
-      window.scrollTo({
-        top: Number(saved),
-        behavior: "instant",
-      });
+  requestAnimationFrame(() => {
+    window.scrollTo({
+      top: Number(saved),
+      behavior: "instant",
     });
-  }, [mode]);
+
+    sessionStorage.removeItem(`scroll-${mode}`);
+  });
+}, [mode]);
 
   // Create a new Depo
   const handleCreateDepo = async () => {
@@ -226,7 +228,7 @@ export default function DeposPage({ mode }) {
 
   // Navigate to Edit modal from dashboard
   const openEdit = (depo) => {
-  navigate(`/depo/${depo.ID_Depo}?edit=true`);
+  navigate(`/depo_details/${depo.ID_Depo}?edit=true`);
 
 };
   return (
@@ -306,7 +308,7 @@ export default function DeposPage({ mode }) {
         >
           {(depo) => (
             <div
-              onClick={() => navigate(`/depo/${depo.ID_Depo}`)}
+              onClick={() => navigate(`/depo_details/${depo.ID_Depo}`)}
               className={
                 isDashboard
                   ? "flex-1 w-full cursor-pointer"
@@ -317,7 +319,7 @@ export default function DeposPage({ mode }) {
                 <DashboardDepoCard
                   depo={depo}
                   formatDate={formatDate}
-                  onEdit={() => navigate(`/depo/${depo.ID_Depo}?edit=true`)}
+                  onEdit={() => navigate(`/depo_details/${depo.ID_Depo}?edit=true`)}
                   onDelete={() => openDelete(depo)}
                 />
               ) : (

@@ -1,9 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  useParams,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { apiFetch } from "../api";
 import Modal from "../components/Modal";
 import ConfirmModal from "../components/ConfirmModal";
@@ -50,7 +46,7 @@ export default function Depo() {
   const [files, setFiles] = useState([]);
 
   // Navigate back
- const handleBack = () => navigate(-1);
+  const handleBack = () => navigate(-1);
 
   // Define error on typing
   const [errors, setErrors] = useState({
@@ -66,21 +62,36 @@ export default function Depo() {
 
   // Navigate from dahboard card to modal
   useEffect(() => {
-    if (searchParams.get("edit") === "true" && depo) {
-      setType(depo.Type_Depo);
-      setCat(depo.Cat_Depo);
-      setTitle(depo.Title_Depo);
-      setDescription(depo.Text_Depo);
-      setLifetime(
-        depo.Lifetime_Depo
-          ? new Date(depo.Lifetime_Depo).toISOString().split("T")[0]
-          : "",
-      );
+    if (searchParams.get("edit") !== "true" || !depo) return;
 
-      setDepoModalOpen(true);
-    }
-  }, [searchParams, depo]);
+    setType(depo.Type_Depo);
+    setCat(depo.Cat_Depo);
+    setTitle(depo.Title_Depo);
+    setDescription(depo.Text_Depo);
+    setLifetime(
+      depo.Lifetime_Depo
+        ? new Date(depo.Lifetime_Depo).toISOString().split("T")[0]
+        : "",
+    );
 
+    setDepoModalOpen(true);
+    const cleanParams = new URLSearchParams(searchParams);
+    cleanParams.delete("edit");
+
+    navigate(
+      {
+        pathname: `/depo_details/${id}`,
+        search: cleanParams.toString(),
+      },
+      { replace: true },
+    );
+  }, [searchParams, depo, id, navigate]);
+
+  // Srool to the top when changing page
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   // Load the current user
   useEffect(() => {
     apiFetch("/auth/me")
@@ -132,7 +143,7 @@ export default function Depo() {
         <h2 className="text-2xl text-red-600 font-bold">{error}</h2>
 
         <button
-          onClick={() => navigate(`/depo/${depo.ID_Depo}`)}
+          onClick={() => navigate(`/depo_details/${depo.ID_Depo}`)}
           className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
         >
           Back to Market
@@ -153,7 +164,7 @@ export default function Depo() {
       method: "DELETE",
     });
 
-    navigate(`/depo/${depo.ID_Depo}?edit=true`);
+    navigate(`/depo_details/${depo.ID_Depo}?edit=true`);
   };
 
   // Update the depo
@@ -175,7 +186,6 @@ export default function Depo() {
       }
 
       await loadDepo();
-
       setDepoModalOpen(false);
     } catch (err) {
       setError(err.message);
