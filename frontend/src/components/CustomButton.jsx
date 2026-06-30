@@ -3,16 +3,25 @@ export default function CustomButton({
   onClick,
   type = "button",
   disabled = false,
-  variant = "primary",
+  variant = "big_green",
   className = "",
 }) {
   const variants = {
-    primary: "bg-green-700 text-white hover:bg-green-800",
+    big_green: "bg-green-700 text-white hover:bg-green-800 min-w-32 py-2",
 
-    secondary:
-      "bg-white border border-green-700 text-green-700 hover:bg-green-50 w-24",
+    big_white:
+      "bg-white border border-green-700 text-green-700 hover:bg-green-50 min-w-32 ",
 
-    danger: "bg-red-600 text-white hover:bg-red-700",
+    big_red:
+      "bg-white border border-red-300 text-red-600 hover:bg-red-50 min-w-32 py-2",
+
+    small_green: "bg-green-700 text-white hover:bg-green-800 text-xs min-w-16",
+
+    small_white:
+      "bg-white border border-green-700 text-xs hover:bg-green-50 min-w-16",
+
+    small_red:
+      "bg-white border border-red-300 text-xs text-red-600 rounded-2xl min-w-16 hover:bg-red-50",
   };
 
   return (
@@ -21,10 +30,10 @@ export default function CustomButton({
       onClick={onClick}
       disabled={disabled}
       className={`
-        px-4 py-2 rounded-2xl transition shadow-md
+        rounded-2xl transition shadow-md
         ${
           disabled
-            ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+            ? "bg-gray-400 text-gray-200 cursor-not-allowed min-w-32 py-2"
             : variants[variant]
         }
         ${className}

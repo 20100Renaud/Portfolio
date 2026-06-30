@@ -1,24 +1,24 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import MarketLocationFilter from "../components/MarketLocationFilter";
-import { CATEGORIES_MARKET } from "../constants/categories_market";
-import { CATEGORIES_FAQ } from "../constants/categories_faq";
 import ValidationCheck from "../components/ValidationCheck";
 import useFilterSummary from "../hooks/useFilterSummary";
 import CustomSelect from "../components/CustomSelect";
 import CustomButton from "../components/CustomButton";
-import { TYPES_DEPOS } from "../config/deposConfig";
-import { deposConfig } from "../config/deposConfig";
 import { getDefaultLifetime } from "../utils/date";
-import { normalizeOptions } from "../utils/select";
 import DeposList from "../components/DeposList";
 import FilterBar from "../components/FilterBar";
 import useDepos from "../hooks/useDepos";
 import Modal from "../components/Modal";
 import useAuth from "../hooks/useAuth";
 import { apiFetch } from "../api";
+import {
+  TYPES_DEPOS,
+  deposConfig,
+  getCategoryOptions,
+} from "../config/deposConfig";
 
 export default function DeposPage({ mode }) {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -105,19 +105,6 @@ export default function DeposPage({ mode }) {
   const allowedTypeOptions = useMemo(() => {
     return TYPES_DEPOS.filter((t) => config.allowedTypes.includes(t.value));
   }, [config.allowedTypes]);
-
-  // Update Category options % Type
-  const getCategoryOptions = () => {
-    if (type === "QUESTION") {
-      return CATEGORIES_FAQ;
-    }
-
-    if (type === "OFFER" || type === "REQUEST") {
-      return CATEGORIES_MARKET;
-    }
-
-    return [];
-  };
 
   // Reset Category when Type changes
   useEffect(() => {
@@ -215,7 +202,7 @@ export default function DeposPage({ mode }) {
       <div
         className={
           isDashboard
-            ? "flex-col sm:flex-1 min-h-0 px-6 "
+            ? "flex-col sm:flex-1 min-h-0 px-3 sm:px-6 "
             : "flex-1 min-h-0 m-2 sm:mx-6"
         }
       >
@@ -233,7 +220,12 @@ export default function DeposPage({ mode }) {
               }
             >
               {isDashboard ? (
-                <DashboardDepoCard depo={depo} formatDate={formatDate} />
+                <DashboardDepoCard
+                  depo={depo}
+                  formatDate={formatDate}
+                  onEdit={() => openEdit(depo)}
+                  onDelete={() => deleteDepo(depo.ID_Depo)}
+                />
               ) : (
                 <PublicDepoCard depo={depo} formatDate={formatDate} />
               )}
@@ -270,8 +262,9 @@ export default function DeposPage({ mode }) {
                 label="Category"
                 value={cat}
                 onChange={setCat}
-                options={getCategoryOptions()}
+                options={getCategoryOptions(type)}
                 disabled={!type}
+                defaultLabel={type ? "Select..." : "Select a type first"}
               />
 
               {cat && <ValidationCheck />}
@@ -285,7 +278,7 @@ export default function DeposPage({ mode }) {
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Fresh tomatoes available"
+                placeholder="Title: "
                 className="border border-green-300 p-2 w-full rounded-2xl shadow outline-none focus:placeholder-transparent focus:border-green-700 focus:ring-1 focus:ring-green-700"
               />
               {title.trim() && <ValidationCheck />}
@@ -309,13 +302,17 @@ export default function DeposPage({ mode }) {
           {/* BUTTONS */}
           <div className="flex justify-end gap-2 pt-2">
             <CustomButton
-              variant="secondary"
+              variant="big_white"
               onClick={() => setIsCreateOpen(false)}
             >
               Cancel
             </CustomButton>
 
-            <CustomButton onClick={handleCreateDepo} disabled={!isFormValid}>
+            <CustomButton
+              variant="big_green"
+              onClick={handleCreateDepo}
+              disabled={!isFormValid}
+            >
               Create
             </CustomButton>
           </div>
@@ -393,7 +390,7 @@ export default function DeposPage({ mode }) {
             {/* Buttons*/}
             <div className="flex justify-end gap-3">
               <CustomButton
-                variant="secondary"
+                variant="big_white"
                 onClick={() => {
                   resetFilters();
                 }}
@@ -401,7 +398,10 @@ export default function DeposPage({ mode }) {
                 Reset
               </CustomButton>
 
-              <CustomButton onClick={() => setIsFilterModalOpen(false)}>
+              <CustomButton
+                variant="big_green"
+                onClick={() => setIsFilterModalOpen(false)}
+              >
                 Done
               </CustomButton>
             </div>

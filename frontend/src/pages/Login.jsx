@@ -41,18 +41,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("[LOGIN] submit triggered");
-    console.log("[LOGIN] email:", email);
-    console.log("[LOGIN] password length:", password.length);
-
-    if (!isFormValid) {
-      console.log("[LOGIN] form invalid, abort");
-      return;
-    }
-
     try {
-      console.log("[LOGIN] sending request...");
-
       const response = await fetch("/api/auth/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -60,11 +49,7 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      console.log("[LOGIN] response received");
-      console.log("[LOGIN] status:", response.status);
-
       const data = await response.json();
-      console.log("[LOGIN] response JSON:", data);
 
       if (response.ok) {
         console.log("[LOGIN] success → navigating dashboard");
@@ -75,11 +60,9 @@ export default function Login() {
             </span>
           </div>,
         );
-        console.log("[LOGIN] result:", data);
         await login();
         navigate("/dashboard");
       } else {
-        console.log("[LOGIN] error response:", data);
         setToast(
           <div className="flex flex-col p-4">
             <span className="font-bold text-lg text-white">
