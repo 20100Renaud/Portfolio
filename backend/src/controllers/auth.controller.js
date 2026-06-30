@@ -4,7 +4,7 @@ import prisma from "../prismaClient.js";
 import { registerSchema } from "../validators/auth.schema.js";
 
 export const register = async (req, res) => {
-  try {
+  try { 
     const result = registerSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({

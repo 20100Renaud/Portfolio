@@ -1,6 +1,7 @@
 import { email } from "zod";
 import prisma from "../prismaClient.js";
 import { UpdateSchema } from "../validators/auth.schema.js";
+import { log } from "node:console";
 
 export const deleteUser = async (req, res) => {
   try {
@@ -44,7 +45,14 @@ export const deleteUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try{
-    const datat = UpdateSchema.parse(req.body);
+    const result = UpdateSchema.safeParse(req.body);
+    if (!result.success) {
+      console.log(result.error);
+      return res.status(400).json({
+        errors: result.error.flatten().fieldErrors,
+      });
+    }
+    const datat = result.data;
     const normalizedEmail = datat.email.toLowerCase().trim();
 
     const existingUser = await prisma.T_Users.findUnique({
@@ -60,11 +68,11 @@ export const updateUser = async (req, res) => {
     const data = {};
 
     if (req.body.username) {
-      data.Login_User = req.body.username;
+      data.Login_User = datat.username;
     }
 
     if (req.body.email) {
-      data.Email_User = req.body.email;
+      data.Email_User = datat.email;
     }
 
     const updated = await prisma.t_Users.update({
@@ -73,6 +81,7 @@ export const updateUser = async (req, res) => {
     });
     res.status(200).json(updated);
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: err.message});
   }
 };
