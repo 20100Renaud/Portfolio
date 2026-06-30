@@ -7,6 +7,13 @@ export default function PublicDepoCard({ depo, formatDate, isDetail = false }) {
     <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[1fr_auto] sm:gap-x-4 p-4">
       {/* LEFT */}
       <div className="flex flex-col text-left sm:justify-between">
+
+        {/* Name - City - Date */}
+        <span className="text-xs text-green-700 text-green-900 italic">
+          {depo.User_Depos?.Login_User} · {depo.User_Depos?.City_User} ·{" "}
+          {formatDate(depo.Date_Depo)}
+        </span>
+
         {/* Title */}
         <span className="font-semibold text-xl">{depo.Title_Depo}</span>
 
@@ -22,12 +29,6 @@ export default function PublicDepoCard({ depo, formatDate, isDetail = false }) {
             {depo.Text_Depo}
           </span>
         </div>
-
-        {/* Name - City - Date */}
-        <span className="text-xs text-green-700 text-green-900 text-right italic">
-          {depo.User_Depos?.Login_User} · {depo.User_Depos?.City_User} ·{" "}
-          {formatDate(depo.Date_Depo)}
-        </span>
       </div>
 
       {/* RIGHT */}

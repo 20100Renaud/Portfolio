@@ -11,12 +11,21 @@ export default function DashboardDepoCard({
 
   return (
     <div className="w-full">
-      {/* On small screen */}
+      {/*   <ConfirmModal */}
+      {/*      open={isDeleteOpen}
+        title="Delete deposit"
+        message={`Are you sure you want to delete "${deleteTarget?.Title_Depo}"?`}
+        confirmLabel="Delete"
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteDepo}
+      /> */}
+
+      {/* ON SMALL SCREEN */}
       <div
         className="
           sm:hidden
           flex flex-col
-          px-4 p-1
+          px-4 p-1 text-xs
         "
       >
         {/* ROW 1 */}
@@ -26,73 +35,108 @@ export default function DashboardDepoCard({
             <span className="font-semibold truncate">{depo.Title_Depo}</span>
             {/* Type and Cat */}
             <div className="flex gap-2 flex-wrap">
-              <span className="text-xs">
+              <span className="">
                 {depo.Type_Depo} - {depo.Cat_Depo}
               </span>
             </div>
           </div>
 
-          <div className="absolute right-0 top-0">
-            {/* Delete btn */}
-            <CustomButton variant="small_red" onClick={() => onDelete?.(depo)}>
+          {/* btns */}
+          <div className="absolute flex right-0 top-0 gap-4">
+            <CustomButton
+              variant="small_white"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit?.(depo);
+              }}
+            >
+              Edit
+            </CustomButton>
+
+            <CustomButton
+              variant="small_red"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete?.(depo);
+              }}
+            >
               Delete
             </CustomButton>
           </div>
         </div>
 
         {/* ROW 2: Dates */}
-        <div className="text-xs text-green-900 leading-tight">
+        <div className="text-green-700 leading-tight">
           <div className="flex justify-between gap-2">
-            <span>📅 {formatDate(depo.Date_Depo)}</span>
-            <span>⏳ {formatDate(depo.Lifetime_Depo)}</span>
-            <span>💬 {answersLabel}</span>
-            <span>📷 {photosLabel}</span>
+            <span className="border border-green-100 rounded-xl py-1 bg-green-50">
+              📅 {formatDate(depo.Date_Depo)}
+            </span>
+            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
+              ⏳ {formatDate(depo.Lifetime_Depo)}
+            </span>
+            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
+              💬 {answersLabel}
+            </span>
+            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
+              📷 {photosLabel}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* >sm screen*/}
-      <div className="hidden sm:flex px-4 p-1 justify-between">
+      {/* >SM SCREEN*/}
+      <div className="hidden sm:flex px-4 p-1 justify-between text-sm">
         {/* COL 1 */}
-        <div className="flex flex-col gap-1 w-64">
+        <div className="flex flex-col gap-1 min-w-0 w-64">
           {/* Title */}
           <span className="font-semibold truncate text-left">
             {depo.Title_Depo}
           </span>
           <div className="flex gap-2 flex-wrap">
-            <span className="text-xs">
+            <span className="">
               {depo.Type_Depo} - {depo.Cat_Depo}
             </span>
           </div>
         </div>
 
-        <div className="flex flex-1 gap-12 justify-between items-center">
+        <div className="flex flex-1 justify-between items-center">
           {/* COL 2: Dates */}
-          <div className="text-xs text-green-900 leading-tight">
+          <div className="text-green-700 whitespace-nowrap">
             <div>📅 {formatDate(depo.Date_Depo)}</div>
             <div>⏳ {formatDate(depo.Lifetime_Depo)}</div>
           </div>
+
           {/* COL 3 */}
-          <div className="flex flex-col text-sm text-green-700 whitespace-nowrap">
-            <span className="text-xs">💬 {answersLabel}</span>
-            <span className="text-xs">📷 {photosLabel}</span>
+          <div className="flex flex-col text-green-700 text-left">
+            <span>💬 {answersLabel}</span>
+            <span>📷 {photosLabel}</span>
           </div>
+
           {/* COL 4: Btns */}
-          <div className="flex ">
-            <div className="flex gap-2">
-              <CustomButton
-                variant="small_white"
-                onClick={() => onEdit?.(depo)}
-              >
-                Edit
-              </CustomButton>
-              <CustomButton
-                variant="small_red"
-                onClick={() => onDelete?.(depo)}
-              >
-                Delete
-              </CustomButton>
-            </div>
+          <div className="flex gap-2">
+            <CustomButton
+              variant="small_white"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit?.(depo);
+              }}
+            >
+              Edit
+            </CustomButton>
+
+            <CustomButton
+              variant="small_red"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete?.(depo);
+              }}
+            >
+              Delete
+            </CustomButton>
           </div>
         </div>
       </div>

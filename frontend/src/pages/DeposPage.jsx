@@ -7,9 +7,11 @@ import ValidationCheck from "../components/ValidationCheck";
 import useFilterSummary from "../hooks/useFilterSummary";
 import CustomSelect from "../components/CustomSelect";
 import CustomButton from "../components/CustomButton";
+import ConfirmModal from "../components/ConfirmModal";
 import { getDefaultLifetime } from "../utils/date";
 import DeposList from "../components/DeposList";
 import FilterBar from "../components/FilterBar";
+import { useLocation } from "react-router-dom";
 import useDepos from "../hooks/useDepos";
 import Modal from "../components/Modal";
 import useAuth from "../hooks/useAuth";
@@ -19,11 +21,19 @@ import {
   deposConfig,
   getCategoryOptions,
 } from "../config/deposConfig";
+import {
+  VALIDATION,
+  validateMax,
+  validateMin,
+  isValidLength,
+} from "../config/deposValidation";
 
 export default function DeposPage({ mode }) {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [date, setDate] = useState(() => new Date().toISOString());
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
@@ -33,6 +43,7 @@ export default function DeposPage({ mode }) {
   const [type, setType] = useState("");
   const [cat, setCat] = useState("");
   const config = deposConfig[mode];
+  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -74,9 +85,36 @@ export default function DeposPage({ mode }) {
     resultCount: filtered.length,
   });
 
+  // Remember scroll before changing page
+  useEffect(() => {
+    const handleScroll = () => {
+      sessionStorage.setItem(`scroll-${mode}`, window.scrollY.toString());
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [mode]);
+
+  // Restore the scroll on going back to the previous page
+  useEffect(() => {
+    const saved = sessionStorage.getItem(`scroll-${mode}`);
+
+    if (!saved) return;
+
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: Number(saved),
+        behavior: "instant",
+      });
+    });
+  }, [mode]);
+
   // Create a new Depo
   const handleCreateDepo = async () => {
-    await apiFetch("/depos", {
+    const response = await apiFetch("/depos", {
       method: "POST",
       body: JSON.stringify({
         type,
@@ -88,18 +126,57 @@ export default function DeposPage({ mode }) {
       }),
     });
 
+    if (!response.ok) {
+      if (response.status === 400) {
+        const data = await response.json();
+
+        setErrors({
+          title: data.errors?.title?.[0] ?? "",
+          description: data.errors?.description?.[0] ?? "",
+        });
+
+        return;
+      }
+
+      throw new Error("Failed to create deposit");
+    }
+
     setIsCreateOpen(false);
     setType("");
     setCat("");
     setTitle("");
     setDescription("");
     setLifetime("");
+    setErrors({ title: "", description: "" });
 
     await refreshDepos();
   };
 
   // Validation for creating a new depo
-  const isFormValid = type && cat && title.trim() && description.trim();
+  const isFormValid =
+    type &&
+    cat &&
+    isValidLength(title, VALIDATION.depo.title) &&
+    isValidLength(description, VALIDATION.depo.description);
+
+  //Delete a depo
+  const handleDeleteDepo = async () => {
+    if (!deleteTarget) return;
+
+    await apiFetch(`/depos/${deleteTarget.ID_Depo}`, {
+      method: "DELETE",
+    });
+
+    setDeleteOpen(false);
+    setDeleteTarget(null);
+
+    await refreshDepos?.();
+  };
+
+  const openDelete = (depo) => {
+  setDeleteTarget(depo);
+  setDeleteOpen(true);
+};
 
   // Manage allowed type options
   const allowedTypeOptions = useMemo(() => {
@@ -135,6 +212,23 @@ export default function DeposPage({ mode }) {
       ? "Manage all deposits"
       : config.subtitle;
 
+  // Define error on typing
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+  });
+
+  // Define error out of focus
+  const [touched, setTouched] = useState({
+    title: false,
+    description: false,
+  });
+
+  // Navigate to Edit modal from dashboard
+  const openEdit = (depo) => {
+  navigate(`/depo/${depo.ID_Depo}?edit=true`);
+
+};
   return (
     <div className="flex flex-col h-full max-w-3xl mx-auto min-h-0 text-center text-green-900 py-8 px-4">
       {/* HEADER */}
@@ -200,7 +294,7 @@ export default function DeposPage({ mode }) {
 
       {/* DEPOS LIST */}
       <div
-        className={
+        className={"cursor-pointer",
           isDashboard
             ? "flex-col sm:flex-1 min-h-0 px-3 sm:px-6 "
             : "flex-1 min-h-0 m-2 sm:mx-6"
@@ -211,25 +305,30 @@ export default function DeposPage({ mode }) {
           deposits={filtered}
         >
           {(depo) => (
-            <Link
-              to={`/depo/${depo.ID_Depo}`}
+            <div
+              onClick={() => navigate(`/depo/${depo.ID_Depo}`)}
               className={
                 isDashboard
-                  ? "flex-1 w-full"
-                  : "flex-1 w-full rounded-2xl bg-white"
+                  ? "flex-1 w-full cursor-pointer"
+                  : "flex-1 w-full rounded-2xl cursor-pointer"
               }
             >
               {isDashboard ? (
                 <DashboardDepoCard
                   depo={depo}
                   formatDate={formatDate}
-                  onEdit={() => openEdit(depo)}
-                  onDelete={() => deleteDepo(depo.ID_Depo)}
+                  onEdit={() => navigate(`/depo/${depo.ID_Depo}?edit=true`)}
+                  onDelete={() => openDelete(depo)}
                 />
               ) : (
-                <PublicDepoCard depo={depo} formatDate={formatDate} />
+                <PublicDepoCard
+                  depo={depo}
+                  formatDate={formatDate}
+                  onEdit={() => openEdit(depo)}
+                  onDelete={() => openDelete(depo)}
+                />
               )}
-            </Link>
+            </div>
           )}
         </DeposList>
       </div>
@@ -272,17 +371,46 @@ export default function DeposPage({ mode }) {
           </div>
 
           {/* TITLE */}
-          <div>
+          <div className="relative">
             <label className="text-xs ">Title</label>
-            <div className="relative">
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Title: "
-                className="border border-green-300 p-2 w-full rounded-2xl shadow outline-none focus:placeholder-transparent focus:border-green-700 focus:ring-1 focus:ring-green-700"
-              />
-              {title.trim() && <ValidationCheck />}
-            </div>
+            <input
+              value={title}
+              onChange={(e) => {
+                const value = e.target.value;
+                setTitle(value);
+
+                setErrors((prev) => ({
+                  ...prev,
+                  title: validateMax(value, VALIDATION.depo.title),
+                }));
+              }}
+              onBlur={() => {
+                setTouched((prev) => ({ ...prev, title: true }));
+
+                setErrors((prev) => ({
+                  ...prev,
+                  title: validateMin(title, VALIDATION.depo.title),
+                }));
+              }}
+              placeholder="Title (25 chars max)"
+              className={`border p-2 w-full rounded-2xl shadow outline-none transition
+                ${
+                  errors.title
+                    ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    : "border-green-300 focus:border-green-700 focus:ring-1 focus:ring-green-700"
+                }
+              `}
+            />
+
+            {!errors.title && isValidLength(title, VALIDATION.depo.title) && (
+              <ValidationCheck />
+            )}
+
+            {errors.title && (
+              <p className="absolute text-xs text-red-600 mt-1 ml-3">
+                {errors.title}
+              </p>
+            )}
           </div>
 
           {/* DESCRIPTION */}
@@ -291,11 +419,47 @@ export default function DeposPage({ mode }) {
             <div className="relative">
               <textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your offer/request..."
-                className="border border-green-300 p-2 w-full rounded-2xl resize-none h-24 shadow outline-none focus:placeholder-transparent focus:border-green-700 focus:ring-1 focus:ring-green-700"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setDescription(value);
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    description: validateMax(
+                      value,
+                      VALIDATION.depo.description,
+                    ),
+                  }));
+                }}
+                onBlur={() => {
+                  setTouched((prev) => ({ ...prev, description: true }));
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    description: validateMin(
+                      description,
+                      VALIDATION.depo.description,
+                    ),
+                  }));
+                }}
+                placeholder="Description (255 chars max)"
+                className={`border p-2 w-full rounded-2xl resize-none h-32 shadow outline-none transition
+                  ${
+                    errors.description
+                      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                      : "border-green-300 focus:border-green-700 focus:ring-1 focus:ring-green-700"
+                  }
+                `}
               />
-              {description.trim() && <ValidationCheck />}
+              {!errors.description &&
+                isValidLength(description, VALIDATION.depo.description) && (
+                  <ValidationCheck />
+                )}
+              {touched.description && errors.description && (
+                <p className="absolute text-xs text-red-600 ml-3">
+                  {errors.description}
+                </p>
+              )}
             </div>
           </div>
 
@@ -407,7 +571,19 @@ export default function DeposPage({ mode }) {
             </div>
           </div>
         </Modal>
+
       )}
+
+
+{/* Delete modal */}
+      <ConfirmModal
+      open={isDeleteOpen}
+      title="Delete deposit"
+      message={`Are you sure you want to delete "${deleteTarget?.Title_Depo}"?`}
+      confirmLabel="Delete"
+      onClose={() => setDeleteOpen(false)}
+      onConfirm={handleDeleteDepo}
+    />
     </div>
   );
 }

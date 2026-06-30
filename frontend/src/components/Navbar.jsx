@@ -62,7 +62,7 @@ export default function Navbar() {
             </li>
             <li>
               <NavItem to="/faq" end>
-                Request
+                Forum
               </NavItem>
             </li>
           </ul>

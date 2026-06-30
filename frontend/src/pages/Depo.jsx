@@ -1,29 +1,46 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { apiFetch } from "../api";
 import Modal from "../components/Modal";
+import ConfirmModal from "../components/ConfirmModal";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import CustomButton from "../components/CustomButton";
 import CustomSelect from "../components/CustomSelect";
 import ValidationCheck from "../components/ValidationCheck";
 import { TYPES_DEPOS, getCategoryOptions } from "../config/deposConfig";
+import {
+  VALIDATION,
+  validateMin,
+  validateMax,
+  isValidLength,
+} from "../config/deposValidation";
 
 export default function Depo() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
 
+  const editTextareaRef = useRef(null);
   const [isAnswerModalOpen, setAnswerModalOpen] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [editAnswerText, setEditAnswerText] = useState("");
   const [answerText, setAnswerText] = useState("");
-  const editTextareaRef = useRef(null);
+  const [answerError, setAnswerError] = useState("");
+  const [answerTouched, setAnswerTouched] = useState(false);
+  const [editAnswerError, setEditAnswerError] = useState("");
+  const [editAnswerTouched, setEditAnswerTouched] = useState(false);
 
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
   const [cat, setCat] = useState("");
 
   const [isDepoModalOpen, setDepoModalOpen] = useState(false);
+  const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
   const [depo, setDepo] = useState(null);
@@ -32,19 +49,37 @@ export default function Depo() {
   const [error, setError] = useState("");
   const [files, setFiles] = useState([]);
 
-  const isDepoFormValid =
-  type &&
-  cat &&
-  title.trim() &&
-  description.trim();
+  // Navigate back
+ const handleBack = () => navigate(-1);
 
-  // Answer count
-  const [answerCount, setAnswerCount] = useState(0);
+  // Define error on typing
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+  });
+
+  // Define error out of focus
+  const [touched, setTouched] = useState({
+    title: false,
+    description: false,
+  });
+
+  // Navigate from dahboard card to modal
   useEffect(() => {
-    if (depo) {
-      setAnswerCount(depo.Answers_Depos?.length || 0);
+    if (searchParams.get("edit") === "true" && depo) {
+      setType(depo.Type_Depo);
+      setCat(depo.Cat_Depo);
+      setTitle(depo.Title_Depo);
+      setDescription(depo.Text_Depo);
+      setLifetime(
+        depo.Lifetime_Depo
+          ? new Date(depo.Lifetime_Depo).toISOString().split("T")[0]
+          : "",
+      );
+
+      setDepoModalOpen(true);
     }
-  }, [depo]);
+  }, [searchParams, depo]);
 
   // Load the current user
   useEffect(() => {
@@ -97,7 +132,7 @@ export default function Depo() {
         <h2 className="text-2xl text-red-600 font-bold">{error}</h2>
 
         <button
-          onClick={() => navigate("/market")}
+          onClick={() => navigate(`/depo/${depo.ID_Depo}`)}
           className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
         >
           Back to Market
@@ -118,7 +153,7 @@ export default function Depo() {
       method: "DELETE",
     });
 
-    navigate("/market");
+    navigate(`/depo/${depo.ID_Depo}?edit=true`);
   };
 
   // Update the depo
@@ -147,6 +182,13 @@ export default function Depo() {
     }
   };
 
+  // Validation on update the depo
+  const isDepoFormValid =
+    type &&
+    cat &&
+    isValidLength(title, VALIDATION.depo.title) &&
+    isValidLength(description, VALIDATION.depo.description);
+
   // send a FormData instead of JSON
   //   const formData = new FormData();
 
@@ -173,6 +215,8 @@ export default function Depo() {
     });
 
     setAnswerText("");
+    setAnswerError("");
+    setAnswerTouched(false);
     await loadDepo();
   };
 
@@ -202,7 +246,7 @@ export default function Depo() {
 
   // Update Edit answer
   const handleUpdateAnswer = async (answerId, newText) => {
-    if (!newText.trim()) return;
+    if (!isValidLength(newText, VALIDATION.answer.description)) return;
 
     await apiFetch(`/depos/answers/${answerId}`, {
       method: "PUT",
@@ -219,6 +263,8 @@ export default function Depo() {
     await handleUpdateAnswer(selectedAnswer.ID_Answer, editAnswerText);
 
     setEditAnswerText("");
+    setEditAnswerError("");
+    setEditAnswerTouched(false);
     setAnswerModalOpen(false);
   };
 
@@ -233,7 +279,14 @@ export default function Depo() {
   return (
     <div className="relative text-center text-green-900 overflow-hidden my-10 mx-auto px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-green-100">
-        {/* HEADER */}
+        {/* Go back arrow*/}
+        <div className="max-w-3xl mx-auto mb-4">
+          <CustomButton variant="small_green" onClick={handleBack} className="">
+            ← Back
+          </CustomButton>
+        </div>
+
+        {/* HEADER (depo details) */}
         <PublicDepoCard
           depo={depo}
           formatDate={(date) =>
@@ -268,7 +321,10 @@ export default function Depo() {
                 Edit Depo
               </CustomButton>
 
-              <CustomButton variant="big_red" onClick={handleDeleteDepo}>
+              <CustomButton
+                variant="big_red"
+                onClick={() => setDeleteOpen(true)}
+              >
                 Delete Depo
               </CustomButton>
             </>
@@ -282,12 +338,11 @@ export default function Depo() {
           {depo.Answers_Depos?.map((a) => (
             <div
               key={a.ID_Answer}
-              className="sm:flex justify-between items-start max-w-3xl mx-auto bg-white border-b border-green-100 p-2 mt-2 w-full"
+              className="max-w-3xl mx-auto bg-white border-b border-green-100 p-2 mt-2 w-full"
             >
-              <p className="text-left">{a.Text_Answer}</p>
-
-              <div className="flex text-right gap-2 flex-col justify-end">
-                <span className="text-xs text-green-900">
+              <div className="flex text-right gap-2 justify-between my-4">
+                {/* user + city + date */}
+                <span className="text-xs text-green-900 my-auto">
                   {a.User_Answers?.Login_User} - {a.User_Answers?.City_User} -{" "}
                   {formatDate(a.Date_Answer)}
                 </span>
@@ -300,13 +355,16 @@ export default function Depo() {
                         onClick={() => {
                           setSelectedAnswer(a);
                           setEditAnswerText(a.Text_Answer);
+                          setEditAnswerError("");
+                          setEditAnswerTouched(false);
                           setAnswerModalOpen(true);
                           setTimeout(() => {
-                            if (editTextareaRef.current) {
-                              editTextareaRef.current.style.height = "auto";
-                              editTextareaRef.current.style.height = `${Math.min(editTextareaRef.current.scrollHeight, 320)}px`;
+                            if (isAnswerModalOpen && editTextareaRef.current) {
+                              const el = editTextareaRef.current;
+                              el.style.height = "auto";
+                              el.style.height = `${Math.min(editTextareaRef.current.scrollHeight, 320)}px`;
                             }
-                          }, 0);
+                          }, [isAnswerModalOpen, editAnswerText]);
                         }}
                       >
                         Edit
@@ -322,6 +380,8 @@ export default function Depo() {
                   )}
                 </div>
               </div>
+              {/* Answer text */}
+              <p className="text-left">{a.Text_Answer}</p>
             </div>
           ))}
         </div>
@@ -332,34 +392,51 @@ export default function Depo() {
       )}
 
       {/* Write an answer */}
-      <div className="max-w-3xl mx-auto rounded-2xl bg-white border border-green-100 p-2 mt-6 gap-4">
-        <textarea
-          value={answerText}
-          onChange={(e) => {
-            setAnswerText(e.target.value);
-            autoResize(e);
-          }}
-          className="
-            w-full
-            min-h-32
-            max-h-80
-            resize-none
-            rounded-2xl
-            border border-green-100
-            p-2
-          "
-          placeholder="Write an answer..."
-        />
+      <div
+        className="max-w-3xl mx-auto rounded-2xl bg-white border border-green-100 p-6 m-6 gap-4 bg-gradient-to-b
+          from-white from-[0%] to-[#a5d6a7] space-y-6"
+      >
+        <h2 className="text-2xl font-bold">Write an answer</h2>
 
-        <div>
-          <CustomButton
-            variant="big_green"
-            disabled={!answerText.trim()}
-            onClick={handleCreateAnswer}
-          >
-            Send answer
-          </CustomButton>
+        <div className="relative">
+          <textarea
+            placeholder="Answer (255 chars max)"
+            value={answerText}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAnswerText(value);
+              setAnswerError(validateMax(value, VALIDATION.answer.description));
+              autoResize(e);
+            }}
+            onBlur={() => {
+              setAnswerTouched(true);
+              setAnswerError(
+                validateMin(answerText, VALIDATION.answer.description),
+              );
+            }}
+            className={`border p-2 w-full rounded-2xl resize-none shadow outline-none transition min-h-64 sm:min-h-28
+              ${
+                answerError
+                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-green-300 focus:border-green-700 focus:ring-1 focus:ring-green-700"
+              }`}
+          />
+          {!answerError &&
+            isValidLength(answerText, VALIDATION.answer.description) && (
+              <ValidationCheck />
+            )}
+
+          {answerTouched && answerError && (
+            <p className="absolute text-xs text-red-600 ml-3 ">{answerError}</p>
+          )}
         </div>
+        <CustomButton
+          variant="big_green"
+          disabled={!isValidLength(answerText, VALIDATION.answer.description)}
+          onClick={handleCreateAnswer}
+        >
+          Send answer
+        </CustomButton>
       </div>
 
       {/* Edit depo modal */}
@@ -367,6 +444,7 @@ export default function Depo() {
         <div className="space-y-4">
           <h2 className="text-xl font-bold">Edit Deposit</h2>
 
+          {/* Type */}
           <div className="flex gap-4">
             <div className="relative flex-1">
               <CustomSelect
@@ -377,10 +455,10 @@ export default function Depo() {
                   ["OFFER", "REQUEST", "QUESTION"].includes(t.value),
                 )}
               />
-
               {type && <ValidationCheck />}
             </div>
 
+            {/* Cat */}
             <div className="relative flex-1">
               <CustomSelect
                 label="Category"
@@ -394,34 +472,99 @@ export default function Depo() {
             </div>
           </div>
 
+          {/* Title */}
           <div>
             <label className="text-xs">Title</label>
 
             <div className="relative">
               <input
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  setTitle(value);
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    title: validateMax(value, VALIDATION.depo.title),
+                  }));
+                }}
+                onBlur={() => {
+                  setTouched((prev) => ({
+                    ...prev,
+                    title: true,
+                  }));
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    title: validateMin(title, VALIDATION.depo.title),
+                  }));
+                }}
                 className="border border-green-300 p-2 w-full rounded-2xl shadow outline-none focus:border-green-700 focus:ring-1 focus:ring-green-700"
               />
+              {!errors.title && isValidLength(title, VALIDATION.depo.title) && (
+                <ValidationCheck />
+              )}
 
-              {title.trim() && <ValidationCheck />}
+              {touched.title && errors.title && (
+                <p className="absolute text-xs text-red-600 mt-1">
+                  {errors.title}
+                </p>
+              )}
             </div>
           </div>
 
+          {/* Description */}
           <div>
             <label className="text-xs">Description</label>
 
             <div className="relative">
               <textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  setDescription(value);
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    description: validateMax(
+                      value,
+                      VALIDATION.depo.description,
+                    ),
+                  }));
+                }}
+                onBlur={() => {
+                  setTouched((prev) => ({
+                    ...prev,
+                    description: true,
+                  }));
+
+                  setErrors((prev) => ({
+                    ...prev,
+                    description: validateMin(
+                      description,
+                      VALIDATION.depo.description,
+                    ),
+                  }));
+                }}
                 className="border border-green-300 p-2 w-full rounded-2xl resize-none min-h-28 max-h-80 overflow-y-auto shadow outline-none focus:border-green-700 focus:ring-1 focus:ring-green-700"
               />
 
-              {description.trim() && <ValidationCheck />}
+              {!errors.description &&
+                isValidLength(description, VALIDATION.depo.description) && (
+                  <ValidationCheck />
+                )}
+
+              {touched.description && errors.description && (
+                <p className="absolute text-xs text-red-600">
+                  {errors.description}
+                </p>
+              )}
             </div>
           </div>
 
+          {/* Date */}
           <div>
             <label className="text-xs">Expiration date</label>
 
@@ -433,8 +576,8 @@ export default function Depo() {
             />
           </div>
 
+          {/* Image */}
           <div className="flex flex-col">
-
             <div className="space-y-1">
               <label className="text-xs text-green-900">Images</label>
 
@@ -463,6 +606,7 @@ export default function Depo() {
             </div>
           </div>
 
+          {/* Btns */}
           <div className="flex justify-between">
             <CustomButton
               variant="big_white"
@@ -484,27 +628,53 @@ export default function Depo() {
 
       {/* Edit answer modal */}
       <Modal open={isAnswerModalOpen} onClose={() => setAnswerModalOpen(false)}>
+        {/* Titre */}
         <h2>Edit Answer</h2>
 
+        {/* Answer texte */}
         <textarea
           value={editAnswerText}
           ref={editTextareaRef}
           onChange={(e) => {
-            setEditAnswerText(e.target.value);
+            const value = e.target.value;
+            setEditAnswerText(value);
+            setEditAnswerError(
+              validateMax(value, VALIDATION.answer.description),
+            );
             autoResize(e);
           }}
-          className="
-            w-full
-            min-h-32
-            max-h-80
-            resize-none
-            rounded-2xl
-            border border-green-100
-            p-2
-          "
+          className={`border p-2 w-full rounded-2xl resize-none shadow outline-none transition min-h-64
+              ${
+                editAnswerError
+                  ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  : "border-green-300 focus:border-green-700 focus:ring-1 focus:ring-green-700"
+              }`}
+          onBlur={() => {
+            setEditAnswerTouched(true);
+
+            if (!editAnswerError) {
+              setEditAnswerError(
+                validateMin(editAnswerText, VALIDATION.answer.description),
+              );
+            }
+          }}
         />
 
-        <div className="flex justify-between">
+        {/* Check mark */}
+        {!editAnswerError &&
+          isValidLength(editAnswerText, VALIDATION.answer.description) && (
+            <ValidationCheck />
+          )}
+
+        {/* Error message */}
+        {editAnswerTouched && editAnswerError && (
+          <p className="absolute text-xs text-red-600 mt-1">
+            {editAnswerError}
+          </p>
+        )}
+
+        {/* Btns */}
+        <div className="flex justify-between mt-6">
           <CustomButton
             variant="big_white"
             onClick={() => setAnswerModalOpen(false)}
@@ -512,13 +682,29 @@ export default function Depo() {
             Cancel
           </CustomButton>
 
-          <CustomButton variant="big_green" onClick={handleSaveEditedAnswer}>
+          <CustomButton
+            variant="big_green"
+            onClick={handleSaveEditedAnswer}
+            disabled={
+              !isValidLength(editAnswerText, VALIDATION.answer.description)
+            }
+          >
             Save
           </CustomButton>
         </div>
 
         {error && <div className="text-red-500">{error}</div>}
       </Modal>
+
+      {/* Delete modal */}
+      <ConfirmModal
+        open={isDeleteOpen}
+        title="Delete deposit"
+        message="Are you sure you want to delete this deposit?"
+        confirmLabel="Delete"
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteDepo}
+      />
     </div>
   );
 }
