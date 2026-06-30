@@ -96,7 +96,7 @@ describe("Flow of a Depository", () => {
 
         //UPDATE an answer
         const UpdateAnswer = await request(app)
-            .put(`/api/depos/answers/${ID_Answer}`)
+            .put(`/api/responses/answers/${ID_Answer}`)
             .set("Cookie", cookie)
             .send({
                 description: "update 1"
@@ -107,7 +107,7 @@ describe("Flow of a Depository", () => {
 
         //DELETE an answer
         const DeleteAnswer = await request(app)
-            .delete(`/api/depos/answers/${ID_Answer}`)
+            .delete(`/api/responses/answers/${ID_Answer}`)
             .set("Cookie", cookie)
 
             expect(DeleteAnswer.status).toBe(200)

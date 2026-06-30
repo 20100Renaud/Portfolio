@@ -12,11 +12,8 @@ import {
   deleteDepo,
   getAllDepos,
   getMyDepos,
-  createAnswer,
-  updateAnswer,
-  deleteAnswer,
 } from "../controllers/depos.controller.js";
-
+import {createAnswer} from "../controllers/answers.controller.js";
 
 const router = express.Router();
 
@@ -44,33 +41,6 @@ router.delete(
   preloadDepo,
   isOwnerOrAdmin((req) => req.depo.ID_User),
   deleteDepo,
-);
-
-
-
-//------------------CRUD ANSWERS--------------------------
-const preloadAnswer = async (req, res, next) => {
-  const answer = await prisma.T_Answers.findUnique({
-    where: { ID_Answer: req.params.id },
-  });
-  if (!answer) return res.status(404).json({ error: "Answer not found" });
-  req.answer = answer;
-  next();
-};
-
-router.put(
-  "/answers/:id",
-  authMiddleware,
-  preloadAnswer,
-  isOwnerOrAdmin((req) => req.answer.ID_User),
-  updateAnswer,
-);
-router.delete(
-  "/answers/:id",
-  authMiddleware,
-  preloadAnswer,
-  isOwnerOrAdmin((req) => req.answer.ID_User),
-  deleteAnswer,
 );
 
 export default router;

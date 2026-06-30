@@ -154,6 +154,7 @@ export default function Depo() {
 
   // Create an answer
   const handleCreateAnswer = async () => {
+    console.log("[ID Depo]", id);
     await apiFetch(`/depos/${id}/answers`, {
       method: "POST",
       body: JSON.stringify({
@@ -167,7 +168,7 @@ export default function Depo() {
 
   // Delete the answer
   const handleDeleteAnswer = async (answerId) => {
-    await apiFetch(`/depos/answers/${answerId}`, {
+    await apiFetch(`/responses/answers/${answerId}`, {
       method: "DELETE",
     });
 
@@ -176,7 +177,7 @@ export default function Depo() {
 
   // Update the answer
   const handleUpdateAnswer = async (answerId, newText) => {
-    await apiFetch(`/depos/answers/${answerId}`, {
+    await apiFetch(`/responses/answers/${answerId}`, {
       method: "PUT",
       body: JSON.stringify({
         description: newText,
