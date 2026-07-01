@@ -15,6 +15,7 @@ ShareUp is a web Application created by the Lyonx team, composed of RENAUD Vince
 - [SETUP PRISMA](#setup-prisma)
 - [PRISMA COMMANDS to restart from DataBase](#prisma-commands-to-restart-from-database)
 - [SETUP TURF](#setup-turf)
+- [How does we test our endpoints?](#how-does-we-test-our-endpoints)
 
 ## Team Formation Overview
 - [Return at the top](#welcome-on-shareup-application)
@@ -566,3 +567,34 @@ npx prisma db pull
 ```
 npm install @turf/turf
 ```
+
+## How does we test our endpoints?
+- [Return at the top](#welcome-on-shareup-application)
+
+We use Jest to create a test file easily then we test our endpoint with supertest
+
+`~/portfolio/backend/$`
+
+Command to test the authentification endpoint:
+
+```
+npm test src/tests/auth.test.js
+```
+
+Command to test the depo endpoint:
+```
+npm test src/tests/depo.test.js
+```
+
+Command to terst the answers endpoint:
+```
+npm test src/tests/answers.test.js
+```
+
+### If everything is fine, the result should look like this:  
+
+![DataBase Diagram](images/good_test.png)  
+
+### If there is an error in the test file and it does not return what was expected:  
+
+![DataBase Diagram](images/bad_test.png)  
