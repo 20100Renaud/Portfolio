@@ -7,7 +7,7 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Faq from "./pages/Faq";
 import Market from "./pages/Market";
-import Depo from "./pages/Depo";
+import DepoDetail from "./pages/DepoDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
@@ -29,10 +29,10 @@ export default function App() {
           <Route path="/market" element={<Market />} />
           <Route path="/faq" element={<Faq />} />
           <Route
-            path="/depo/:id"
+            path="/depo_details/:id"
             element={
               <ProtectedRoute>
-                <Depo />
+                <DepoDetail />
               </ProtectedRoute>
             }
           />

@@ -79,6 +79,7 @@ export default function CustomSelect({
             onChange={(option) => onChange(option?.value || defaultValue)}
             options={mobileOptions}
             isSearchable={false}
+            isDisabled={disabled}
             unstyled
             components={{
               DropdownIndicator: () => null,
@@ -90,7 +91,7 @@ export default function CustomSelect({
                   border border-green-300 p-2 bg-white
                   transition-all
                   ${selectProps.menuIsOpen ? "rounded-t-2xl" : "rounded-2xl"}
-                  ${isDisabled ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}
+                  ${isDisabled ? "bg-gray-200 text-gray-400 cursor-not-allowed" : ""}
                   ${isFocused ? "ring-1 ring-green-700 border-green-700" : ""}
                 `,
               menu: () =>
@@ -153,6 +154,11 @@ export default function CustomSelect({
             focus:ring-1
             focus:ring-green-700
             focus:border-green-700
+            ${
+              disabled
+                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                : "bg-white"
+            }
             ${open ? "rounded-t-2xl ring-1 ring-green-700 border-green-700" : "rounded-2xl"}
           `}
           />

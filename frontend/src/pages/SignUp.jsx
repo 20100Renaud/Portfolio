@@ -72,13 +72,6 @@ export default function SignUp() {
     if (!isFormValid) return;
 
     try {
-      console.log("SignUp result:", {
-        email,
-        username,
-        city_user,
-        latitude_user,
-        longitude_user,
-      });
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

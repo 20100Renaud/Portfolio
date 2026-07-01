@@ -127,20 +127,20 @@ export const getMyDepos = async (req, res) => {
 
 export const updateDepo = async (req, res) => {
   try {
-    result = UpdateDepoSchema.safeParse(req.body);
+    const result = UpdateDepoSchema.safeParse(req.body);
+
     if (!result.success) {
-      console.log(result.error);
       return res.status(400).json({
         errors: result.error.flatten().fieldErrors,
-    });
+      });
     }
 
     const data = result.data;
-    const depo = req.depo;
-    if (!depo) return res.status(404).json({ error: "Depo not found" });
 
     const updated = await prisma.T_Depos.update({
-      where: { ID_Depo: depo.ID_Depo },
+      where: {
+        ID_Depo: req.params.id,
+      },
       data: {
         Type_Depo: data.type,
         Cat_Depo: data.cat,
@@ -151,10 +151,11 @@ export const updateDepo = async (req, res) => {
           : undefined,
       },
     });
+
     res.json(updated);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Server error" });
   }
 };
 

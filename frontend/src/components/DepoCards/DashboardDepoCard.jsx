@@ -1,49 +1,147 @@
-export default function DashboardDepoCard({ depo, formatDate }) {
-  const answerCount = depo.Answers_Depos?.length ?? 0;
+import CustomButton from "../CustomButton";
+import { getDepoStats } from "../../utils/depoStats";
+
+export default function DashboardDepoCard({
+  depo,
+  formatDate,
+  onEdit,
+  onDelete,
+}) {
+  const { photos, answers, answersLabel, photosLabel } = getDepoStats(depo);
 
   return (
-    <div
-      className="
-        grid gap-3
-        grid-cols-1
-        sm:grid-cols-[220px_auto_auto_auto]
-        sm:items-center
-        w-full
-      "
-    >
-      {/* Title */}
-      <div>
-        <span className="font-semibold truncate">{depo.Title_Depo}</span>
+    <div className="w-full">
+      {/*   <ConfirmModal */}
+      {/*      open={isDeleteOpen}
+        title="Delete deposit"
+        message={`Are you sure you want to delete "${deleteTarget?.Title_Depo}"?`}
+        confirmLabel="Delete"
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteDepo}
+      /> */}
+
+      {/* ON SMALL SCREEN */}
+      <div
+        className="
+          sm:hidden
+          flex flex-col
+          px-4 pb-6 pt-2 text-xs gap-4
+        "
+      >
+        {/* ROW 1 */}
+        <div className="relative flex justify-between mb-1">
+          <div className="w-full text-left">
+            {/* Title */}
+            <span className="font-semibold truncate">{depo.Title_Depo}</span>
+            {/* Type and Cat */}
+            <div className="flex gap-2 flex-wrap">
+              <span className="">
+                {depo.Type_Depo} - {depo.Cat_Depo}
+              </span>
+            </div>
+          </div>
+
+          {/* btns */}
+          <div className="absolute flex right-0 top-0 gap-4">
+            <CustomButton
+              variant="small_white"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit?.(depo);
+              }}
+            >
+              Edit
+            </CustomButton>
+
+            <CustomButton
+              variant="small_red"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete?.(depo);
+              }}
+            >
+              Delete
+            </CustomButton>
+          </div>
+        </div>
+
+        {/* ROW 2: Dates */}
+        <div className="text-green-700 leading-tight">
+          <div className="flex justify-between gap-2">
+            <span className="border border-green-100 rounded-xl py-1 bg-green-50">
+              📅 {formatDate(depo.Date_Depo)}
+            </span>
+            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
+              ⏳ {formatDate(depo.Lifetime_Depo)}
+            </span>
+            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
+              💬 {answersLabel}
+            </span>
+            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
+              📷 {photosLabel}
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Type/Cat */}
-      <div className="flex gap-2 sm:flex-col">
-        <span className="text-xs bg-green-100 px-2 py-1 rounded-xl">
-          {depo.Type_Depo}
-        </span>
+      {/* >SM SCREEN*/}
+      <div className="hidden sm:flex px-4 p-1 justify-between text-sm">
+        {/* COL 1 */}
+        <div className="flex flex-col gap-1 min-w-0 w-64">
+          {/* Title */}
+          <span className="font-semibold truncate text-left">
+            {depo.Title_Depo}
+          </span>
+          <div className="flex gap-2 flex-wrap">
+            <span className="">
+              {depo.Type_Depo} - {depo.Cat_Depo}
+            </span>
+          </div>
+        </div>
 
-        <span className="text-xs bg-green-100 px-2 py-1 rounded-xl">
-          {depo.Cat_Depo}
-        </span>
+        <div className="flex flex-1 justify-between items-center">
+          {/* COL 2: Dates */}
+          <div className="text-green-700 whitespace-nowrap">
+            <div>📅 {formatDate(depo.Date_Depo)}</div>
+            <div>⏳ {formatDate(depo.Lifetime_Depo)}</div>
+          </div>
+
+          {/* COL 3 */}
+          <div className="flex flex-col text-green-700 text-left">
+            <span>💬 {answersLabel}</span>
+            <span>📷 {photosLabel}</span>
+          </div>
+
+          {/* COL 4: Btns */}
+          <div className="flex gap-2">
+            <CustomButton
+              variant="small_white"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onEdit?.(depo);
+              }}
+            >
+              Edit
+            </CustomButton>
+
+            <CustomButton
+              variant="small_red"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete?.(depo);
+              }}
+            >
+              Delete
+            </CustomButton>
+          </div>
+        </div>
       </div>
 
-      {/* Dates */}
-      <div className="text-xs text-green-900">
-        <div>{formatDate(depo.Date_Depo)}</div>
-        <div>{formatDate(depo.Lifetime_Depo)}</div>
-      </div>
-      <div className="text-sm text-green-700">💬 {answerCount}</div>
-
-      {/* Buttons */}
-      <div className="flex gap-2 justify-end">
-        <button className="text-xs text-blue-600 border border-blue-300 px-4 py-2 rounded-2xl">
-          Edit
-        </button>
-
-        <button className="text-xs text-red-600 border border-red-300 px-4 py-2 rounded-2xl">
-          Delete
-        </button>
-      </div>
+      <div className="border-b border-green-300 mx-4"></div>
     </div>
   );
 }

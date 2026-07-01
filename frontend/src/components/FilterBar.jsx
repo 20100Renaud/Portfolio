@@ -50,14 +50,14 @@ export default function FilterBar({
       <div className="flex justify-center gap-2 mb-2 sm:mb-0 sm:mr-2 ">
         {/* Filter the depos btn */}
         {config.showFilters && (
-          <CustomButton variant="secondary" onClick={toggleFilters}>
+          <CustomButton variant="big_white" onClick={toggleFilters}>
             Filters
           </CustomButton>
         )}
 
         {/* Reset Filter btn */}
         <CustomButton
-          variant="secondary"
+          variant="big_white"
           onClick={() => {
             resetFilters();
           }}

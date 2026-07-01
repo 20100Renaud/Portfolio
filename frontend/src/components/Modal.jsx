@@ -13,9 +13,10 @@ export default function Modal({ open, onClose, children }) {
         onClick={(e) => e.stopPropagation()}
         className="
           w-full
-          max-w-xs
+          max-w-md sm:max-w-lg
           max-h-[90vh]
           overflow-y-auto
+          overflow-x-hidden
           rounded-2xl
           bg-gradient-to-b
           from-white from-[0%] to-[#a5d6a7]

@@ -63,9 +63,10 @@ export default function useDepos(mode) {
   });
 
   // Auto switch mode
+  const isAdmin = user?.role === "ADMIN";
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (mode === "faq") {
+      if (mode === "faq" || isAdmin) {
         setDisplayMode("all");
         setActiveLocation({
           city: "",
