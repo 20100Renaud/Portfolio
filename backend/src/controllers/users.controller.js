@@ -1,4 +1,9 @@
+import { email } from "zod";
 import prisma from "../prismaClient.js";
+import { UpdateSchema } from "../validators/auth.schema.js";
+import { log } from "node:console";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const deleteUser = async (req, res) => {
   try {
@@ -21,17 +26,128 @@ export const deleteUser = async (req, res) => {
     if (user.Role_User === "ADMIN") {
       return res.status(403).json({ error: "Cannot delete admin account" });
     }
-
     await prisma.T_Answers.updateMany({
       where: { ID_User: req.user.userId },
       data: { ID_User: unknown.ID_User },
     });
+    await prisma.t_Depos.deleteMany({
+      where: {ID_User: req.user.userId}
+    })
+
 
     await prisma.T_Users.delete({ where: { ID_User: userId } });
 
-    res.json({ message: "Account deleted, answers reassigned" });
+  return res.status(200).json({
+    message: "Account deleted, answers reassigned",
+  });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  try{
+    const result = UpdateSchema.safeParse(req.body);
+    if (!result.success) {
+      console.log(result.error);
+      return res.status(400).json({
+        errors: result.error.flatten().fieldErrors,
+      });
+    }
+    const datat = result.data;
+    const normalizedEmail = datat.email.toLowerCase().trim();
+
+    const existingUser = await prisma.T_Users.findUnique({
+      where: { Email_User: normalizedEmail },
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already used" });
+    }
+    const user = req.user;
+    if (!user) return res.status(404).json({ error: "User not found"});
+
+    const data = {};
+
+    if (req.body.username) {
+      data.Login_User = datat.username;
+    }
+
+    if (req.body.email) {
+      data.Email_User = datat.email;
+    }
+
+    const updated = await prisma.t_Users.update({
+      where: { ID_User: user.userId },
+      data,
+    });
+    res.status(200).json(updated);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err.message});
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ message: "Non authentifié" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const userId = decoded.userId;
+
+
+      const user = await prisma.t_Users.findUnique({
+        where: {
+          ID_User: userId,
+        },
+        select: {
+          Password_User: true,
+        }
+      });
+
+      const oldPasswordHash = user.Password_User;
+
+      const isValid = await bcrypt.compare(
+        req.body.oldPassword,
+        oldPasswordHash
+      );
+
+      if (newPassword.length < 4) {
+        return res.status(400).json({
+          message: "New Password must be at least 4 char"
+        });
+      }
+
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({
+          message: "Password doesn't match"
+        });
+      }
+
+      const newHash = await bcrypt.hash(newPassword, 10);
+
+      await prisma.t_Users.update({
+        where: {
+          ID_User: userId
+        },
+        data: {
+          Password_User: newHash
+        }
+      });
+
+      return res.status(200).json({
+        message: "Password modified"
+      });
+  
+  } catch (err){
+    console.log(err);
+    res.status(500).json({ error: err.message});
   }
 };

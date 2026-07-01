@@ -170,6 +170,7 @@ export default function Depo() {
   // Update the depo
   const handleUpdateDepo = async () => {
     try {
+      console.log("[id]", id);
       const response = await apiFetch(`/depos/${id}`, {
         method: "PUT",
         body: JSON.stringify({
@@ -181,9 +182,22 @@ export default function Depo() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Update failed");
-      }
+      console.log("[PUT]", response);
+      console.log("[DATA]",{
+        type,
+        cat,
+        title,
+        description,
+        lifetime,
+      });
+
+    if (!response.ok) {
+      console.log("Status:", response.status);
+      console.log("OK:", response.ok);
+      console.log(await response.text());
+
+      throw new Error("Update failed");
+    }
 
       await loadDepo();
       setDepoModalOpen(false);
@@ -247,7 +261,7 @@ export default function Depo() {
 
   // Delete the answer
   const handleDeleteAnswer = async (answerId) => {
-    await apiFetch(`/depos/answers/${answerId}`, {
+    await apiFetch(`/responses/answers/${answerId}`, {
       method: "DELETE",
     });
 
@@ -258,7 +272,7 @@ export default function Depo() {
   const handleUpdateAnswer = async (answerId, newText) => {
     if (!isValidLength(newText, VALIDATION.answer.description)) return;
 
-    await apiFetch(`/depos/answers/${answerId}`, {
+    await apiFetch(`/responses/answers/${answerId}`, {
       method: "PUT",
       body: JSON.stringify({
         description: newText,

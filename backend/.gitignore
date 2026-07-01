@@ -2,4 +2,6 @@ node_modules
 
 .env
 .env.studio
+.env.test
 /src/generated/prisma
+coverage
