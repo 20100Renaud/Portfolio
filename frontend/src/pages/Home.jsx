@@ -172,15 +172,15 @@ export default function Home() {
           window.location.reload();
         }}
       >
-        <div className="text-center">
+        <div className="text-center py-8">
           <div className="flex justify-center">
             <div
               className="inline-flex flex-col items-center text-center
                   p-2
-                  shadow-2xl
                   rounded-full
                   text-green-700
-                  bg-green-100"
+                  bg-green-100
+                  ring-1 ring-green-400 shadow-2xl"
             >
               🌿<div>Application built</div>
               <div>for people around us</div>
@@ -189,17 +189,17 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="transition-transform duration-200 -mb-8">
+          <div className="transition-transform duration-200 sm:-mb-8">
             <AnimatedFlatLogoInfinite size={160} />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr]">
             {/* Frontend */}
             <div className="flex flex-col items-center">
               <img
                 src="/images/Vincent.png"
                 alt="Frontend developer"
-                className="w-36 h-36 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
+                className="w-40 h-40 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
               />
 
               <h3 className="mt-4 text-xl font-semibold text-green-900">
@@ -211,12 +211,31 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Team Name */}
+            <div className="my-14">
+              <button
+                onClick={() => {
+                  setIsTeamModalOpen(false);
+                  window.location.reload();
+                }}
+                className="
+                px-2 py-1
+                rounded-full
+                bg-green-100
+                transition
+                text-lg font-bold text-green-900
+              "
+              >
+                Lyonx Team
+              </button>
+            </div>
+
             {/* Backend */}
             <div className="flex flex-col items-center">
               <img
                 src="/images/Enzo.png"
                 alt="Backend developer"
-                className="w-36 h-36 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
+                className="w-40 h-40 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
               />
 
               <h3 className="mt-4 text-xl font-semibold text-green-900">
@@ -227,24 +246,6 @@ export default function Home() {
                 Building the API, database and application logic.
               </p>
             </div>
-          </div>
-
-          <div className="flex justify-center pt-2">
-            <button
-              onClick={() => {
-                setIsTeamModalOpen(false);
-                window.location.reload();
-              }}
-              className="
-                px-6 py-2
-                rounded-2xl
-                bg-green-100
-                transition
-                text-2xl font-bold text-green-900
-              "
-            >
-              Lyonx Team
-            </button>
           </div>
         </div>
       </Modal>
