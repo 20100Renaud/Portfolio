@@ -2,13 +2,29 @@
 
 ShareUp is a web Application created by the Lyonx team, composed of RENAUD Vincent and MESSAOUDI Enzo, which consist of offering or requesting garden products and discussion around the garden between many person.
 
+### Navigation
+- [Team Formation Overview](#team-formation-overview)
+- [Ideas Explored](#ideas-explored)
+- [How does the application work ?](#how-does-the-application-work)
+- [System Architecture](#system-architecture)
+- [Database Diagram](#database-diagram)
+- [Application Structure](#application-structure)
+- [LOADING COMMANDS](#loading-commands)
+- [SETUP docker](#setup-docker)
+- [RUN container](#run-container)
+- [SETUP PRISMA](#setup-prisma)
+- [PRISMA COMMANDS to restart from DataBase](#prisma-commands-to-restart-from-database)
+- [SETUP TURF](#setup-turf)
+
 ## Team Formation Overview
+- [Return at the top](#welcome-on-shareup-application)
 
 Following our shared project on the Simple Shell, we developed a strong sense of cohesion and alignment in our way of working. After some consideration, we decided to form a team made up of Enzo M. (backend) and Vincent R. (frontend) under the name LYONX.
 
 Roles were assigned naturally based on each person’s comfort zone; however, the work is carried out collaboratively via Discord and GitHub, with daily remote communication and in-person meetings once a week.
 
 ## Ideas Explored
+- [Return at the top](#welcome-on-shareup-application)
 
 For starter, we defined a few key criteria:
 - Public usefulness: addressing a real need
@@ -26,7 +42,8 @@ Several ideas were collected and analyzed before selecting the one that met all 
 		A platform for exchanging goods for garden lovers named ShareUP.
 
 
-## How does the application work ?
+## How does the application work?
+- [Return at the top](#welcome-on-shareup-application)
 
 When the user arrive on ShareUp, he will appear on the Home Page. On this one, he can read infos about the application(What the application is about, why it was created etc.).
 
@@ -41,12 +58,15 @@ Futher, there is the Forum. On this page, the user can communicate with other us
 Finally, the user can see all his infos in the dashboard page. It only appear at the top right of the page when he is connected. In the dashboard, the user can see all his depos easily, edit or delete them.
 
 ## System Architecture
+- [Return at the top](#welcome-on-shareup-application)
 ![System Architecture](images/SA_diagram.png)
 
 ## Database Diagram
+- [Return at the top](#welcome-on-shareup-application)
 ![DataBase Diagram](images/BDD.png)
 
 ## Application Structure
+- [Return at the top](#welcome-on-shareup-application)
 .  
 ├── Dockerfile  
 ├── Presentation - Portfolio project Foundations v3.pdf  
@@ -270,3 +290,279 @@ Finally, the user can see all his infos in the dashboard page. It only appear at
 ├── package.json  
 └── scripts  
     └── dev.js  
+
+## LOADING COMMANDS
+- [Return at the top](#welcome-on-shareup-application)
+
+- Terminal 1: `~/portfolio/`
+
+    1. npm run dev
+    2. npm run rebuild
+    3. npm run clean
+
+        - *1,2 and 3 auto-open the browser when frontend is ready.*
+        - *Can fail sometimes with WSL*
+
+    4. npm run stop
+
+- Terminal 2: `~/portfolio/backend/$`
+
+    5. npm run studio
+
+### 1. Usual development (restart from the last time)
+
+`~/portfolio/`
+
+```
+npm run dev
+
+# docker compose -f docker-compose.dev.yml up -d
+```
+
+- Starts containers (frontend, backend, postgres)
+- Reuses existing Docker layers (fast startup)
+- Keeps existing database state
+- Keeps Prisma data intact
+
+### 2. Rebuild containers (no cache, full refresh)
+
+`~/portfolio/`
+
+```
+npm run rebuild
+
+# docker compose -f docker-compose.dev.yml up --build -d
+```
+
+#### When to use:
+
+- Docker is not picking up code changes
+- Strange runtime errors after updates
+- After dependency changes (package.json changes)
+
+#### What it does:
+
+- Recreates containers even if they already exist
+- Rebuilds images from scratch (ignores cached container state)
+- Keeps PostgreSQL data volume intact
+- Keeps database data
+
+### 3. Full reset (Prisma / seed / DB changes)
+
+`~/portfolio/`
+
+```
+npm run clean
+
+# docker compose -f docker-compose.dev.yml down -v && npm run rebuild
+```
+
+#### When to use:
+
+- Prisma schema changed
+- Seeder logic changed
+- Want a completely fresh database
+- DB state is corrupted or outdated
+
+#### What it does:
+
+- Stops all containers
+- Deletes containers + all volumes
+- Removes PostgreSQL data completely
+- Recreates database from scratch
+- Runs:
+  - Prisma migrations
+  - Seed script (automatic on backend start)
+
+### 4. Stop the containers at the end of the day (restard with dev)
+*Usually `Ctr + C` is enough but with -d, the logs are not visible*
+
+`~/portfolio/`
+
+```
+npm run stop
+
+# docker compose -f docker-compose.dev.yml down
+```
+
+- Stop containers
+- Remove containers
+- Remove default network
+
+### 5. Check the DataBase inside the docker (use another terminal)
+
+`~/portfolio/backend/$`
+
+```
+npm run studio
+
+// The first time run:
+npm install --save-dev dotenv-cli
+```
+
+### Development Ports
+
+| Port | Service                 |
+| ---- | ----------------------- |
+| 5000 | Backend API (Express)   |
+| 5173 | Frontend (Vite + React) |
+| 5433 | PostgreSQL Database     |
+| 5555 | Prisma Studio           |
+
+## SETUP docker
+- [Return at the top](#welcome-on-shareup-application)
+
+`~/portfolio/$`
+
+```
+sudo apt update
+sudo apt  install docker.io -y
+```
+
+```
+which docker         # /usr/bin/docker
+docker --version     # version 29.1.3-0ubuntu3~24.04.1
+
+```
+
+```
+sudo apt-get install docker-compose-plugin
+docker compose version              # Docker Compose version v5.1.3
+```
+
+Add user to the docker group
+
+```
+sudo usermod -aG docker $USER
+```
+
+verify Docker is working
+
+```
+docker ps
+```
+
+### To restard Docker
+
+```
+sudo systemctl restart docker
+```
+
+## RUN container
+- [Return at the top](#welcome-on-shareup-application)
+
+```
+docker exec -it portfolio-backend-1 sh
+```
+
+run the migration inside the container
+
+```
+# npx prisma migrate deploy --schema=prisma/schema.prisma
+```
+
+### Pull from library/postgres
+
+```
+docker pull postgres
+```
+
+## SETUP PRISMA
+- [Return at the top](#welcome-on-shareup-application)
+
+```
+npm install prisma@6 @prisma/client@6   # 7 works differently
+```
+
+## PRISMA COMMANDS to restart from schema.prisma
+- [Return at the top](#welcome-on-shareup-application)
+
+### 1. Stop Docker and delete the database
+
+`~/portfolio/$`
+
+```
+docker compose -f docker-compose.dev.yml down -v
+```
+
+### 2. Delete existing migrations
+
+`~/portfolio/backend/$`
+
+```
+rm -rf prisma/migrations
+```
+
+### 3. Start PostgreSQL ans backend containers
+
+(Need a database running to generate migrations)
+
+`~/portfolio/$`
+
+```
+docker compose -f docker-compose.dev.yml up postgres backend -d
+```
+
+Wait the time to process.
+
+### 4. Create a fresh migration inside the docker
+
+`~/portfolio/backend`
+
+```
+docker compose exec backend npx prisma migrate dev --name init
+```
+
+### 5. Rebuild containers
+
+`~/portfolio`
+
+```
+npm run clean
+```
+
+### Generate User
+
+```
+npx prisma generate
+```
+
+### Generate Admin and uknown user
+
+- localy:
+
+```
+npx prisma db seed
+```
+
+- in the container:
+
+```
+docker compose exec backend npx prisma db seed
+```
+
+### 6. Check the DataBase localy
+
+`~/portfolio/backend/$`
+
+```
+npx prisma studio //port:5555
+```
+
+## PRISMA COMMANDS to restart from DataBase
+- [Return at the top](#welcome-on-shareup-application)
+
+### Adjust schema.prisma to match current DataBase
+
+```
+npx prisma db pull
+```
+
+## SETUP TURF
+- [Return at the top](#welcome-on-shareup-application)
+
+`~/portfolio/frontend/$`
+
+```
+npm install @turf/turf
+```
