@@ -25,7 +25,7 @@ export default function DashboardDepoCard({
         className="
           sm:hidden
           flex flex-col
-          px-4 p-1 text-xs
+          px-4 pb-6 pt-2 text-xs gap-4
         "
       >
         {/* ROW 1 */}
