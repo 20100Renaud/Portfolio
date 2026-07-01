@@ -10,7 +10,7 @@ export const uploadToCloudinary = (buffer) => {
       (error, result) => {
         if (error) reject(error);
         else resolve(result);
-      }
+      },
     );
 
     streamifier.createReadStream(buffer).pipe(stream);

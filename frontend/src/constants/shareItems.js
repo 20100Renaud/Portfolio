@@ -1,6 +1,24 @@
-// src/constants/shareItems.js
-import { FaLeaf, FaAppleAlt, FaCarrot, FaEgg, FaSeedling, FaTree, FaPoop } from "react-icons/fa";
-import { GiStrawberry, GiBeet, GiTomato, GiPumpkin, GiMushroom, GiHerbsBundle, GiHoneyJar, GiPlantSeed, GiBasket, GiNotebook } from "react-icons/gi";
+import {
+  FaLeaf,
+  FaAppleAlt,
+  FaCarrot,
+  FaEgg,
+  FaSeedling,
+  FaTree,
+  FaPoop,
+} from "react-icons/fa";
+import {
+  GiStrawberry,
+  GiBeet,
+  GiTomato,
+  GiPumpkin,
+  GiMushroom,
+  GiHerbsBundle,
+  GiHoneyJar,
+  GiPlantSeed,
+  GiBasket,
+  GiNotebook,
+} from "react-icons/gi";
 import { MdCompost } from "react-icons/md";
 
 export const shareItems = [

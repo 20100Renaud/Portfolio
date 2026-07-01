@@ -1,21 +1,36 @@
 import prisma from "../prismaClient.js";
+import { uploadToCloudinary } from "../../services/cloudinary.service.js";
+import { error } from "node:console";
+import { CreateDepoSchema, UpdateDepoSchema } from "../validators/depo.schema.js";
+import { CreateAnswersSchema, UpdateAnswersSchema } from "../validators/answers.schema.js";
 
-
-// -----------------------------------------CRUD POSTS---------------------------------------------------------------
+// -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
   try {
-    const { title, description, lifetime } = req.body;
+    const result = CreateDepoSchema.safeParse(req.body);
+    if (!result.success) {
+      console.log(result.error)
+      return res.status(400).json({
+          errors: result.error.flatten().fieldErrors
+      })
+    }
 
-    const lifetimeDate = lifetime
-      ? new Date(lifetime)
-      : new Date(new Date().setMonth(new Date().getMonth() + 1));
+    const data = result.data;
+    const { type, cat, title, description, lifetime } = req.body;
+
+    const lifetimeDate =
+      req.body.lifetime && req.body.lifetime !== ""
+        ? new Date(req.body.lifetime)
+        : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
     const depo = await prisma.T_Depos.create({
       data: {
-        Title_Depo: title,
-        Text_Depo: description,
-        Lifetime_Depo: lifetimeDate,
         ID_User: req.user.userId,
+        Type_Depo: data.type,
+        Cat_Depo: data.cat,
+        Title_Depo: data.title,
+        Text_Depo: data.description,
+        Lifetime_Depo: lifetimeDate,
       },
     });
 
@@ -23,7 +38,7 @@ export const createDepo = async (req, res) => {
     if (req.files?.length) {
       const uploadedImages = await Promise.all(
         //Stock it/them in cloudinary
-        req.files.map((file) => uploadToCloudinary(file.buffer))
+        req.files.map((file) => uploadToCloudinary(file.buffer)),
       );
 
       await prisma.T_Images.createMany({
@@ -38,21 +53,29 @@ export const createDepo = async (req, res) => {
 
     res.status(201).json(depo);
   } catch (err) {
+    console.error(err)
     res.status(500).json({ error: err.message });
   }
 };
 
-
+// Display all depos in the db
 export const getAllDepos = async (req, res) => {
   try {
+    const { userId } = req.query;
+
     const depos = await prisma.T_Depos.findMany({
+      where: userId ? { ID_User: userId } : undefined,
       include: {
         User_Depos: true,
         Answers_Depos: {
-          include: { User_Answers: true }
-        }
-      }
+          include: { User_Answers: true },
+        },
+      },
+      orderBy: {
+        Date_Depo: "desc",
+      },
     });
+
     res.json(depos);
   } catch (err) {
     console.error(err);
@@ -60,107 +83,91 @@ export const getAllDepos = async (req, res) => {
   }
 };
 
-
-export const updateDepo = async (req, res) => {
+// Display depos owned by the user
+export const getMyDepos = async (req, res) => {
   try {
-    const depo = req.depo;
-    if (!depo) return res.status(404).json({ error: "Depo not found" });
-
-    const updated = await prisma.T_Depos.update({
-      where: { ID_Depo: depo.ID_Depo },
-      data: {
-        Title_Depo: req.body.title,
-        Text_Depo: req.body.description,
-        Lifetime_Depo: req.body.lifetime
-      }
+    const depos = await prisma.T_Depos.findMany({
+      where: {
+        ID_User: req.user.userId,
+      },
+      include: {
+        User_Depos: {
+          select: {
+            ID_User: true,
+            Login_User: true,
+            City_User: true,
+            Latitude_User: true,
+            Longitude_User: true,
+          },
+        },
+        Answers_Depos: {
+          include: {
+            User_Answers: {
+              select: {
+                ID_User: true,
+                Login_User: true,
+                City_User: true,
+                Email_User: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        Date_Depo: "desc",
+      },
     });
-    res.json(updated);
+
+    res.json(depos);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
+export const updateDepo = async (req, res) => {
+  try {
+    const result = UpdateDepoSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        errors: result.error.flatten().fieldErrors,
+      });
+    }
+
+    const data = result.data;
+
+    const updated = await prisma.T_Depos.update({
+      where: {
+        ID_Depo: req.params.id,
+      },
+      data: {
+        Type_Depo: data.type,
+        Cat_Depo: data.cat,
+        Title_Depo: data.title,
+        Text_Depo: data.description,
+        Lifetime_Depo: data.lifetime
+          ? new Date(data.lifetime)
+          : undefined,
+      },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
 export const deleteDepo = async (req, res) => {
   try {
     const depo = req.depo;
     if (!depo) return res.status(404).json({ error: "Depo not found" });
 
-    if (!process.env.UNKNOWN_EMAIL) {
-      return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
-    }
-    const unknown = await prisma.T_Users.findFirst({
-      where: { Email_User: process.env.UNKNOWN_EMAIL }
-    });
-    if (!unknown) {
-      return res.status(500).json({ error: "Unknown user missing" });
-    }
-
-    await prisma.T_Answers.deleteMany({
-      where: { ID_Depo_Com: depo.ID_Depo }
-    });
-
     await prisma.T_Depos.delete({
-      where: { ID_Depo: depo.ID_Depo }
+      where: { ID_Depo: depo.ID_Depo },
     });
 
-    res.json({ message: "Deleted" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
-// -----------------------------------------------CRUD COMMENTS-----------------------------------------------------------
-export const createAnswer = async (req, res) => {
-  try {
-    const { description } = req.body;
-    const depo = req.depo;
-    if (!depo) return res.status(404).json({ error: "Depo not found" });
-    if (depo.ID_User === req.user.userId && req.user.role !== "ADMIN") {
-      return res.status(403).json({
-        error: "You can't answer to your own depo"
-      });
-    }
-
-    const answer = await prisma.T_Answers.create({
-      data: {
-        Description_Com: description,
-        ID_Depo_Com: depo.ID_Depo,
-        ID_User_Com: req.user.userId
-      }
-    });
-    res.status(201).json(answer);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
-
-export const updateAnswer = async (req, res) => {
-  try {
-    const answer = req.answer;
-    if (!answer) return res.status(404).json({ error: "Answer not found" });
-
-    const updated = await prisma.T_Answers.update({
-      where: { ID_Com: req.params.id },
-      data: { Description_Com: req.body.description }
-    });
-    res.json(updated);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
-export const deleteAnswer = async (req, res) => {
-  try {
-    const answer = req.answer;
-    if (!answer) return res.status(404).json({ error: "Answer not found" });
-
-    await prisma.T_Answers.delete({ where: { ID_Com: req.params.id } });
     res.json({ message: "Deleted" });
   } catch (err) {
     console.error(err);

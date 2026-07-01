@@ -1,9 +1,21 @@
 {
+  "type": "module",
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "cookie-parser": "^1.4.7"
+    "@turf/turf": "^7.3.5",
+    "cookie-parser": "^1.4.7",
+    "node-cron": "^4.4.1",
+    "react-select": "^5.10.2"
   },
   "devDependencies": {
+    "dotenv-cli": "^11.0.0",
     "prisma": "^6.19.3"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.js dev",
+    "rebuild": "node scripts/dev.js rebuild",
+    "clean": "node scripts/dev.js clean",
+    "stop": "node scripts/dev.js stop",
+    "studio": "node scripts/dev.js studio"
   }
 }

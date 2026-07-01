@@ -5,28 +5,35 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  const refreshUser = async () => {
+    const res = await fetch("/api/auth/me", {
+      credentials: "include",
+    });
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+
+    setIsAuthenticated(true);
+    setUsername(data.username);
+    setUser(data);
+
+    return data;
+  };
 
   useEffect(() => {
-    fetch("/api/auth/me", {
-      credentials: "include",
-    })
-      .then(res => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then(data => {
-        setIsAuthenticated(true);
-        setUsername(data.username);
-      })
+    refreshUser()
       .catch(() => {
         setIsAuthenticated(false);
         setUsername(null);
+        setUser(null);
       })
       .finally(() => {
         setLoading(false);
       });
   }, []);
-
   const login = (username) => {
     setIsAuthenticated(true);
     setUsername(username);
@@ -37,13 +44,30 @@ export function AuthProvider({ children }) {
       method: "POST",
       credentials: "include",
     });
+
     setIsAuthenticated(false);
     setUsername(null);
+    setUser(null);
   };
+
+  useEffect(() => {
+    console.log("[AUTH]", {
+      isAuthenticated,
+      username,
+      user,
+    });
+  }, [isAuthenticated, username, user]);
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, username, login, logout, loading }}
+      value={{
+        isAuthenticated,
+        username,
+        user,
+        login: refreshUser,
+        logout,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

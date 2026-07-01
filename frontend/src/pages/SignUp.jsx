@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import CustomButton from "../components/CustomButton";
+import CitySelect from "../components/CitySelect";
+import InputField from "../components/InputField";
 import { useAuth } from "../context/useAuth";
-
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -11,11 +12,19 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [results, setResults] = useState([]);
   const [city_user, setCity] = useState("");
   const [latitude_user, setLatitude] = useState(null);
   const [longitude_user, setLongitude] = useState(null);
+  const [cityTouched, setCityTouched] = useState(false);
 
+  // Show validation
+  const citySelected = latitude_user != null && longitude_user != null;
+
+  // Show warning
+  const showCityWarning =
+    cityTouched && city_user.trim() !== "" && !citySelected;
+
+  // Initialize error
   const [errors, setErrors] = useState({
     username: "",
     city_user: "",
@@ -24,6 +33,7 @@ export default function SignUp() {
     confirmPassword: "",
   });
 
+  // Validation for the form
   const [touched, setTouched] = useState({
     username: false,
     city_user: false,
@@ -32,44 +42,22 @@ export default function SignUp() {
     confirmPassword: false,
   });
 
+  // Validation criteria
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPassword = (password) => password.length >= 4;
   const isValidUsername = (username) => username.length >= 4;
-  const isValidCity_user = (city_user) => city_user.length >= 2;
+  const isValidCity_user = () =>
+    city_user.length >= 2 && latitude_user !== null && longitude_user !== null;
 
+  // Disable the create btn until:
   const isFormValid =
     isValidUsername(username) &&
-    isValidCity_user(city_user) &&
+    isValidCity_user() &&
     isValidEmail(email) &&
     isValidPassword(password) &&
     password === confirmPassword;
 
-  const validItem = (
-    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600">
-      ✔
-    </span>
-  );
-
-  const handleCityChange = async (value) => {
-    setCity(value);
-
-    if (value.length < 2) {
-      setResults([]);
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://geo.api.gouv.fr/communes?nom=${value}&fields=centre,codesPostaux`
-      );
-
-      const data = await response.json();
-      setResults(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+  // Loading toast
   const [toast, setToast] = useState(null);
   useEffect(() => {
     if (toast) {
@@ -78,23 +66,24 @@ export default function SignUp() {
     }
   }, [toast]);
 
+  // Check if the form is correct before creating
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) return;
 
     try {
-      console.log({
-        email,
-        username,
-        city_user,
-        latitude_user,
-        longitude_user,
-      });
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email, password, username, city_user, latitude_user, longitude_user}),
+        body: JSON.stringify({
+          email,
+          password,
+          username,
+          city_user,
+          latitude_user,
+          longitude_user,
+        }),
       });
 
       const data = await response.json();
@@ -103,17 +92,21 @@ export default function SignUp() {
         setToast(
           <div className="flex flex-col p-4">
             <span className="text-green-100">Account created!</span>
-            <span className="font-bold text-lg text-white">Welcome {username}</span>
-          </div>
+            <span className="font-bold text-lg text-white">
+              Welcome {username}
+            </span>
+          </div>,
         );
-        console.log("SignUp result:", data);
-        login(data.username);
+
+        await login();
         navigate("/dashboard");
       } else {
         setToast(
           <div className="flex flex-col p-4">
-            <span className="text-white">{data.message || "Sign up failed"}</span>
-          </div>
+            <span className="text-white">
+              {data.message || "Sign up failed"}
+            </span>
+          </div>,
         );
       }
     } catch (err) {
@@ -121,268 +114,212 @@ export default function SignUp() {
       setToast(
         <div className="flex flex-col p-4">
           <span className="text-white">Server error, try again later</span>
-        </div>
+        </div>,
       );
       console.error(err);
     }
   };
 
-
-
-
   return (
-    <div className="mt-6 flex flex-grow items-center justify-center w-full px-6">
+    <div className="mt-6 flex flex-grow items-center justify-center w-full px-6 text-green-900">
       <div
         className="
         relative w-full max-w-md p-8
         bg-gradient-to-b
         from-white from-[0%] to-[#a5d6a7]
-        rounded-xl shadow-lg flex flex-col items-center"
+        rounded-2xl shadow-lg flex flex-col items-center"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+        <h2 className="text-2xl font-bold text-center mb-2">
           Create an account
         </h2>
 
         <form onSubmit={handleSubmit} noValidate className="w-full space-y-4">
+          {/* UserName field */}
+          <InputField
+            label="Username"
+            value={username}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              setUsername(value);
+
+              setErrors((prev) => ({
+                ...prev,
+                username: isValidUsername(value)
+                  ? ""
+                  : "Username must be at least 4 characters",
+              }));
+            }}
+            onBlur={() =>
+              setTouched((prev) => ({
+                ...prev,
+                username: true,
+              }))
+            }
+            placeholder="Username"
+            error={errors.username}
+            touched={touched.username}
+            showValid={isValidUsername(username)}
+            required
+          />
+
+          {/* City field */}
           <div className="relative">
-            <label className="block text-gray-700">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => {
-                const value = e.target.value;
-                setUsername(value);
-                setErrors((prev) => ({
-                  ...prev,
-                  username: isValidUsername(value)
-                    ? ""
-                    : "Username must be at least 4 characters",
-                }));
+            <CitySelect
+              label="City"
+              value={city_user}
+              showValid={citySelected}
+              isValid={citySelected}
+              showWarning={showCityWarning}
+              onChange={(city) => {
+                setCity(city);
+                setLatitude(null);
+                setLongitude(null);
               }}
-              onBlur={() => setTouched((prev) => ({ ...prev, username: true }))}
-              className={`
-              input input-bordered w-full bg-white pl-4 
-              focus:placeholder-transparent
-              focus:outline-none
-              ${touched.username && errors.username
-                  ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
-            `}
-              placeholder="Your username"
-              required
-            />
-            <div className="h-2">
-              {touched.username && errors.username && (
-                <p className="text-red-500 text-sm">{errors.username}</p>
-              )}
-            </div>
-
-            {isValidUsername(username) && validItem}
-          </div>
-
-	        <div className="relative">
-            <label className="block text-gray-700">
-              City
-            </label>
-
-            <input
-                type="text"
-                value={city_user}
-                onChange={(e) => handleCityChange(e.target.value)}
-                maxLength={50}
-                className="input input-bordered w-full"
-                placeholder="Votre city"
-                required
-              />
-
-              {results.length > 0 && (
-                <ul className="absolute z-50 w-full mt-1 bg-white border rounded-box shadow-lg max-h-60 overflow-y-auto">
-                  {results.map((commune) => (
-                    <li
-                      key={commune.code}
-                      className="px-4 py-2 cursor-pointer hover:bg-base-200 flex justify-between"
-                      onClick={() => {
-                        setCity(commune.nom);
-
-                        if (commune.centre?.coordinates) {
-                          setLongitude(commune.centre.coordinates[0]);
-                          setLatitude(commune.centre.coordinates[1]);
-                        }
-
-                        setResults([]);
-                      }}
-                    >
-                      <span>{commune.nom}</span>
-
-                      {commune.codesPostaux?.length > 0 && (
-                        <span className="text-sm text-gray-500">
-                          {commune.codesPostaux[0]}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-          </div>
-
-          <div className="relative">
-            <label className="block text-gray-700">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                const value = e.target.value.toLowerCase();
-                setEmail(value);
-                setErrors((prev) => ({
-                  ...prev,
-                  email: isValidEmail(value)
-                    ? ""
-                    : "Invalid email address",
-                }));
+              onSelect={({ city, lat, lng }) => {
+                setCity(city);
+                setLatitude(lat);
+                setLongitude(lng);
               }}
-              onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
-              className={`
-              input input-bordered w-full bg-white pl-4
-              focus:placeholder-transparent
-              focus:outline-none
-              ${touched.email && errors.email
-                  ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
-            `}
-              placeholder="you@example.com"
-              required
             />
-
-            <div className="h-2">
-              {touched.email && errors.email && (
-                <p className="text-red-500 text-sm">{errors.email}</p>
-              )}
-            </div>
-
-            {isValidEmail(email) && (validItem)}
           </div>
 
-          <div className="relative">
-            <label className="block text-gray-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                const value = e.target.value;
-                setPassword(value);
-                setErrors((prev) => ({
-                  ...prev,
-                  password: isValidPassword(value)
-                    ? ""
-                    : "Password must be at least 4 characters",
-                }));
-              }}
-              onBlur={() =>
-                setTouched((prev) => ({ ...prev, password: true }))
-              }
-              className={`
-              input input-bordered w-full bg-white pl-4
-              focus:placeholder-transparent
-              focus:outline-none
-              ${touched.password && errors.password
-                  ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
-            `}
-              placeholder="********"
-              required
-            />
+          {/* Email field */}
+          <InputField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => {
+              const value = e.target.value.toLowerCase();
 
-            <div className="h-2">
-              {touched.password && errors.password && (
-                <p className="text-red-500 text-sm">{errors.password}</p>
-              )}
-            </div>
+              setEmail(value);
 
-            {isValidPassword(password) && validItem}
-          </div>
+              setErrors((prev) => ({
+                ...prev,
+                email: isValidEmail(value) ? "" : "Invalid email address",
+              }));
+            }}
+            onBlur={() =>
+              setTouched((prev) => ({
+                ...prev,
+                email: true,
+              }))
+            }
+            placeholder="you@example.com"
+            error={errors.email}
+            touched={touched.email}
+            showValid={isValidEmail(email)}
+            required
+          />
 
-          <div className="relative">
-            <label className="block text-gray-700">Confirm Password</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => {
-                const value = e.target.value;
-                setConfirmPassword(value);
+          {/* Password field */}
+          <InputField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => {
+              const value = e.target.value;
 
-                setErrors((prev) => ({
-                  ...prev,
-                  confirmPassword:
-                    value === password
-                      ? ""
-                      : "Passwords do not match",
-                }));
-              }}
-              onBlur={() =>
-                setTouched((prev) => ({
-                  ...prev,
-                  confirmPassword: true,
-                }))
-              }
-              className={`
-              input input-bordered w-full bg-white pl-4
-              focus:placeholder-transparent
-              focus:outline-none
-              ${touched.confirmPassword && errors.confirmPassword
-                  ? "border-red-500 ring-2 ring-red-600"
-                  : "focus:ring-2 focus:ring-green-700"}
-                }
-            `}
-              placeholder="********"
-              required
-            />
+              setPassword(value);
 
-            <div className="h-2">
-              {touched.confirmPassword && errors.confirmPassword && (
-                <p className="text-red-500 text-sm">
-                  {errors.confirmPassword}
-                </p>
-              )}
-            </div>
+              setErrors((prev) => ({
+                ...prev,
+                password: isValidPassword(value)
+                  ? ""
+                  : "Password must be at least 4 characters",
+              }));
+            }}
+            onBlur={() =>
+              setTouched((prev) => ({
+                ...prev,
+                password: true,
+              }))
+            }
+            placeholder="********"
+            error={errors.password}
+            touched={touched.password}
+            showValid={isValidPassword(password)}
+            required
+          />
 
-            {confirmPassword && confirmPassword === password && validItem}
-          </div>
+          {/* Check password field */}
+          <InputField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => {
+              const value = e.target.value;
 
-          <button
+              setConfirmPassword(value);
+
+              setErrors((prev) => ({
+                ...prev,
+                confirmPassword:
+                  value === password ? "" : "Passwords do not match",
+              }));
+            }}
+            onBlur={() =>
+              setTouched((prev) => ({
+                ...prev,
+                confirmPassword: true,
+              }))
+            }
+            placeholder="********"
+            error={errors.confirmPassword}
+            touched={touched.confirmPassword}
+            showValid={confirmPassword && confirmPassword === password}
+            required
+          />
+
+          {/* SignUp Btn */}
+          <CustomButton
             type="submit"
             disabled={!isFormValid}
-            className={`
-            px-6 py-3 w-full rounded-full
-            transition
-            shadow-md
-            ${isFormValid
-                ? "bg-green-700 text-white hover:bg-green-800"
-                : "bg-gray-400 text-gray-200 cursor-not-allowed"
-              }
-          `}
+            className="flex justify-center w-full"
           >
             Sign Up
-          </button>
+          </CustomButton>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?
+        {/* Login page link Btn */}
+        <div className="mt-4 flex items-center justify-center gap-2 text-sm">
+          <span>Already have an account?</span>
+
           <Link
             to="/Login"
-            className="text-primary font-medium hover:underline ml-2 "
+            className="
+              text-sm
+              px-2 py-1
+              rounded-full
+              border border-green-300
+              text-green-700
+              bg-green-50
+              hover:bg-green-100
+              transition
+              flex items-center
+              active:scale-95
+              active:opacity-80
+            "
           >
             Login
           </Link>
-        </p>
+        </div>
       </div>
 
+      {/* <div className="flex justify-around w-full"> */}
+
+      {/* <RotateCcw className="w-3 h-3" /> */}
+
+      {/* Toast message (error or confirm) */}
       {toast && (
-        <div className="
+        <div
+          className="
             fixed items-center justify-center text-center
             bg-green-600
-            rounded-lg shadow-lg
+            rounded-2xl shadow-lg
             animate-fade-in
-          ">
+          "
+        >
           {toast}
         </div>
       )}
