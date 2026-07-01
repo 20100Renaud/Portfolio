@@ -1,20 +1,22 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaQuestion } from "react-icons/fa";
 import { GiBasket, GiNotebook } from "react-icons/gi";
 import Animated_logo from "../components/Animated_logo";
+import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
 import { shareItems } from "../constants/shareItems";
 import { useScrollScale } from "../hooks/useInView";
+import Modal from "../components/Modal";
 
 export default function Home() {
   const basketRef = useRef(null);
   const notebookRef = useRef(null);
   const questionRef = useRef(null);
-
   const basketScale = useScrollScale(basketRef);
   const notebookScale = useScrollScale(notebookRef);
   const questionScale = useScrollScale(questionRef);
-  
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+
   return (
     <div
       className="
@@ -80,12 +82,19 @@ export default function Home() {
             <Animated_logo size={120} />
           </div>
           <div
+            onClick={() => setIsTeamModalOpen(true)}
             className="
-            flex flex-col sm:flex-row justify-around
-            italic font-semibold px-6 py-1
-            bg-green-700 text-white
-            rounded-full
-            shadow-md"
+              flex flex-col sm:flex-row justify-around
+              italic font-semibold px-6 py-1
+              bg-green-700 text-white
+              rounded-full
+              shadow-md
+              cursor-pointer
+              transition
+              hover:bg-green-800
+              hover:scale-[1.02]
+              active:scale-100
+            "
           >
             <p className="basis-1/3">Share locally</p>
             <p className="basis-1/3">Grow community</p>
@@ -154,6 +163,91 @@ export default function Home() {
           </div>
         </aside>
       </section>
+
+      {/* About Modal */}
+      <Modal
+        open={isTeamModalOpen}
+        onClose={() => {
+          setIsTeamModalOpen(false);
+          window.location.reload();
+        }}
+      >
+        <div className="text-center">
+          <div className="flex justify-center">
+            <div
+              className="inline-flex flex-col items-center text-center
+                  p-2
+                  shadow-2xl
+                  rounded-full
+                  text-green-700
+                  bg-green-100"
+            >
+              🌿<div>Application built</div>
+              <div>for people around us</div>
+              <div>about sharing locally</div>
+              <div>garden goods.</div>🌿
+            </div>
+          </div>
+
+          <div className="transition-transform duration-200 -mb-8">
+            <AnimatedFlatLogoInfinite size={160} />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            {/* Frontend */}
+            <div className="flex flex-col items-center">
+              <img
+                src="/images/Vincent.png"
+                alt="Frontend developer"
+                className="w-36 h-36 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
+              />
+
+              <h3 className="mt-4 text-xl font-semibold text-green-900">
+                Frontend
+              </h3>
+
+              <p className="text-sm text-green-700">
+                Designing and building the user interface.
+              </p>
+            </div>
+
+            {/* Backend */}
+            <div className="flex flex-col items-center">
+              <img
+                src="/images/Enzo.png"
+                alt="Backend developer"
+                className="w-36 h-36 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
+              />
+
+              <h3 className="mt-4 text-xl font-semibold text-green-900">
+                Backend
+              </h3>
+
+              <p className="text-sm text-green-700">
+                Building the API, database and application logic.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={() => {
+                setIsTeamModalOpen(false);
+                window.location.reload();
+              }}
+              className="
+                px-6 py-2
+                rounded-2xl
+                bg-green-100
+                transition
+                text-2xl font-bold text-green-900
+              "
+            >
+              Lyonx Team
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
