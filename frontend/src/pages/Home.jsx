@@ -212,21 +212,15 @@ export default function Home() {
             </div>
 
             {/* Team Name */}
-            <div className="my-14">
+            <div className="my-16">
               <button
                 onClick={() => {
                   setIsTeamModalOpen(false);
                   window.location.reload();
                 }}
-                className="
-                px-2 py-1
-                rounded-full
-                bg-green-100
-                transition
-                text-lg font-bold text-green-900
-              "
+                className="text-lg font-bold text-green-900"
               >
-                Lyonx Team
+                -Lyonx Team-
               </button>
             </div>
 
