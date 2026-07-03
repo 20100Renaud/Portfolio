@@ -132,6 +132,16 @@ describe("Flow of a User  ", () => {
       });
       expect(BadUpdateResponse.status).toBe(409)
 
+    // BAD UPDATE
+    const response = await request(app)
+      .put("/api/auth/update")
+      .send({
+        username: "Hack",
+        email: "hack@gmail.com",
+      });
+
+    expect(response.status).toBe(401);
+
     // UPDATE
     const updateResponse = await request(app)
       .put("/api/auth/update")
