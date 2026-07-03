@@ -164,7 +164,7 @@ export default function Depo() {
       method: "DELETE",
     });
 
-    navigate(`/depo_details/${depo.ID_Depo}?edit=true`);
+    navigate(`/market?edit=true`);
   };
 
   // Update the depo
