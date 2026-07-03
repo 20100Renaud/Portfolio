@@ -32,6 +32,15 @@ export const createAnswer = async (req, res) => {
 
 export const updateAnswer = async (req, res) => {
   try {
+    const answer = req.answer;
+    if (!answer) return res.status(404).json({ error: "answer not found" });
+
+    if (req.user.userId !== answer.ID_User && req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        error: "Forbidden",
+      });
+    }
+
     const result = UpdateAnswersSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -62,6 +71,12 @@ export const deleteAnswer = async (req, res) => {
   try {
     const answer = req.answer;
     if (!answer) return res.status(404).json({ error: "Answer not found" });
+
+    if (req.user.userId !== answer.ID_User && req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        error: "Forbidden",
+      });
+    }
 
     await prisma.T_Answers.delete({ where: { ID_Answer: req.params.id } });
     res.json({ message: "Deleted" });

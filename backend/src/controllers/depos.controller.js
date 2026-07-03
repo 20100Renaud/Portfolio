@@ -127,6 +127,14 @@ export const getMyDepos = async (req, res) => {
 
 export const updateDepo = async (req, res) => {
   try {
+    const depo = req.depo
+    if (!depo) return res.status(404).json({ error: "Depo not found" });
+
+    if (req.user.userId !== depo.ID_User && req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        error: "Forbidden",
+      });
+    }
     const result = UpdateDepoSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -163,6 +171,12 @@ export const deleteDepo = async (req, res) => {
   try {
     const depo = req.depo;
     if (!depo) return res.status(404).json({ error: "Depo not found" });
+
+    if (req.user.userId !== depo.ID_User && req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        error: "Forbidden",
+      });
+    }
 
     await prisma.T_Depos.delete({
       where: { ID_Depo: depo.ID_Depo },
