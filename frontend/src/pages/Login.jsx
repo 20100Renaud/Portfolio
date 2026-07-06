@@ -52,7 +52,10 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("[LOGIN] success → navigating dashboard");
+        console.log(
+          `[LOGIN] success → navigating
+          dashboard`);
+
         setToast(
           <div className="flex flex-col p-4">
             <span className="font-bold text-lg text-white">

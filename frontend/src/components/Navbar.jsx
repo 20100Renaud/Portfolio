@@ -16,7 +16,7 @@ const NavItem = ({ to, end, children, className = "" }) => {
       {({ isActive }) => (
         <span
           className={`relative inline-block ${
-            isActive ? "text-white font-bold" : "text-white"
+            isActive ? "text-white font-bold underline" : "text-white"
           }`}
         >
           {children}
