@@ -213,21 +213,21 @@ export default function Depo() {
     isValidLength(title, VALIDATION.depo.title) &&
     isValidLength(description, VALIDATION.depo.description);
 
-  // send a FormData instead of JSON
-  //   const formData = new FormData();
+  //send a FormData instead of JSON
+    const formData = new FormData();
 
-  // formData.append("title", title);
-  // formData.append("description", description);
+  formData.append("title", title);
+  formData.append("description", description);
 
-  // files.forEach((file) => {
-  //   formData.append("images", file);
-  // });
+  files.forEach((file) => {
+    formData.append("images", file);
+  });
 
-  // await fetch("http://localhost:5000/api/depos", {
-  //   method: "POST",
-  //   credentials: "include",
-  //   body: formData,
-  // });
+  await fetch("http://localhost:5000/api/depos", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
   // Create an answer
   const handleCreateAnswer = async () => {
@@ -588,7 +588,7 @@ export default function Depo() {
             </div>
           </div>
 
-          {/* Date */}
+          {/* Expiration date */}
           <div>
             <label className="text-xs">Expiration date</label>
 
