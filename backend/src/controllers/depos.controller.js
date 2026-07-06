@@ -3,6 +3,7 @@ import { uploadToCloudinary } from "../../services/cloudinary.service.js";
 import { error } from "node:console";
 import { CreateDepoSchema, UpdateDepoSchema } from "../validators/depo.schema.js";
 import { CreateAnswersSchema, UpdateAnswersSchema } from "../validators/answers.schema.js";
+import { sendDepoCreatedEmail} from "../services/email.service.js";
 
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
@@ -51,6 +52,16 @@ export const createDepo = async (req, res) => {
       });
     }
 
+    const user = await prisma.T_Users.findUnique({
+        where: {
+            ID_User: req.user.userId
+        },
+        select: {
+            Email_User: true
+        }
+    });
+
+    await sendDepoCreatedEmail(user.Email_User, depo);
     res.status(201).json(depo);
   } catch (err) {
     console.error(err)
