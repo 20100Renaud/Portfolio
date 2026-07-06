@@ -91,7 +91,7 @@ export default function Depo() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
   // Load the current user
   useEffect(() => {
     apiFetch("/auth/me")
@@ -164,7 +164,7 @@ export default function Depo() {
       method: "DELETE",
     });
 
-    navigate(`/market?edit=true`);
+    navigate(`/market`);
   };
 
   // Update the depo

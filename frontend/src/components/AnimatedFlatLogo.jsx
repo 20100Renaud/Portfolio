@@ -1,6 +1,6 @@
 
-import text from "../assets/ShareUp_512x512.webp";
-import arrows from "../assets/Arrows_512x512.webp";
+import text from "../assets/ShareUp_512x512.png";
+import arrows from "../assets/Arrows_512x512.png";
 
 const AnimatedFlatLogo = ({ size = 120 }) => {
   return (

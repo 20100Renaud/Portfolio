@@ -1,20 +1,24 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaQuestion } from "react-icons/fa";
 import { GiBasket, GiNotebook } from "react-icons/gi";
 import Animated_logo from "../components/Animated_logo";
+import AnimatedFlatLogoInfinite from "../components/AnimatedFlatLogo_infinite";
 import { shareItems } from "../constants/shareItems";
 import { useScrollScale } from "../hooks/useInView";
+import Modal from "../components/Modal";
+import dessin from "../assets/dessin_jardin.png";
+import Marquee from "../components/Marquee";
 
 export default function Home() {
   const basketRef = useRef(null);
   const notebookRef = useRef(null);
   const questionRef = useRef(null);
-
   const basketScale = useScrollScale(basketRef);
   const notebookScale = useScrollScale(notebookRef);
   const questionScale = useScrollScale(questionRef);
-  
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+
   return (
     <div
       className="
@@ -22,44 +26,10 @@ export default function Home() {
       items-center text-center
       text-green-900 overflow-hidden"
     >
-      <section className="relative border-y-2 border-green-600/80 backdrop-blur-xs bg-white/60 w-full m-4  shadow-md overflow-hidden py-3 sm:py-4">
-        <div className="flex w-max animate-marquee will-change-transform gap-4">
-          {shareItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.name}
-                className="flex flex-col items-center justify-center text-center shrink-0 w-20 sm:w-28"
-              >
-                <div className="text-green-600/80 text-2xl sm:text-4xl">
-                  <Icon />
-                </div>
-                <span className="text-xs sm:text-sm font-medium">
-                  {item.name}
-                </span>
-              </div>
-            );
-          })}
-
-          {shareItems.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={"dup-" + item.name + i}
-                aria-hidden
-                className="flex flex-col items-center justify-center text-center shrink-0 w-20 sm:w-28"
-              >
-                <div className="text-green-600 text-2xl sm:text-4xl">
-                  <Icon />
-                </div>
-                <span className="text-xs sm:text-sm font-medium">
-                  {item.name}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <Marquee
+        items={shareItems}
+        className="border-y-2 border-green-600/80 backdrop-blur-xs bg-white/60 shadow-md m-4"
+      />
 
       <section className="relative z-10 px-4 w-full">
         <div
@@ -80,12 +50,19 @@ export default function Home() {
             <Animated_logo size={120} />
           </div>
           <div
+            onClick={() => setIsTeamModalOpen(true)}
             className="
-            flex flex-col sm:flex-row justify-around
-            italic font-semibold px-6 py-1
-            bg-green-700 text-white
-            rounded-full
-            shadow-md"
+              flex flex-col sm:flex-row justify-around
+              italic font-semibold px-6 py-1
+              bg-green-700 text-white
+              rounded-full
+              shadow-md
+              cursor-pointer
+              transition
+              hover:bg-green-800
+              hover:scale-[1.02]
+              active:scale-100
+            "
           >
             <p className="basis-1/3">Share locally</p>
             <p className="basis-1/3">Grow community</p>
@@ -154,6 +131,111 @@ export default function Home() {
           </div>
         </aside>
       </section>
+
+      {/* About Modal */}
+      <Modal
+        open={isTeamModalOpen}
+        onClose={() => {
+          setIsTeamModalOpen(false);
+          window.location.reload();
+        }}
+      >
+        <div className="relative">
+          <img
+            src={dessin}
+            alt="Dessin de jardin"
+            className="
+            absolute
+            inset-0
+            w-full
+            -my-6
+            opacity-70
+            pointer-events-none
+            z-0"
+          />
+          <div className="relative z-10 text-center">
+            <div className="flex justify-center">
+              <div
+                className="inline-flex flex-col text-center
+                  p-2
+                  rounded-full
+                  text-green-700
+                  bg-green-100
+                  ring-1 ring-green-400 shadow-2xl"
+              >
+                🌿<div>Application built</div>
+                <div>for people around us</div>
+                <div>about sharing locally</div>
+                <div>garden goods.</div>🌿
+              </div>
+            </div>
+
+            <div className="relative flex justify-center items-center h-36 mt-8 -mx-10">
+              <Marquee
+                items={shareItems}
+                className="border-y-2 border-green-600/80 backdrop-blur-xs bg-white/60 shadow-md m-4"
+              />
+
+              <div className="absolute flex items-center justify-center z-10 pointer-events-none backdrop-blur rounded-full">
+                <AnimatedFlatLogoInfinite size={160} />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] border-2 rounded-2xl p-4 bg-white/50">
+              {/* Frontend */}
+              <div className="flex flex-col items-center">
+                <img
+                  src="/images/Vincent.png"
+                  alt="Frontend developer"
+                  className="w-40 h-40 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
+                />
+                <h3 className="mt-4 text-xl font-semibold text-green-900">
+                  Vincent
+                </h3>
+                <h3 className="mt-4 text-xl font-semibold text-green-900">
+                  FRONTEND
+                </h3>
+
+                <p className="text-sm text-green-700">
+                  Designing and building the user interface.
+                </p>
+              </div>
+
+              {/* Team Name */}
+              <div className="">
+                <button
+                  onClick={() => {
+                    setIsTeamModalOpen(false);
+                    window.location.reload();
+                  }}
+                  className="text-lg font-bold text-green-900"
+                >
+                  -Lyonx Team-
+                </button>
+              </div>
+
+              {/* Backend */}
+              <div className="flex flex-col items-center">
+                <img
+                  src="/images/Enzo.png"
+                  alt="Backend developer"
+                  className="w-40 h-40 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
+                />
+                <h3 className="mt-4 text-xl font-semibold text-green-900">
+                  Enzo
+                </h3>
+                <h3 className="mt-4 text-xl font-semibold text-green-900">
+                  BACKEND
+                </h3>
+
+                <p className="text-sm text-green-700">
+                  Building the API, database and application logic.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
