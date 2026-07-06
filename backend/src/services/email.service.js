@@ -15,3 +15,17 @@ export async function sendDepoCreatedEmail(email, depo) {
         `
     });
 }
+
+export async function sendAnswerReceivedEmail(email, sender, depo, answer) {
+    await resend.emails.send({
+        from: "delivered@resend.dev",
+        //email is the email of the owner of the depo. It has to be put here
+        to: "12168@holbertonstudents.com",
+        subject: `${depo.Title_Depo} got a new answer!`,
+        html: `
+            <h1><strong>${sender.Login_User}</strong> responded to your depo!</h1>
+            <br>
+            <p>${answer.Text_Answer}</p>
+        `
+    });
+}
