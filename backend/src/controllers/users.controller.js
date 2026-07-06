@@ -47,6 +47,9 @@ export const deleteUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try{
+    const user = req.user;
+    if (!user) return res.status(404).json({ error: "User not found"});
+
     const result = UpdateSchema.safeParse(req.body);
     if (!result.success) {
       console.log(result.error);
@@ -64,8 +67,6 @@ export const updateUser = async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ error: "Email already used" });
     }
-    const user = req.user;
-    if (!user) return res.status(404).json({ error: "User not found"});
 
     const data = {};
 
@@ -99,9 +100,7 @@ export const changePassword = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     const userId = decoded.userId;
-
 
       const user = await prisma.t_Users.findUnique({
         where: {
@@ -118,6 +117,12 @@ export const changePassword = async (req, res) => {
         req.body.oldPassword,
         oldPasswordHash
       );
+
+      if (!isValid) {
+      return res.status(400).json({
+        message: "Old password is incorrect",
+      });
+    }
 
       if (newPassword.length < 4) {
         return res.status(400).json({
