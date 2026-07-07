@@ -118,7 +118,7 @@ export default function Depo() {
 
       setDepo(data);
 
-      console.log("[DATA FRONT]", data);
+      console.log("[DATA Load depo]", data);
     } catch {
       setError("Failed to load depo");
       setDepo(null);
@@ -183,7 +183,7 @@ export default function Depo() {
       });
 
       console.log("[PUT]", response);
-      console.log("[DATA]",{
+      console.log("[DATA Update depo]",{
         type,
         cat,
         title,
@@ -212,22 +212,6 @@ export default function Depo() {
     cat &&
     isValidLength(title, VALIDATION.depo.title) &&
     isValidLength(description, VALIDATION.depo.description);
-
-  //send a FormData instead of JSON
-    const formData = new FormData();
-
-  formData.append("title", title);
-  formData.append("description", description);
-
-  files.forEach((file) => {
-    formData.append("images", file);
-  });
-
-  await fetch("http://localhost:5000/api/depos", {
-    method: "POST",
-    credentials: "include",
-    body: formData,
-  });
 
   // Create an answer
   const handleCreateAnswer = async () => {
@@ -463,7 +447,7 @@ export default function Depo() {
         </CustomButton>
       </div>
 
-      {/* Edit depo modal */}
+      {/* -------------- Edit depo modal ------------------- */}
       <Modal open={isDepoModalOpen} onClose={() => setDepoModalOpen(false)}>
         <div className="space-y-4">
           <h2 className="text-xl font-bold">Edit Deposit</h2>
@@ -611,12 +595,13 @@ export default function Depo() {
                     hover:border-green-700 hover:ring-1 hover:ring-green-700
                     transition text-sm text-green-900 text-center"
                 >
-                  📎 Click to upload files
+                  🖼 Click to manage images
                 </div>
 
                 <input
                   type="file"
                   multiple
+                  accept="image/*"
                   onChange={(e) => setFiles([...e.target.files])}
                   className="hidden"
                 />

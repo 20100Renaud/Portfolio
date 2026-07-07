@@ -2,15 +2,21 @@ import jwt from "jsonwebtoken";
 import prisma from "../prismaClient.js";
 import cookieParser from "cookie-parser";
 
-export const authMiddleware = async(req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
+  console.log("AUTH MIDDLEWARE HIT");
+
   const token = req.cookies.token;
+  console.log("COOKIE TOKEN:", token);
 
   if (!token) {
+    console.log("NO TOKEN");
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("DECODED JWT:", decoded);
+
     const user = await prisma.T_Users.findUnique({
       where: {
         ID_User: decoded.userId,
@@ -19,6 +25,7 @@ export const authMiddleware = async(req, res, next) => {
 
     if (!user) {
       res.clearCookie("token");
+      console.log("USER NOT FOUND");
 
       return res.status(401).json({
         error: "User no longer exists",
@@ -26,8 +33,11 @@ export const authMiddleware = async(req, res, next) => {
     }
 
     req.user = decoded;
+    console.log("AUTH CHECK");
+
     next();
   } catch {
+    console.error("AUTH ERROR:", err);
     return res.status(401).json({ error: "Invalid token" });
   }
 };

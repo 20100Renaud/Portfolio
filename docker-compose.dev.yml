@@ -37,6 +37,7 @@ services:
     volumes:
       - ./backend:/app/backend
       - /app/backend/node_modules
+      - ./backend/uploads:/app/backend/uploads
     command: sh docker-entrypoint.sh
 
   frontend:

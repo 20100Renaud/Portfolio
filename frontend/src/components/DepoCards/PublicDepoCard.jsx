@@ -2,12 +2,12 @@ import { getDepoStats } from "../../utils/depoStats";
 
 export default function PublicDepoCard({ depo, formatDate, isDetail = false }) {
   const { photos, answers, answersLabel, photosLabel } = getDepoStats(depo);
+  const firstImage = depo.Images_Depos?.[0]?.URL_Image;
 
   return (
     <div className="flex flex-col gap-2 sm:grid sm:grid-cols-[1fr_auto] sm:gap-x-4 p-4">
       {/* LEFT */}
       <div className="flex flex-col text-left sm:justify-between">
-
         {/* Name - City - Date */}
         <span className="text-xs text-green-700 text-green-900 italic">
           {depo.User_Depos?.Login_User} · {depo.User_Depos?.City_User} ·{" "}
@@ -34,8 +34,16 @@ export default function PublicDepoCard({ depo, formatDate, isDetail = false }) {
       {/* RIGHT */}
       <div className="flex gap-4">
         {/* Photos */}
-        <div className="w-32 h-32 rounded-2xl bg-green-100 flex items-center justify-center">
-          Photo
+        <div className="w-32 h-32 rounded-2xl bg-green-100 flex items-center justify-center overflow-hidden">
+          {firstImage ? (
+            <img
+              src={`http://localhost:5000${firstImage}`}
+              alt={depo.Title_Depo}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-4xl">🌱</span>
+          )}
         </div>
 
         {/* Type */}
