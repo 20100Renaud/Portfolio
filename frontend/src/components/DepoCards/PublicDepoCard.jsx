@@ -1,6 +1,16 @@
 import { getDepoStats } from "../../utils/depoStats";
+import { useState } from "react";
+import ImageGalleryModal from "../ImageGalleryModal";
+import { ZoomIn } from "lucide-react"
 
-export default function PublicDepoCard({ depo, formatDate, isDetail = false }) {
+
+export default function PublicDepoCard({
+  depo,
+  formatDate,
+  isDetail = false,
+  enableGallery = false,
+}) {
+  const [galleryOpen, setGalleryOpen] = useState(false);
   const { photos, answers, answersLabel, photosLabel } = getDepoStats(depo);
   const firstImage = depo.Images_Depos?.[0]?.URL_Image;
 
@@ -34,15 +44,46 @@ export default function PublicDepoCard({ depo, formatDate, isDetail = false }) {
       {/* RIGHT */}
       <div className="flex gap-4">
         {/* Photos */}
-        <div className="w-32 h-32 rounded-2xl bg-green-100 flex items-center justify-center overflow-hidden">
+        <div
+          className={`
+    relative
+    w-32 h-32
+    rounded-2xl
+    overflow-hidden
+    bg-green-100
+    flex items-center justify-center
+    ${enableGallery ? "cursor-pointer group" : ""}
+  `}
+          onClick={() => enableGallery && firstImage && setGalleryOpen(true)}
+        >
           {firstImage ? (
             <img
               src={`http://localhost:5000${firstImage}`}
               alt={depo.Title_Depo}
-              className="w-full h-full object-cover"
+              className={`
+        w-full
+        h-full
+        object-cover
+        ${enableGallery ? "transition-transform duration-300 group-hover:scale-105" : ""}
+      `}
             />
           ) : (
             <span className="text-4xl">🌱</span>
+          )}
+
+          {enableGallery && (
+            <div
+              className="
+        absolute inset-0
+        bg-black/30
+        opacity-0
+        group-hover:opacity-100
+        transition
+        flex items-center justify-center
+      "
+            >
+              <ZoomIn size={36} className="text-white/80" />
+            </div>
           )}
         </div>
 
@@ -62,6 +103,12 @@ export default function PublicDepoCard({ depo, formatDate, isDetail = false }) {
           <span className="text-xs">📷 {photosLabel} </span>
         </div>
       </div>
+      <ImageGalleryModal
+        open={galleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        images={depo.Images_Depos}
+        initialIndex={0}
+      />
     </div>
   );
 }

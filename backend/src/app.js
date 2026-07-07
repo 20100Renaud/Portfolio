@@ -11,6 +11,7 @@ import authRoutes from "./routes/auth.routes.js";
 import deposRoutes from "./routes/depos.routes.js";
 import answersRoutes from "./routes/answers.routes.js";
 import citiesRoutes from "./routes/cities.routes.js";
+import imageRoutes from "./routes/images.routes.js";
 
 import { startDepoCleanupJob } from "./jobs/cleanupDepos.job.js";
 
@@ -61,6 +62,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/depos", deposRoutes);
 app.use("/api/responses", answersRoutes);
 app.use("/api/cities", citiesRoutes);
+app.use("/api/images", imageRoutes);
 
 // --------------- Specific endpoints ---------------
 app.get("/api/test", async (req, res) => {

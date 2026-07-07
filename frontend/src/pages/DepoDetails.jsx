@@ -6,6 +6,7 @@ import ConfirmModal from "../components/ConfirmModal";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import CustomButton from "../components/CustomButton";
 import CustomSelect from "../components/CustomSelect";
+import ImageManagerModal from "../components/ImageManagerModal";
 import ValidationCheck from "../components/ValidationCheck";
 import { TYPES_DEPOS, getCategoryOptions } from "../config/deposConfig";
 import {
@@ -36,6 +37,7 @@ export default function Depo() {
   const [cat, setCat] = useState("");
 
   const [isDepoModalOpen, setDepoModalOpen] = useState(false);
+  const [isImagesModalOpen, setImagesModalOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
@@ -43,7 +45,6 @@ export default function Depo() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [files, setFiles] = useState([]);
 
   // Navigate back
   const handleBack = () => navigate(-1);
@@ -117,8 +118,7 @@ export default function Depo() {
       const data = await response.json();
 
       setDepo(data);
-
-      console.log("[DATA Load depo]", data);
+      return data;
     } catch {
       setError("Failed to load depo");
       setDepo(null);
@@ -170,7 +170,6 @@ export default function Depo() {
   // Update the depo
   const handleUpdateDepo = async () => {
     try {
-      console.log("[id]", id);
       const response = await apiFetch(`/depos/${id}`, {
         method: "PUT",
         body: JSON.stringify({
@@ -182,22 +181,9 @@ export default function Depo() {
         }),
       });
 
-      console.log("[PUT]", response);
-      console.log("[DATA Update depo]",{
-        type,
-        cat,
-        title,
-        description,
-        lifetime,
-      });
-
-    if (!response.ok) {
-      console.log("Status:", response.status);
-      console.log("OK:", response.ok);
-      console.log(await response.text());
-
-      throw new Error("Update failed");
-    }
+      if (!response.ok) {
+        throw new Error("Update failed");
+      }
 
       await loadDepo();
       setDepoModalOpen(false);
@@ -284,6 +270,9 @@ export default function Depo() {
       year: "2-digit",
     }).format(new Date(date));
 
+  // Retrive the number of images uploaded
+  const imageCount = depo.Images_Depos?.length ?? 0;
+
   return (
     <div className="relative text-center text-green-900 overflow-hidden my-10 mx-auto px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-green-100">
@@ -305,6 +294,7 @@ export default function Depo() {
             }).format(new Date(date))
           }
           isDetail
+          enableGallery
         />
 
         {/* Btns Edit/delet if user or admin */}
@@ -584,34 +574,26 @@ export default function Depo() {
             />
           </div>
 
-          {/* Image */}
+          {/* Photo */}
           <div className="flex flex-col">
             <div className="space-y-1">
-              <label className="text-xs text-green-900">Images</label>
+              <label className="text-xs text-green-900">
+                {imageCount === 0
+                  ? "No photos yet"
+                  : `${imageCount} photo${imageCount > 1 ? "s" : ""}`}
+              </label>
 
               <label className="block w-full cursor-pointer">
-                <div
+                <CustomButton
+                  variant="big_white"
+                  onClick={() => setImagesModalOpen(true)}
                   className="border border-green-300 rounded-2xl p-3 bg-white shadow
                     hover:border-green-700 hover:ring-1 hover:ring-green-700
                     transition text-sm text-green-900 text-center"
                 >
-                  🖼 Click to manage images
-                </div>
-
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => setFiles([...e.target.files])}
-                  className="hidden"
-                />
+                  🖼 Gallery
+                </CustomButton>
               </label>
-
-              {files?.length > 0 && (
-                <p className="text-xs text-green-700">
-                  {files.length} file{files.length > 1 ? "s" : ""} selected
-                </p>
-              )}
             </div>
           </div>
 
@@ -635,7 +617,15 @@ export default function Depo() {
         </div>
       </Modal>
 
-      {/* Edit answer modal */}
+      {/* -------------- Edit Image modal ------------- */}
+      <ImageManagerModal
+        open={isImagesModalOpen}
+        onClose={() => setImagesModalOpen(false)}
+        depo={depo}
+        onSaved={loadDepo}
+      />
+
+      {/* -------------- Edit answer modal ------------- */}
       <Modal open={isAnswerModalOpen} onClose={() => setAnswerModalOpen(false)}>
         {/* Titre */}
         <h2>Edit Answer</h2>
