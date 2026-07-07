@@ -595,7 +595,7 @@ export default function DeposPage({ mode }) {
         </div>
       </Modal>
 
-      {/* Filter modal */}
+      {/* ---------------- Filter modal ----------------- */}
       {config.showFilters && (
         <Modal
           open={isFilterModalOpen}
@@ -687,7 +687,7 @@ export default function DeposPage({ mode }) {
       )}
 
 
-{/* Delete modal */}
+      {/* -------------------- Delete modal -----------------*/}
       <ConfirmModal
       open={isDeleteOpen}
       title="Delete deposit"

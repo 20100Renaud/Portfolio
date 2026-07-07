@@ -39,7 +39,7 @@ export default function CitySelect({
 
     try {
       const cities = await searchCities(input);
-      setResults(cities);
+      setResults(cities.slice(0, 4));
     } catch (err) {
       console.error(err);
     } finally {
@@ -124,11 +124,11 @@ export default function CitySelect({
         )}
 
         {open && results.length > 0 && (
-          <ul className="absolute top-full left-0 z-50 w-full bg-white border border-green-700 rounded-b-2xl shadow max-h-60 overflow-auto text-left ring-1 ring-green-700">
+          <ul className="absolute top-full left-0 z-50 w-full bg-white border border-green-700 rounded-b-2xl shadow max-h-40 overflow-auto text-left ring-1 ring-green-700">
             {results.map((commune) => (
               <li
                 key={`${commune.nom}-${commune.centre.coordinates[0]}-${commune.centre.coordinates[1]}`}
-                className="px-3 py-2 hover:bg-green-100 cursor-pointer flex justify-between"
+                className="px-3 py-1 hover:bg-green-100 cursor-pointer flex justify-between"
                 onClick={() => handleSelect(commune)}
               >
                 <span>{commune.nom}</span>

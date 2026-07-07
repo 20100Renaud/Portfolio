@@ -66,7 +66,7 @@ export const deposConfig = {
     filters: {
       type: true,
       category: true,
-      user: false,
+      user: true,
       radius: false,
     },
     label: "deposit",

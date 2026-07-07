@@ -10,6 +10,8 @@
     "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
     "build": "tsc && npx prisma generate",
     "migrate": "prisma migrate deploy --schema=prisma/schema.prisma",
+    "seed": "node prisma/seed.js",
+    "seed:demo": "dotenv -e .env.studio -- node prisma/demoSeed.js",
     "studio": "dotenv -e .env.studio -- prisma studio",
     "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:watch": "jest --watch"
