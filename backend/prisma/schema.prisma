@@ -66,7 +66,7 @@ model T_Images {
   ID_Depo        String
   URL_Image      String
   Text_Image     String?
-  Date_Image     DateTime
+  Date_Image     DateTime  @default(now())
 
-  Depos_Images   T_Depos   @relation(fields: [ID_Depo], references: [ID_Depo])
+  Depos_Images   T_Depos   @relation(fields: [ID_Depo], references: [ID_Depo], onDelete: Cascade)
 }

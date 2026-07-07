@@ -24,6 +24,11 @@ startDepoCleanupJob();
 
 // --------------- Global middleware ---------------
 app.use((req, res, next) => {
+  console.log("GLOBAL HIT:", req.method, req.url);
+  next();
+});
+
+app.use((req, res, next) => {
   if (req.url !== "/health") {
     console.log(`[REQ] ${req.method} ${req.url}`);
   }
@@ -38,6 +43,14 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+
+app.use((err, req, res, next) => {
+  console.error("GLOBAL ERROR:", err);
+
+  res.status(500).json({
+    message: err.message || "Internal server error",
+  });
+});
 
 // --------------- Static files ---------------
 app.use("/uploads", express.static("uploads"));

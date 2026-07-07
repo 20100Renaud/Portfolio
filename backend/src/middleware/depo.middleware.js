@@ -7,13 +7,16 @@ export const preloadDepo = async (req, res, next) => {
       where: { ID_Depo: req.params.id },
       include: {
         User_Depos: true,
+        Images_Depos: true,
         Answers_Depos: {
-          include: { User_Answers: true },
+          include: {
+            User_Answers: true,
+          },
         },
       },
     });
 
-    
+
     if (!depo) {
       return res.status(404).json({ error: "Depo not found" });
     }

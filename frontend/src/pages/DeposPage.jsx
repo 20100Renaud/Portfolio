@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import MarketLocationFilter from "../components/MarketLocationFilter";
@@ -30,13 +30,13 @@ import {
 
 export default function DeposPage({ mode }) {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [date, setDate] = useState(() => new Date().toISOString());
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
+  const [files, setFiles] = useState([]);
   const isDashboard = mode === "dashboard";
   const [title, setTitle] = useState("");
   const { isAuthenticated } = useAuth();
@@ -45,6 +45,7 @@ export default function DeposPage({ mode }) {
   const config = deposConfig[mode];
   const location = useLocation();
   const navigate = useNavigate();
+  const fileInputRef = useRef();
   const { user } = useAuth();
 
   const {
@@ -114,19 +115,30 @@ export default function DeposPage({ mode }) {
   });
 }, [mode]);
 
+  // Store Images
+  const [date, setDate] = useState(() =>
+    new Date().toISOString().split("T")[0]
+  );
+
   // Create a new Depo
   const handleCreateDepo = async () => {
-    const response = await apiFetch("/depos", {
-      method: "POST",
-      body: JSON.stringify({
-        type,
-        cat,
-        title,
-        description,
-        date,
-        lifetime,
-      }),
-    });
+  const formData = new FormData();
+
+  formData.append("type", type);
+  formData.append("cat", cat);
+  formData.append("title", title);
+  formData.append("description", description);
+  formData.append("date", date);
+  formData.append("lifetime", lifetime);
+
+  files.forEach((file) => {
+    formData.append("images", file);
+  });
+
+  const response = await apiFetch("/depos", {
+    method: "POST",
+    body: formData,
+  });
 
     if (!response.ok) {
       if (response.status === 400) {
@@ -149,6 +161,11 @@ export default function DeposPage({ mode }) {
     setTitle("");
     setDescription("");
     setLifetime("");
+    setFiles([]);
+    if (fileInputRef.current) {
+  fileInputRef.current.value = "";
+}
+    setDate(new Date().toISOString());
     setErrors({ title: "", description: "" });
 
     await refreshDepos();
@@ -161,7 +178,7 @@ export default function DeposPage({ mode }) {
     isValidLength(title, VALIDATION.depo.title) &&
     isValidLength(description, VALIDATION.depo.description);
 
-  //Delete a depo
+  // Delete a depo
   const handleDeleteDepo = async () => {
     if (!deleteTarget) return;
 
@@ -255,10 +272,13 @@ export default function DeposPage({ mode }) {
               setIsCreateOpen(true);
               setType("");
               setCat("");
-              setTitle("");
+              if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+}
               setDescription("");
               setDate(new Date().toISOString());
               setLifetime(getDefaultLifetime());
+
             }}
           >
             {config.createButtonLabel}
@@ -460,6 +480,38 @@ export default function DeposPage({ mode }) {
               {touched.description && errors.description && (
                 <p className="absolute text-xs text-red-600 ml-3">
                   {errors.description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="flex flex-col">
+            <div className="space-y-1">
+              <label className="text-xs text-green-900">Images</label>
+
+              <label className="block w-full cursor-pointer">
+                <div
+                  className="border border-green-300 rounded-2xl p-3 bg-white shadow
+                    hover:border-green-700 hover:ring-1 hover:ring-green-700
+                    transition text-sm text-green-900 text-center"
+                >
+                  📎 Click to upload files
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => setFiles([...e.target.files])}
+                  className="hidden"
+                />
+              </label>
+
+              {files?.length > 0 && (
+                <p className="text-xs text-green-700">
+                  {files.length} file{files.length > 1 ? "s" : ""} selected
                 </p>
               )}
             </div>
