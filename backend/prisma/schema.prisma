@@ -22,7 +22,8 @@ model T_Users {
   ID_User        String       @id @default(uuid())
   Role_User      String       @default("CLIENT")
   Login_User     String       @unique
-  Email_User     String       @unique
+  Email_Encrypted_User  String
+  Email_Hash_User       String   @unique
   Password_User  String
   Date_User      DateTime     @default(now())
   City_User      String

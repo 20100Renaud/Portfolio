@@ -1,5 +1,6 @@
 import { AskEmail } from "../services/email.service.js";
 import prisma from "../config/prisma.js";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 export const sendCoordinates = async (req, res) => {
     try {
@@ -13,7 +14,7 @@ export const sendCoordinates = async (req, res) => {
         },
         select: {
             ID_User: true,
-            Email_User: true,
+            Email_Encrypted_User: true,
             Login_User: true,
         },
         });
@@ -30,7 +31,9 @@ export const sendCoordinates = async (req, res) => {
             });
         }
 
-        await AskEmail(owner.Email_User, owner, applicant, depo);
+        const email = decryptEmail(owner.Email_Encrypted_User);
+
+        await AskEmail(email, owner, applicant, depo);
         return res.status(200).json({
             message: "Email sent successfully."
         });

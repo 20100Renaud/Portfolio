@@ -1,10 +1,19 @@
 import request from "supertest";
 import app from "../app.js";
 import prisma from "../prismaClient.js";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 describe("Flow of a User  ", () => {
   const email = `test_${Date.now()}@gmail.com`;
   const password = "test1234";
+
+  const unknownEmail = process.env.UNKNOWN_EMAIL;
+  if (!unknownEmail) {
+    throw new Error("UNKNOWN_EMAIL missing");
+  }
+
+  const UnknowEmailHash = hmacEmail(unknownEmail);
+  const UnknowEmailEncrypted = encryptEmail(unknownEmail);
 
   //CREATE the unknow user
   beforeAll(async () => {
@@ -12,7 +21,8 @@ describe("Flow of a User  ", () => {
     await prisma.T_Users.create({
       data: {
         Login_User: "unknow",
-        Email_User: process.env.UNKNOWN_EMAIL,
+        Email_Hash_User: UnknowEmailHash,
+        Email_Encrypted_User: UnknowEmailEncrypted,
         Password_User: "DISABLE",
         City_User: "unknow",
         Latitude_User: 0,
@@ -27,18 +37,18 @@ describe("Flow of a User  ", () => {
       where: {
         OR: [
           {
-            Email_User: {
+            Login_User: {
               startsWith: "test_",
             },
           },
           {
-            Email_User: {
-              startsWith: "updated_",
+            Login_User: {
+              startsWith: "NewUsername",
             },
           },
           {
-            Email_User: {
-              startsWith: "un@",
+            Login_User: {
+              startsWith: "unknow",
             },
           },
         ],
@@ -153,7 +163,6 @@ describe("Flow of a User  ", () => {
 
     expect(updateResponse.status).toBe(200);
     expect(updateResponse.body.Login_User).toBe("NewUsername");
-    expect(updateResponse.body.Email_User).toContain("updated_");
 
     //UPDATE Password
     const PasswordResponse = await request(app)

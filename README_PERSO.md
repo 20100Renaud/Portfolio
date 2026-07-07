@@ -291,7 +291,8 @@ erDiagram
 		string ID_User PK
 		string Role_User
 		string Login_User
-		string Email_User
+		string Email_Encrypted_User
+		string Email_Hash_User
 		string Password_User
 		datetime Date_User
 		string City_User

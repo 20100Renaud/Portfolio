@@ -4,6 +4,7 @@ import {
   CreateDepoSchema,
   UpdateDepoSchema,
 } from "../validators/depo.schema.js";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
@@ -74,15 +75,6 @@ export const createDepo = async (req, res) => {
         data: imageRecords,
       });
     }
-
-    const user = await prisma.T_Users.findUnique({
-        where: {
-            ID_User: req.user.userId
-        },
-        select: {
-            Email_User: true
-        }
-    });
 
     res.status(201).json(depo);
   } catch (err) {
@@ -155,7 +147,7 @@ export const getMyDepos = async (req, res) => {
                 ID_User: true,
                 Login_User: true,
                 City_User: true,
-                Email_User: true,
+                //Email_User: true,
               },
             },
           },

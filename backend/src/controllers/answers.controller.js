@@ -3,6 +3,7 @@ import { uploadToCloudinary } from "../../services/cloudinary.service.js";
 import { error } from "node:console";
 import { CreateAnswersSchema, UpdateAnswersSchema } from "../validators/answers.schema.js";
 import { sendAnswerReceivedEmail} from "../services/email.service.js";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 export const createAnswer = async (req, res) => {
   try {
@@ -32,7 +33,7 @@ export const createAnswer = async (req, res) => {
         ID_User: depo.ID_User,
       },
       select: {
-        Email_User: true,
+        Email_Encrypted_User: true,
         Login_User: true,
       },
     });
@@ -46,7 +47,9 @@ export const createAnswer = async (req, res) => {
       }
     })
 
-    await sendAnswerReceivedEmail(owner.Email_User, sender, depo, answer);
+    const email = decryptEmail(owner.Email_Encrypted_User);
+
+    await sendAnswerReceivedEmail(email, sender, depo, answer);
     res.status(201).json(answer);
   } catch (err) {
     console.error(err);
