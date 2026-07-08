@@ -1,22 +1,30 @@
 import prisma from "../prismaClient.js";
 import { uploadToCloudinary } from "../../services/cloudinary.service.js";
-import { error } from "node:console";
-import { CreateDepoSchema, UpdateDepoSchema } from "../validators/depo.schema.js";
-import { CreateAnswersSchema, UpdateAnswersSchema } from "../validators/answers.schema.js";
+import {
+  CreateDepoSchema,
+  UpdateDepoSchema,
+} from "../validators/depo.schema.js";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
+  console.log("[CREATE DEPO HIT]");
+
   try {
+    console.log("[USER on createDepo]:", req.user);
+    console.log("[BODY on createDepo]:", req.body);
+    console.log("[FILES on createDepo]:", req.files);
+
     const result = CreateDepoSchema.safeParse(req.body);
+
     if (!result.success) {
-      console.log(result.error)
+      console.log("[ZOD ERROR]:", result.error);
       return res.status(400).json({
-          errors: result.error.flatten().fieldErrors
-      })
+        errors: result.error.flatten().fieldErrors,
+      });
     }
 
     const data = result.data;
-    const { type, cat, title, description, lifetime } = req.body;
 
     const lifetimeDate =
       req.body.lifetime && req.body.lifetime !== ""
@@ -34,28 +42,53 @@ export const createDepo = async (req, res) => {
       },
     });
 
+    console.log("[FILES]:", req.files);
+
     // Check if the user send an image
+    const imageRecords = [];
+
     if (req.files?.length) {
-      const uploadedImages = await Promise.all(
-        //Stock it/them in cloudinary
-        req.files.map((file) => uploadToCloudinary(file.buffer)),
-      );
+      if (process.env.CLOUDINARY_CLOUD_NAME) {
+        console.log(process.env.CLOUDINARY_CLOUD_NAME);
+        const uploaded = await Promise.all(
+          req.files.map((file) => uploadToCloudinary(file.buffer)),
+        );
+
+        uploaded.forEach((img) => {
+          imageRecords.push({
+            ID_Depo: depo.ID_Depo,
+            URL_Image: img.secure_url,
+            Date_Image: new Date(),
+          });
+        });
+      } else {
+        req.files.forEach((file) => {
+          imageRecords.push({
+            ID_Depo: depo.ID_Depo,
+            URL_Image: `/uploads/${file.filename}`,
+            Date_Image: new Date(),
+          });
+        });
+      }
 
       await prisma.T_Images.createMany({
-        //Then, in the database
-        data: uploadedImages.map((image) => ({
-          ID_Depo: depo.ID_Depo,
-          Date_Image: new Date(),
-          URL_Image: image.secure_url,
-        })),
+        data: imageRecords,
       });
     }
 
     res.status(201).json(depo);
   } catch (err) {
-    console.error(err)
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
+};
+
+// Get image URL
+const getImageUrl = (file) => {
+  if (process.env.NODE_ENV === "development") {
+    return `local://${file.originalname}`;
+  }
+  return uploadToCloudinary(file.buffer);
 };
 
 // Display all depos in the db
@@ -67,8 +100,13 @@ export const getAllDepos = async (req, res) => {
       where: userId ? { ID_User: userId } : undefined,
       include: {
         User_Depos: true,
+
+        Images_Depos: true,
+
         Answers_Depos: {
-          include: { User_Answers: true },
+          include: {
+            User_Answers: true,
+          },
         },
       },
       orderBy: {
@@ -100,6 +138,8 @@ export const getMyDepos = async (req, res) => {
             Longitude_User: true,
           },
         },
+        Images_Depos: true,
+
         Answers_Depos: {
           include: {
             User_Answers: {
@@ -107,7 +147,7 @@ export const getMyDepos = async (req, res) => {
                 ID_User: true,
                 Login_User: true,
                 City_User: true,
-                Email_User: true,
+                //Email_User: true,
               },
             },
           },
@@ -127,6 +167,14 @@ export const getMyDepos = async (req, res) => {
 
 export const updateDepo = async (req, res) => {
   try {
+    const depo = req.depo;
+    if (!depo) return res.status(404).json({ error: "Depo not found" });
+
+    if (req.user.userId !== depo.ID_User && req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        error: "Forbidden",
+      });
+    }
     const result = UpdateDepoSchema.safeParse(req.body);
 
     if (!result.success) {
@@ -146,9 +194,7 @@ export const updateDepo = async (req, res) => {
         Cat_Depo: data.cat,
         Title_Depo: data.title,
         Text_Depo: data.description,
-        Lifetime_Depo: data.lifetime
-          ? new Date(data.lifetime)
-          : undefined,
+        Lifetime_Depo: data.lifetime ? new Date(data.lifetime) : undefined,
       },
     });
 
@@ -163,6 +209,12 @@ export const deleteDepo = async (req, res) => {
   try {
     const depo = req.depo;
     if (!depo) return res.status(404).json({ error: "Depo not found" });
+
+    if (req.user.userId !== depo.ID_User && req.user.role !== "ADMIN") {
+      return res.status(403).json({
+        error: "Forbidden",
+      });
+    }
 
     await prisma.T_Depos.delete({
       where: { ID_Depo: depo.ID_Depo },

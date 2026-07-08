@@ -1,12 +1,16 @@
 const API = "http://localhost:5000/api";
 
 export const apiFetch = (url, options = {}) => {
-  return fetch(`${API}${url}`, {
+  const isFormData = options.body instanceof FormData;
+
+  return fetch(`http://localhost:5000/api${url}`, {
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
     ...options,
+    headers: isFormData
+      ? options.headers
+      : {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        },
   });
 };

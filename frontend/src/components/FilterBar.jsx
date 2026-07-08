@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { ChevronUp, Shovel } from "lucide-react";
 import { normalizeOptions } from "../utils/select";
-import MarketLocationFilter from "./MarketLocationFilter";
 import CustomButton from "../components/CustomButton";
 
 export default function FilterBar({

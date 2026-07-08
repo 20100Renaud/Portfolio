@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { Trash2 } from "lucide-react"
 import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import MarketLocationFilter from "../components/MarketLocationFilter";
@@ -30,13 +31,14 @@ import {
 
 export default function DeposPage({ mode }) {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [date, setDate] = useState(() => new Date().toISOString());
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
+  const [files, setFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const isDashboard = mode === "dashboard";
   const [title, setTitle] = useState("");
   const { isAuthenticated } = useAuth();
@@ -45,6 +47,7 @@ export default function DeposPage({ mode }) {
   const config = deposConfig[mode];
   const location = useLocation();
   const navigate = useNavigate();
+  const fileInputRef = useRef();
   const { user } = useAuth();
 
   const {
@@ -114,19 +117,30 @@ export default function DeposPage({ mode }) {
   });
 }, [mode]);
 
+  // Store Images
+  const [date, setDate] = useState(() =>
+    new Date().toISOString().split("T")[0]
+  );
+
   // Create a new Depo
   const handleCreateDepo = async () => {
-    const response = await apiFetch("/depos", {
-      method: "POST",
-      body: JSON.stringify({
-        type,
-        cat,
-        title,
-        description,
-        date,
-        lifetime,
-      }),
-    });
+  const formData = new FormData();
+
+  formData.append("type", type);
+  formData.append("cat", cat);
+  formData.append("title", title);
+  formData.append("description", description);
+  formData.append("date", date);
+  formData.append("lifetime", lifetime);
+
+  files.forEach((file) => {
+    formData.append("images", file);
+  });
+
+  const response = await apiFetch("/depos", {
+    method: "POST",
+    body: formData,
+  });
 
     if (!response.ok) {
       if (response.status === 400) {
@@ -149,6 +163,12 @@ export default function DeposPage({ mode }) {
     setTitle("");
     setDescription("");
     setLifetime("");
+    setFiles([]);
+    setPreviewImages([]);
+    if (fileInputRef.current) {
+  fileInputRef.current.value = "";
+}
+    setDate(new Date().toISOString());
     setErrors({ title: "", description: "" });
 
     await refreshDepos();
@@ -161,7 +181,7 @@ export default function DeposPage({ mode }) {
     isValidLength(title, VALIDATION.depo.title) &&
     isValidLength(description, VALIDATION.depo.description);
 
-  //Delete a depo
+  // Delete a depo
   const handleDeleteDepo = async () => {
     if (!deleteTarget) return;
 
@@ -255,10 +275,13 @@ export default function DeposPage({ mode }) {
               setIsCreateOpen(true);
               setType("");
               setCat("");
-              setTitle("");
+              if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+}
               setDescription("");
               setDate(new Date().toISOString());
               setLifetime(getDefaultLifetime());
+
             }}
           >
             {config.createButtonLabel}
@@ -335,8 +358,19 @@ export default function DeposPage({ mode }) {
         </DeposList>
       </div>
 
-      {/* Create a new Deposit modal*/}
-      <Modal open={isCreateOpen} onClose={() => setIsCreateOpen(false)}>
+      {/* ------------------ Create a new Deposit modal --------------*/}
+      <Modal
+        open={isCreateOpen}
+        onClose={() => {
+          setIsCreateOpen(false);
+          setFiles([]);
+          setPreviewImages([]);
+
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        }}
+      >
         <div className="space-y-4">
           <h2 className="text-xl font-bold">Create a new Deposit</h2>
 
@@ -465,6 +499,82 @@ export default function DeposPage({ mode }) {
             </div>
           </div>
 
+          {/* Image */}
+          <div className="flex flex-col">
+            <div className="space-y-1">
+              <label className="text-xs text-green-900">Images</label>
+
+              <label className="block w-full cursor-pointer">
+                <div
+                  className="border border-green-300 rounded-2xl p-3 bg-white shadow
+                    hover:border-green-700 hover:ring-1 hover:ring-green-700
+                    transition text-sm text-green-900 text-center max-w-36 mx-auto"
+                >
+                  🖼 Add images
+                </div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.files);
+
+                    setFiles(selected);
+
+                    const previews = selected.map((file) => ({
+                      file,
+                      url: URL.createObjectURL(file),
+                    }));
+
+                    setPreviewImages(previews);
+                  }}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Thumbnails */}
+              {previewImages.length > 0 && (
+                <div className="mt-3 grid grid-cols-5 gap-2">
+                  {previewImages.map((image, index) => (
+                    <div
+                      key={image.url}
+                      className="relative aspect-square rounded-xl overflow-hidden border border-green-300"
+                    >
+                      <img
+                        src={image.url}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+
+                      <CustomButton
+                      variant="icon"
+                        onClick={() => {
+                          const newFiles = files.filter((_, i) => i !== index);
+
+                          setFiles(newFiles);
+
+                          setPreviewImages(
+                            newFiles.map((file) => ({
+                              file,
+                              url: URL.createObjectURL(file),
+                            }))
+                          );
+                        }}
+                        className="
+                          absolute top-0 right-0 h-6 w-6 p-0 flex items-center justify-center z-10 bg-white/20
+                        "
+                      >
+                        <Trash2 size={12} />
+                      </CustomButton>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* BUTTONS */}
           <div className="flex justify-end gap-2 pt-2">
             <CustomButton
@@ -485,7 +595,7 @@ export default function DeposPage({ mode }) {
         </div>
       </Modal>
 
-      {/* Filter modal */}
+      {/* ---------------- Filter modal ----------------- */}
       {config.showFilters && (
         <Modal
           open={isFilterModalOpen}
@@ -577,7 +687,7 @@ export default function DeposPage({ mode }) {
       )}
 
 
-{/* Delete modal */}
+      {/* -------------------- Delete modal -----------------*/}
       <ConfirmModal
       open={isDeleteOpen}
       title="Delete deposit"

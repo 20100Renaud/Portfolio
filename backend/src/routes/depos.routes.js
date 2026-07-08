@@ -24,7 +24,30 @@ router.get("/:id", preloadDepo, (req, res) => {
   res.json(req.depo);
 });
 
-router.post("/", authMiddleware, upload.array("images", 5), createDepo);
+router.post(
+  "/",
+  (req, res, next) => {
+    console.log("[ROUTE HIT /depos]");
+    next();
+  },
+  authMiddleware,
+  (req, res, next) => {
+    upload.array("images", 5)(req, res, function (err) {
+      if (err) {
+        console.error("[MULTER ERROR]:", err);
+        return res.status(400).json({ error: err.message });
+      }
+
+      console.log("[MULTER PASSED]");
+      console.log("FILES:", req.files);
+      console.log("BODY:", req.body);
+
+      next();
+    });
+  },
+  createDepo,
+);
+
 router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
 
 router.put(

@@ -1,6 +1,7 @@
 import prisma from "../src/prismaClient.js";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import { hmacEmail, encryptEmail, decryptEmail } from "../src/utils/emailCrypto.js";
 
 dotenv.config();
 
@@ -11,12 +12,16 @@ async function main() {
     throw new Error("UNKNOWN_EMAIL missing");
   }
 
+  const UnknowEmailHash = hmacEmail(unknownEmail);
+  const UnknowEmailEncrypted = encryptEmail(unknownEmail);
+
   const unknownUser = await prisma.T_Users.upsert({
-    where: { Email_User: unknownEmail },
+    where: { Email_Hash_User: UnknowEmailHash },
     update: {},
     create: {
       Login_User: "Unknown",
-      Email_User: unknownEmail,
+      Email_Hash_User: UnknowEmailHash,
+      Email_Encrypted_User: UnknowEmailEncrypted,
       Password_User: "DISABLED",
       Role_User: "CLIENT",
       City_User: "Unknown",
@@ -34,14 +39,18 @@ async function main() {
     throw new Error("ADMIN_EMAIL or ADMIN_PASSWORD missing");
   }
 
+  const AdminEmailHash = hmacEmail(adminEmail);
+  const AdminEmailEncrypted = encryptEmail(adminEmail);
+
   const existingAdmin = await prisma.T_Users.findUnique({
-    where: { Email_User: adminEmail },
+    where: { Email_Hash_User: AdminEmailHash },
   });
   if (!existingAdmin) {
     await prisma.T_Users.create({
       data: {
         Login_User: "Admin",
-        Email_User: adminEmail,
+        Email_Hash_User: AdminEmailHash,
+        Email_Encrypted_User: AdminEmailEncrypted,
         Password_User: await bcrypt.hash(adminPassword, 10),
         Role_User: "ADMIN",
         City_User: "Unknown",
