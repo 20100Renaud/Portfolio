@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../prismaClient.js";
 import { registerSchema } from "../validators/auth.schema.js";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 export const register = async (req, res) => {
   try { 
@@ -13,10 +14,14 @@ export const register = async (req, res) => {
     }
     const data = result.data;
     const normalizedEmail = data.email.toLowerCase().trim();
+
+    const emailHash = hmacEmail(normalizedEmail);
+    const emailEncrypted = encryptEmail(normalizedEmail);
+
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const existingUser = await prisma.T_Users.findUnique({
-      where: { Email_User: normalizedEmail },
+      where: { Email_Hash_User: emailHash },
     });
 
     if (existingUser) {
@@ -26,7 +31,8 @@ export const register = async (req, res) => {
     const user = await prisma.T_Users.create({
       data: {
         Login_User: data.username,
-        Email_User: normalizedEmail,
+        Email_Hash_User: emailHash,
+        Email_Encrypted_User: emailEncrypted,
         Password_User: hashedPassword,
         City_User: data.city_user,
         Latitude_User: data.latitude_user,
@@ -70,9 +76,12 @@ export const connect = async (req, res) => {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+    const emailHash = hmacEmail(normalizedEmail);
 
     const user = await prisma.T_Users.findUnique({
-      where: { Email_User: normalizedEmail },
+      where: {
+        Email_Hash_User: emailHash,
+      },
     });
 
     if (!user) {

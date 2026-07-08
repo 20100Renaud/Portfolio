@@ -4,6 +4,7 @@ import {
   CreateDepoSchema,
   UpdateDepoSchema,
 } from "../validators/depo.schema.js";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 // -----------------------------------------CRUD DEPOS---------------------------------------------------------------
 export const createDepo = async (req, res) => {
@@ -146,7 +147,7 @@ export const getMyDepos = async (req, res) => {
                 ID_User: true,
                 Login_User: true,
                 City_User: true,
-                Email_User: true,
+                //Email_User: true,
               },
             },
           },

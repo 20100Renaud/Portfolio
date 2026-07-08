@@ -4,6 +4,7 @@ import { UpdateSchema } from "../validators/auth.schema.js";
 import { log } from "node:console";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 export const deleteUser = async (req, res) => {
   try {
@@ -17,8 +18,15 @@ export const deleteUser = async (req, res) => {
     if (!process.env.UNKNOWN_EMAIL) {
       return res.status(500).json({ error: "UNKNOWN_EMAIL missing" });
     }
+
+    const unknownEmail = process.env.UNKNOWN_EMAIL;
+      if (!unknownEmail) {
+        throw new Error("UNKNOWN_EMAIL missing");
+      }
+    const UnknowEmailHash = hmacEmail(unknownEmail);
+
     const unknown = await prisma.T_Users.findFirst({
-      where: { Email_User: process.env.UNKNOWN_EMAIL },
+      where: { Email_Hash_User: UnknowEmailHash },
     });
     if (!unknown) {
       return res.status(500).json({ error: "Unknown user missing" });
@@ -58,15 +66,6 @@ export const updateUser = async (req, res) => {
       });
     }
     const datat = result.data;
-    const normalizedEmail = datat.email.toLowerCase().trim();
-
-    const existingUser = await prisma.T_Users.findUnique({
-      where: { Email_User: normalizedEmail },
-    });
-
-    if (existingUser) {
-      return res.status(409).json({ error: "Email already used" });
-    }
 
     const data = {};
 
@@ -75,10 +74,27 @@ export const updateUser = async (req, res) => {
     }
 
     if (req.body.email) {
-      data.Email_User = datat.email;
+        const normalizedEmail = datat.email.toLowerCase().trim();
+
+        const emailHash = hmacEmail(normalizedEmail);
+
+        const existingUser = await prisma.T_Users.findUnique({
+            where: {
+                Email_Hash_User: emailHash,
+            },
+        });
+
+        if (existingUser) {
+            return res.status(409).json({
+                error: "Email already used",
+            });
+        }
+
+        data.Email_Hash_User = emailHash;
+        data.Email_Encrypted_User = encryptEmail(normalizedEmail);
     }
 
-    const updated = await prisma.t_Users.update({
+    const updated = await prisma.T_Users.update({
       where: { ID_User: user.userId },
       data,
     });

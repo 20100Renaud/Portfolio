@@ -4,7 +4,7 @@ import { deleteUser, updateUser } from "../controllers/users.controller.js";
 import { changePassword } from "../controllers/users.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
-
+import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 const router = Router();
 
@@ -31,7 +31,8 @@ router.get("/me", authMiddleware, async (req, res) => {
     Latitude_User: user.Latitude_User,
     Longitude_User: user.Longitude_User,
     City_User: user.City_User,
-    email: user.Email_User,
+    hashed_email: user.Email_Hash_User,
+    crypted_email: user.Email_Encrypted_User
   });
 });
 

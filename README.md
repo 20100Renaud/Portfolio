@@ -348,6 +348,12 @@ npm install @turf/turf
 
 We use Jest to create a test file easily then we test our endpoint with supertest
 
+if you change the prisma schema, you have to use this command:
+
+```
+npx dotenv -e .env.test -- prisma migrate deploy
+```
+
 `~/portfolio/backend/$`
 
 Command to test the authentification endpoint:

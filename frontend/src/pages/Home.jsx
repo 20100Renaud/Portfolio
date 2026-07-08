@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaQuestion } from "react-icons/fa";
 import { GiBasket, GiNotebook } from "react-icons/gi";
 import Animated_logo from "../components/Animated_logo";
@@ -9,6 +9,7 @@ import { useScrollScale } from "../hooks/useInView";
 import Modal from "../components/Modal";
 import dessin from "../assets/dessin_jardin.png";
 import Marquee from "../components/Marquee";
+import CustomButton from "../components/CustomButton";
 
 export default function Home() {
   const basketRef = useRef(null);
@@ -18,6 +19,7 @@ export default function Home() {
   const notebookScale = useScrollScale(notebookRef);
   const questionScale = useScrollScale(questionRef);
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div
@@ -122,9 +124,9 @@ export default function Home() {
               <p>
                 So we built a way to connect people around that idea. Please
                 help us improve it here in the{" "}
-                <Link to="/faq" className="underline text-blue-500">
+                <CustomButton onClick={() => navigate("/faq")} variant="small_green" className="">
                   FAQ
-                </Link>
+                </CustomButton>
                 .
               </p>
             </div>

@@ -1,17 +1,22 @@
 import prisma from "../src/prismaClient.js";
 import bcrypt from "bcrypt";
+import { hmacEmail, encryptEmail, decryptEmail } from "../src/utils/emailCrypto.js";
 
 async function main() {
   console.log("🌱 Creating demo data...");
 
   // ---------------- USERS ----------------
 
-  const password = await bcrypt.hash("password123", 10);
+  const password = await bcrypt.hash("123456", 10);
+
+  const AythanEmailHash = hmacEmail("aythan@sharup.fr");
+  const AythanEmailEncrypted = encryptEmail("aythan@sharup.fr");
 
   const aythan = await prisma.T_Users.create({
     data: {
       Login_User: "Puma",
-      Email_User: "aythan@sharup.fr",
+      Email_Encrypted_User: AythanEmailEncrypted,
+      Email_Hash_User: AythanEmailHash,
       Password_User: password,
       Role_User: "CLIENT",
       City_User: "Sens",
@@ -20,10 +25,14 @@ async function main() {
     },
   });
 
+  const KikiEmailHash = hmacEmail("kiki@sharup.fr");
+  const KikiEmailEncrypted = encryptEmail("kiki@sharup.fr");
+
   const kiki = await prisma.T_Users.create({
     data: {
       Login_User: "Kiki",
-      Email_User: "killian@sharup.fr",
+      Email_Encrypted_User: KikiEmailEncrypted,
+      Email_Hash_User: KikiEmailHash,
       Password_User: password,
       Role_User: "CLIENT",
       City_User: "Saint-Sérotin",
@@ -32,10 +41,14 @@ async function main() {
     },
   });
 
+  const YoussefEmailHash = hmacEmail("youssef@sharup.fr");
+  const YoussefEmailEncrypted = encryptEmail("youssef@sharup.fr");
+
   const youyou = await prisma.T_Users.create({
     data: {
       Login_User: "Le Bourrin",
-      Email_User: "youssef@sharup.fr",
+      Email_Encrypted_User: YoussefEmailEncrypted,
+      Email_Hash_User: YoussefEmailHash,
       Password_User: password,
       Role_User: "CLIENT",
       City_User: "Rosoy",
