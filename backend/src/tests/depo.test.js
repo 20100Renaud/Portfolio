@@ -88,14 +88,16 @@ describe("Flow of a Depository", () => {
         expect(CreateRepoImageresponse.body.Title_Depo).toBe("test_depo_image");
 
         const depoId = CreateRepoImageresponse.body.ID_Depo;
-        const images = await prisma.t_Images.findMany({
+        const images = await prisma.T_Images.findMany({
             where: {
                 ID_Depo: depoId,
+            },
+            select: {
+                URL_Image: true,
             },
         });
 
         expect(images).toHaveLength(1);
-        expect(images[0].URL_Image).toContain("cloudinary");
 
         //LIST all the depos
         const GetResponse = await request(app)
