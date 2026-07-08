@@ -28,7 +28,7 @@ export async function AskEmail(email, owner, applicant, depo) {
         Hello ${owner.Login_User} !
         ${applicant.Login_user} wants to share his coordinates with you to discuss about your post: ${depo.Title_Depo}
         <br>
-        You can meke contact with him with this email:
+        You can make contact with him with this email:
         ${applicant.Emai_user}
         `
     })
