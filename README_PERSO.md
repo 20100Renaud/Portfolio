@@ -99,8 +99,8 @@ npm run rebuild
 
 cd backend
 
-npm run seed:demo
 npm run prisma:generate (if schema has changed, sync with Prisma Client )
+npm run seed:demo
 npm run studio
 ```
 

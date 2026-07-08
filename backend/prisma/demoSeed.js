@@ -20,8 +20,8 @@ async function main() {
       Password_User: password,
       Role_User: "CLIENT",
       City_User: "Sens",
-      Latitude_User: 3.2870335570549027,
-      Longitude_User: 48.19603419481204,
+      Latitude_User: 48.19603419481204,
+      Longitude_User: 3.2870335570549027,
     },
   });
 
@@ -36,8 +36,8 @@ async function main() {
       Password_User: password,
       Role_User: "CLIENT",
       City_User: "Saint-Sérotin",
-      Latitude_User: 3.1577555967741935,
-      Longitude_User: 48.246025029569935,
+      Latitude_User: 48.246025029569935,
+      Longitude_User: 3.1577555967741935,
     },
   });
 
@@ -52,8 +52,8 @@ async function main() {
       Password_User: password,
       Role_User: "CLIENT",
       City_User: "Rosoy",
-      Latitude_User: 3.3111308549999974,
-      Longitude_User: 48.149528074999985,
+      Latitude_User: 48.149528074999985,
+      Longitude_User: 3.3111308549999974,
     },
   });
 
@@ -65,7 +65,7 @@ async function main() {
       Type_Depo: "OFFER",
       Cat_Depo: "Vegetables",
       Title_Depo: "Fresh tomatoes from my garden",
-      Text_Depo: "I have extra tomatoes this week. Free for neighbours.",
+      Text_Depo: "I have extra tomatoes this week.",
       Lifetime_Depo: new Date("2026-08-01"),
 
       Images_Depos: {
