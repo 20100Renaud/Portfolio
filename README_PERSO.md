@@ -82,6 +82,28 @@ npm run clean
   - Prisma migrations
   - Seed script (automatic on backend start)
 
+#### Load demoSeed
+After clean, the db is empty, rebuild will run the seed.js file, then it is possible to add data in the db with:
+
+`~/portfolio/backend/$`
+```
+npm run seed:demo
+```
+
+#### Full rabase routine
+```
+cd ~/Portfolio
+
+npm run clean
+npm run rebuild
+
+cd backend
+
+npm run seed:demo
+npm run prisma:generate (if schema has changed, sync with Prisma Client )
+npm run studio
+```
+
 ### 4. Stop the containers at the end of the day (restard with dev)
 *Usually `Ctr + C` is enough but with -d, the logs are not visible*
 

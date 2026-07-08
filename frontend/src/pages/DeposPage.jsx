@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo, useRef } from "react";
+import { Trash2 } from "lucide-react"
 import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import MarketLocationFilter from "../components/MarketLocationFilter";
@@ -37,6 +38,7 @@ export default function DeposPage({ mode }) {
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
   const [files, setFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const isDashboard = mode === "dashboard";
   const [title, setTitle] = useState("");
   const { isAuthenticated } = useAuth();
@@ -162,6 +164,7 @@ export default function DeposPage({ mode }) {
     setDescription("");
     setLifetime("");
     setFiles([]);
+    setPreviewImages([]);
     if (fileInputRef.current) {
   fileInputRef.current.value = "";
 }
@@ -355,8 +358,19 @@ export default function DeposPage({ mode }) {
         </DeposList>
       </div>
 
-      {/* Create a new Deposit modal*/}
-      <Modal open={isCreateOpen} onClose={() => setIsCreateOpen(false)}>
+      {/* ------------------ Create a new Deposit modal --------------*/}
+      <Modal
+        open={isCreateOpen}
+        onClose={() => {
+          setIsCreateOpen(false);
+          setFiles([]);
+          setPreviewImages([]);
+
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        }}
+      >
         <div className="space-y-4">
           <h2 className="text-xl font-bold">Create a new Deposit</h2>
 
@@ -494,9 +508,9 @@ export default function DeposPage({ mode }) {
                 <div
                   className="border border-green-300 rounded-2xl p-3 bg-white shadow
                     hover:border-green-700 hover:ring-1 hover:ring-green-700
-                    transition text-sm text-green-900 text-center"
+                    transition text-sm text-green-900 text-center max-w-36 mx-auto"
                 >
-                  📎 Click to upload files
+                  🖼 Add images
                 </div>
 
                 <input
@@ -504,15 +518,59 @@ export default function DeposPage({ mode }) {
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={(e) => setFiles([...e.target.files])}
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.files);
+
+                    setFiles(selected);
+
+                    const previews = selected.map((file) => ({
+                      file,
+                      url: URL.createObjectURL(file),
+                    }));
+
+                    setPreviewImages(previews);
+                  }}
                   className="hidden"
                 />
               </label>
 
-              {files?.length > 0 && (
-                <p className="text-xs text-green-700">
-                  {files.length} file{files.length > 1 ? "s" : ""} selected
-                </p>
+              {/* Thumbnails */}
+              {previewImages.length > 0 && (
+                <div className="mt-3 grid grid-cols-5 gap-2">
+                  {previewImages.map((image, index) => (
+                    <div
+                      key={image.url}
+                      className="relative aspect-square rounded-xl overflow-hidden border border-green-300"
+                    >
+                      <img
+                        src={image.url}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+
+                      <CustomButton
+                      variant="icon"
+                        onClick={() => {
+                          const newFiles = files.filter((_, i) => i !== index);
+
+                          setFiles(newFiles);
+
+                          setPreviewImages(
+                            newFiles.map((file) => ({
+                              file,
+                              url: URL.createObjectURL(file),
+                            }))
+                          );
+                        }}
+                        className="
+                          absolute top-0 right-0 h-6 w-6 p-0 flex items-center justify-center z-10 bg-white/20
+                        "
+                      >
+                        <Trash2 size={12} />
+                      </CustomButton>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </div>
@@ -537,7 +595,7 @@ export default function DeposPage({ mode }) {
         </div>
       </Modal>
 
-      {/* Filter modal */}
+      {/* ---------------- Filter modal ----------------- */}
       {config.showFilters && (
         <Modal
           open={isFilterModalOpen}
@@ -629,7 +687,7 @@ export default function DeposPage({ mode }) {
       )}
 
 
-{/* Delete modal */}
+      {/* -------------------- Delete modal -----------------*/}
       <ConfirmModal
       open={isDeleteOpen}
       title="Delete deposit"

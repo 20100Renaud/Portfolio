@@ -109,7 +109,7 @@ export default function DashboardDepoCard({
           </div>
 
           {/* COL 3 */}
-          <div className="flex flex-col text-green-700 text-left">
+          <div className="flex flex-col text-green-700 text-left w-24">
             <span>💬 {answersLabel}</span>
             <span>📷 {photosLabel}</span>
           </div>

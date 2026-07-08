@@ -22,6 +22,9 @@ export default function CustomButton({
 
     small_red:
       "bg-white border border-red-300 text-xs text-red-600 rounded-2xl min-w-16 hover:bg-red-50",
+
+    icon:
+      "text-red-600 rounded-2xl",
   };
 
   return (
