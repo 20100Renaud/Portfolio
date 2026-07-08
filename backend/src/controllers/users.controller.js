@@ -84,7 +84,7 @@ export const updateUser = async (req, res) => {
             },
         });
 
-        if (existingUser && existingUser.ID_User !== user.userId) {
+        if (existingUser) {
             return res.status(409).json({
                 error: "Email already used",
             });
