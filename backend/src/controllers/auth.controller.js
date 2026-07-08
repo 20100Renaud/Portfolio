@@ -75,7 +75,8 @@ export const connect = async (req, res) => {
       return res.status(400).json({ error: "Missing credentials" });
     }
 
-    const emailHash = hashEmail(normalizedEmail);
+    const normalizedEmail = email.toLowerCase().trim();
+    const emailHash = hmacEmail(normalizedEmail);
 
     const user = await prisma.T_Users.findUnique({
       where: {
