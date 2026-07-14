@@ -14,6 +14,7 @@ import {
   getMyDepos,
 } from "../controllers/depos.controller.js";
 import {createAnswer} from "../controllers/answers.controller.js";
+import { CreateLimiter, UpdateLimiter } from "../middleware/depo.middleware.js";
 
 const router = express.Router();
 
@@ -31,6 +32,7 @@ router.post(
     next();
   },
   authMiddleware,
+  CreateLimiter,
   (req, res, next) => {
     upload.array("images", 5)(req, res, function (err) {
       if (err) {
@@ -48,11 +50,12 @@ router.post(
   createDepo,
 );
 
-router.post("/:id/answers", authMiddleware, preloadDepo, createAnswer);
+router.post("/:id/answers", authMiddleware, CreateLimiter, preloadDepo, createAnswer);
 
 router.put(
   "/:id",
   authMiddleware,
+  UpdateLimiter,
   preloadDepo,
   isOwnerOrAdmin((req) => req.depo.ID_User),
   updateDepo,

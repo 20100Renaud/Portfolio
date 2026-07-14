@@ -35,6 +35,7 @@ const preloadAnswer = async (req, res, next) => {
 router.put(
   "/answers/:id",
   authMiddleware,
+  UpdateLimiter,
   preloadAnswer,
   isOwnerOrAdmin((req) => req.answer.ID_User),
   updateAnswer,

@@ -1,3 +1,4 @@
+import rateLimit from "express-rate-limit";
 import prisma from "../prismaClient.js";
 
 export const preloadDepo = async (req, res, next) => {
@@ -28,3 +29,21 @@ export const preloadDepo = async (req, res, next) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+// Function used at the creation of a depo or an answer
+export const CreateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: {
+    error: "Too many request ! Try later.",
+  },
+})
+
+// Function used at the updatye of a depo
+export const UpdateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: {
+    error: "Too many request ! Try later.",
+  },
+})
