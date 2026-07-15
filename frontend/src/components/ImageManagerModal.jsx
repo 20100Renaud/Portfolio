@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Trash2 } from "lucide-react"
+import { Trash2, Plus } from "lucide-react";
 import Modal from "./Modal";
 import CustomButton from "./CustomButton";
 
@@ -7,6 +7,7 @@ export default function ImageManagerModal({ open, onClose, depo, onSaved }) {
   const [titles, setTitles] = useState({});
   const [images, setImages] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [imageLimitMessage, setImageLimitMessage] = useState("");
   const fileInputRef = useRef(null);
 
   // Initialize image modal
@@ -16,10 +17,21 @@ export default function ImageManagerModal({ open, onClose, depo, onSaved }) {
     setImages(depo.Images_Depos ?? []);
     setTitles({});
     setSelectedFiles([]);
-  }, [open, depo.Images_Depos]);
+  }, [open]);
+
+  // Manage upload images max message
+  useEffect(() => {
+    if (!imageLimitMessage) return;
+
+    const timer = setTimeout(() => {
+      setImageLimitMessage("");
+    }, 3500);
+
+    return () => clearTimeout(timer);
+  }, [imageLimitMessage]);
 
   // Save every changes in the image modal
-  const saveImageModal = async () => {
+  const handleSaveGallery = async () => {
     try {
       for (const image of images) {
         await fetch(`http://localhost:5000/api/images/${image.ID_Image}`, {
@@ -47,7 +59,6 @@ export default function ImageManagerModal({ open, onClose, depo, onSaved }) {
   // Delete image
   const deleteImage = async (imageId) => {
     try {
-
       const response = await fetch(
         `http://localhost:5000/api/images/${imageId}`,
         {
@@ -66,16 +77,35 @@ export default function ImageManagerModal({ open, onClose, depo, onSaved }) {
     }
   };
 
-  // Upload image
-  const uploadImages = async () => {
-    try {
-      if (!selectedFiles.length) {
-        return;
-      }
+  // Images config
+  const MAX_IMAGES = 4;
+  const canAddImages = images.length < MAX_IMAGES;
+  const imageSlots = Array.from({ length: MAX_IMAGES }, (_, index) => {
+    return images[index] ?? null;
+  });
 
+  // Upload images
+  const handleImageSelection = async (e) => {
+    const files = Array.from(e.target.files);
+
+    if (!files.length) return;
+
+    const remainingSlots = MAX_IMAGES - images.length;
+    if (files.length > remainingSlots) {
+      setImageLimitMessage("Maximum number of images is 4.");
+    } else {
+      setImageLimitMessage("");
+    }
+
+    const filesToUpload = files.slice(0, remainingSlots);
+    if (!filesToUpload.length) {
+      return;
+    }
+
+    try {
       const formData = new FormData();
 
-      selectedFiles.forEach((file) => {
+      filesToUpload.forEach((file) => {
         formData.append("images", file);
       });
 
@@ -95,146 +125,152 @@ export default function ImageManagerModal({ open, onClose, depo, onSaved }) {
 
       const data = await response.json();
 
-      console.log("[UPLOAD RESPONSE]", data);
-      console.log("[LOCAL IMAGES]", images);
+      setImages((prev) => [...prev, ...data.images]);
 
-      setImages((prev) => {
-        const updated = [...prev, ...data.images];
+      if (files.length > remainingSlots) {
+        setImageLimitMessage("Maximum number of images is 4.");
+      }
 
-        console.log("[LOCAL IMAGES]", updated);
-
-        return updated;
-      });
-
-      console.log(images);
-
-      setSelectedFiles([]);
-
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (err) {
       console.error("Upload failed:", err);
     }
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={onClose} className="sm:max-w-sm">
       <h2 className="text-xl font-bold mb-6">Gallery</h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {images.length ? (
-          images.map((image) => (
+      <div className="h-[420px] sm:h-[450px] overflow-y-auto">
+        <div className="grid grid-cols-2 gap-4">
+          {imageSlots.map((image, index) => (
             <div
-              key={image.ID_Image}
-              className="relative border border-green-300 bg-white/50 rounded-xl p-2"
+              key={image ? image.ID_Image : `empty-${index}`}
+              className="
+                relative
+                rounded-xl
+                border
+                border-green-300
+                bg-white/50
+                p-2
+              "
             >
-              <CustomButton
-                variant="icon"
-                onClick={() => deleteImage(image.ID_Image)}
-                className="absolute top-2 right-2 h-8 w-8 rounded-full p-0 flex items-center justify-center z-10"
-              >
-                <Trash2 size={12} />
-              </CustomButton>
+              {image ? (
+                <>
+                  <CustomButton
+                    variant="icon"
+                    onClick={() => deleteImage(image.ID_Image)}
+                    className="
+                      absolute top-2 right-2
+                      h-6 w-6
+                      p-0
+                      flex items-center justify-center
+                      z-10
+                      bg-white/70
+                      hover:bg-white
+                    "
+                  >
+                    <Trash2 size={12} />
+                  </CustomButton>
 
-              <img
-                src={`http://localhost:5000${image.URL_Image}`}
-                alt={image.Text_Image ?? ""}
-                className="w-full aspect-square object-cover rounded-lg"
-              />
+                  <img
+                    src={`http://localhost:5000${image.URL_Image}`}
+                    alt={image.Text_Image ?? ""}
+                    className="
+                      w-full
+                      aspect-square
+                      object-cover
+                      rounded-lg
+                    "
+                  />
 
-              <input
-                value={image.Text_Image ?? ""}
-                onChange={(e) => {
-                  const value = e.target.value;
+                  <input
+                    value={image.Text_Image ?? ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
 
-                  setImages((prev) =>
-                    prev.map((img) =>
-                      img.ID_Image === image.ID_Image
-                        ? { ...img, Text_Image: value }
-                        : img,
-                    ),
-                  );
-                }}
-                placeholder="Title"
-                className="
-                  mt-2
-                  w-full
-                  rounded-xl
-                  border
-                  border-green-300
-                  bg-white
-                  px-3
-                  py-2
-                  text-sm
-                  focus:outline-none
-                  focus:border-green-700
-                  focus:ring-1
-                  focus:ring-green-700
-                "
-              />
+                      setImages((prev) =>
+                        prev.map((img) =>
+                          img.ID_Image === image.ID_Image
+                            ? { ...img, Text_Image: value }
+                            : img,
+                        ),
+                      );
+                    }}
+                    placeholder="Title"
+                    className="
+                      mt-2
+                      w-full
+                      rounded-xl
+                      border
+                      border-green-300
+                      bg-white
+                      px-3
+                      py-2
+                      text-sm
+                      focus:outline-none
+                      focus:border-green-700
+                      focus:ring-1
+                      focus:ring-green-700
+              "
+                  />
+                </>
+              ) : (
+                <button
+                  onClick={() => fileInputRef.current.click()}
+                  className="
+                    w-full
+                    aspect-square
+                    rounded-lg
+                    border-2
+                    border-dashed
+                    border-green-300
+                    bg-green-50
+                    flex
+                    items-center
+                    justify-center
+                    text-4xl
+                    text-green-600
+                    hover:bg-green-100
+                    hover:border-green-700
+                    transition
+                    mb-12
+                  "
+                >
+                  <Plus size={30} strokeWidth={1.5} />
+                </button>
+              )}
             </div>
-          ))
-        ) : (
-          <div className="border border-green-300 rounded-xl p-4">
-            <p>No images yet.</p>
-          </div>
-        )}
+          ))}
+        </div>
       </div>
 
+      {/* Hidden image selection */}
       <input
         ref={fileInputRef}
         type="file"
         accept="image/*"
         multiple
         hidden
-        onChange={(e) =>
-          setSelectedFiles((prev) => [...prev, ...Array.from(e.target.files)])
-        }
+        onChange={handleImageSelection}
       />
 
-      <div className="flex w-full justify-center gap-8 my-4">
-        
-        <CustomButton
-          variant="big_white"
-          onClick={() => fileInputRef.current.click()}
-        >
-          + Add images
-        </CustomButton>
-
-        <CustomButton variant="big_green" onClick={saveImageModal}>
-          Close
-        </CustomButton>
-
+      {/* Limite max message */}
+      <div className="relative">
+        {imageLimitMessage && (
+          <p className="absolute w-full text-center text-sm text-red-600 -translate-y-4">
+            {imageLimitMessage}
+          </p>
+        )}
       </div>
 
-      {/* Show selected files */}
-      {selectedFiles.length > 0 && (
-        <div className="mt-3">
-          <p className="underline">Selected:</p>
-
-          <div className="text-left">
-            {selectedFiles.map((file) => {
-              const maxLength = 30;
-              const name = file.name;
-              let displayName;
-              if (name.length > maxLength) {
-                const firstPart = name.slice(0, 15);
-                const lastPart = name.slice(-15);
-                displayName = `- ${firstPart} [...] ${lastPart}`;
-              } else {
-                displayName = `- ${name}`;
-              }
-              return <div key={file.name}>{displayName}</div>;
-            })}
-          </div>
-
-          <CustomButton
-            variant="big_green"
-            onClick={uploadImages}
-            className="mt-2"
-          >
-            Confim Upload
-          </CustomButton>
-        </div>
-      )}
+      <div className="flex w-full justify-center my-4">
+        <CustomButton variant="big_green" onClick={handleSaveGallery}>
+          Save
+        </CustomButton>
+      </div>
     </Modal>
   );
 }

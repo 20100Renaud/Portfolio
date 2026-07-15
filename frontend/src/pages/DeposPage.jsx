@@ -11,6 +11,7 @@ import CustomButton from "../components/CustomButton";
 import ConfirmModal from "../components/ConfirmModal";
 import { getDefaultLifetime } from "../utils/date";
 import DeposList from "../components/DeposList";
+import ImagePreviewGrid from "../components/ImagePreviewGrid";
 import FilterBar from "../components/FilterBar";
 import { useLocation } from "react-router-dom";
 import useDepos from "../hooks/useDepos";
@@ -226,7 +227,7 @@ export default function DeposPage({ mode }) {
   // Manage page title and sub if admin
   const pageTitle =
     mode === "dashboard" && user?.role === "ADMIN"
-      ? "Depos Management"
+      ? "Management"
       : config.title;
 
   const pageSubtitle =
@@ -277,7 +278,7 @@ export default function DeposPage({ mode }) {
               setCat("");
               if (fileInputRef.current) {
                 fileInputRef.current.value = "";
-}
+              }
               setDescription("");
               setDate(new Date().toISOString());
               setLifetime(getDefaultLifetime());
@@ -374,7 +375,7 @@ export default function DeposPage({ mode }) {
         <div className="space-y-4">
           <h2 className="text-xl font-bold">Create a new Deposit</h2>
 
-          <p className="text-sm ">
+          <p className="text-sm">
             Deposits last 1 month by default, you can change it later.
           </p>
 
@@ -535,43 +536,24 @@ export default function DeposPage({ mode }) {
               </label>
 
               {/* Thumbnails */}
-              {previewImages.length > 0 && (
-                <div className="mt-3 grid grid-cols-5 gap-2">
-                  {previewImages.map((image, index) => (
-                    <div
-                      key={image.url}
-                      className="relative aspect-square rounded-xl overflow-hidden border border-green-300"
-                    >
-                      <img
-                        src={image.url}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
+              <ImagePreviewGrid
+                images={previewImages}
+                getKey={(image) => image.url}
+                getSrc={(image) => image.url}
+                showAddButton={true}
+                onDelete={(index) => {
+                  const newFiles = files.filter((_, i) => i !== index);
 
-                      <CustomButton
-                      variant="icon"
-                        onClick={() => {
-                          const newFiles = files.filter((_, i) => i !== index);
+                  setFiles(newFiles);
 
-                          setFiles(newFiles);
-
-                          setPreviewImages(
-                            newFiles.map((file) => ({
-                              file,
-                              url: URL.createObjectURL(file),
-                            }))
-                          );
-                        }}
-                        className="
-                          absolute top-0 right-0 h-6 w-6 p-0 flex items-center justify-center z-10 bg-white/20
-                        "
-                      >
-                        <Trash2 size={12} />
-                      </CustomButton>
-                    </div>
-                  ))}
-                </div>
-              )}
+                  setPreviewImages(
+                    newFiles.map((file) => ({
+                      file,
+                      url: URL.createObjectURL(file),
+                    }))
+                  );
+                }}
+              />
             </div>
           </div>
 

@@ -46,14 +46,14 @@ export default function PublicDepoCard({
         {/* Photos */}
         <div
           className={`
-    relative
-    w-32 h-32
-    rounded-2xl
-    overflow-hidden
-    bg-green-100
-    flex items-center justify-center
-    ${enableGallery ? "cursor-pointer group" : ""}
-  `}
+            relative
+            w-32 h-32
+            rounded-2xl
+            overflow-hidden
+            bg-green-100
+            flex items-center justify-center
+            ${enableGallery ? "cursor-pointer group" : ""}
+          `}
           onClick={() => enableGallery && firstImage && setGalleryOpen(true)}
         >
           {firstImage ? (
@@ -61,11 +61,11 @@ export default function PublicDepoCard({
               src={`http://localhost:5000${firstImage}`}
               alt={depo.Title_Depo}
               className={`
-        w-full
-        h-full
-        object-cover
-        ${enableGallery ? "transition-transform duration-300 group-hover:scale-105" : ""}
-      `}
+                w-full
+                h-full
+                object-cover
+                ${enableGallery ? "transition-transform duration-300 group-hover:scale-105" : ""}
+              `}
             />
           ) : (
             <span className="text-4xl">🌱</span>
@@ -74,13 +74,13 @@ export default function PublicDepoCard({
           {enableGallery && (
             <div
               className="
-        absolute inset-0
-        bg-black/30
-        opacity-0
-        group-hover:opacity-100
-        transition
-        flex items-center justify-center
-      "
+                absolute inset-0
+                bg-black/30
+                opacity-0
+                group-hover:opacity-100
+                transition
+                flex items-center justify-center
+              "
             >
               <ZoomIn size={36} className="text-white/80" />
             </div>
