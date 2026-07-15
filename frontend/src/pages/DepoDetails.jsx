@@ -31,6 +31,7 @@ export default function Depo() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
 
+
   const editTextareaRef = useRef(null);
   const [isAnswerModalOpen, setAnswerModalOpen] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -46,7 +47,8 @@ export default function Depo() {
   const [cat, setCat] = useState("");
 
   const [isDepoModalOpen, setDepoModalOpen] = useState(false);
-  const [isImagesModalOpen, setImagesModalOpen] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetimeMonths, setLifetimeMonths] = useState(1);
@@ -337,6 +339,7 @@ export default function Depo() {
                   setTitle(depo.Title_Depo);
                   setDescription(depo.Text_Depo);
                   setLifetimeMonths(getLifetimeMonths(depo.Lifetime_Depo));
+                  setGalleryImages(depo.Images_Depos ?? []);
                   setDepoModalOpen(true);
                 }}
               >
@@ -463,7 +466,7 @@ export default function Depo() {
 
       {/* -------------- Edit depo modal ------------------- */}
       <Modal open={isDepoModalOpen} onClose={() => setDepoModalOpen(false)}>
-        <div className="space-y-4">
+        <div className="sm:space-y-4  text-sm">
           <h2 className="text-xl font-bold">Edit Deposit</h2>
 
           {/* Type */}
@@ -592,21 +595,21 @@ export default function Depo() {
             </div>
           </div>
 
-          {/* Expiration date */}
-          <div className="flex flex-col gap-3 items-center">
+          {/* Expiration block */}
+          <div className="flex flex-col items-center">
             <label className="text-xs">Expiration</label>
 
             {/* Sentence */}
             <div className="w-full items-center  flex rounded-2xl border border-green-300 bg-white px-4 py-2">
               <div
-                className={`flex-1 ${
+                className={`flex-1 text-xs sm:text-sm ${
                   isLifetimeUrgent(depo.Lifetime_Depo)
                     ? "text-red-500"
                     : "text-green-900"
                 }`}
               >
-                {getLifetimeTextFromDate(depo.Lifetime_Depo)}
-                left before auto-deleting
+                {getLifetimeTextFromDate(depo.Lifetime_Depo)} left before
+                auto-deleting
               </div>
 
               {/* Btns */}
@@ -666,15 +669,18 @@ export default function Depo() {
             </div>
           </div>
 
-          {/* Images */}
-          <ImagePreviewGrid
-            images={depo.Images_Depos ?? []}
-            getKey={(image) => image.ID_Image}
-            getSrc={(image) => `http://localhost:5000${image.URL_Image}`}
-            showDelete={false}
-            showAddButton={true}
-            addButtonAction={() => setImagesModalOpen(true)}
-          />
+          {/* Images preview*/}
+          <div className="my-4">
+            <ImagePreviewGrid
+              images={depo.Images_Depos ?? []}
+              getKey={(image) => image.ID_Image}
+              getSrc={(image) => `http://localhost:5000${image.URL_Image}`}
+              showDelete={false}
+              showAddButton={true}
+              addButtonAction={() => setIsGalleryOpen(true)}
+            />
+          </div>
+
           {/* Btns */}
           <div className="flex justify-end gap-4">
             <CustomButton
@@ -697,9 +703,12 @@ export default function Depo() {
 
       {/* -------------- Edit Image modal ------------- */}
       <ImageManagerModal
-        open={isImagesModalOpen}
-        onClose={() => setImagesModalOpen(false)}
+        open={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        mode="edit"
         depo={depo}
+        images={galleryImages}
+        setImages={setGalleryImages}
         onSaved={loadDepo}
       />
 

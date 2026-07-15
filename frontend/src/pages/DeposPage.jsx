@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react"
 import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import MarketLocationFilter from "../components/MarketLocationFilter";
+import ImageManagerModal from "../components/ImageManagerModal";
 import ValidationCheck from "../components/ValidationCheck";
 import useFilterSummary from "../hooks/useFilterSummary";
 import CustomSelect from "../components/CustomSelect";
@@ -38,8 +39,8 @@ export default function DeposPage({ mode }) {
   const [showWarning, setShowWarning] = useState(false);
   const [description, setDescription] = useState("");
   const [lifetime, setLifetime] = useState("");
-  const [files, setFiles] = useState([]);
-  const [previewImages, setPreviewImages] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [isGalleryOpen, setGalleryOpen] = useState(false);
   const isDashboard = mode === "dashboard";
   const [title, setTitle] = useState("");
   const { isAuthenticated } = useAuth();
@@ -48,7 +49,6 @@ export default function DeposPage({ mode }) {
   const config = deposConfig[mode];
   const location = useLocation();
   const navigate = useNavigate();
-  const fileInputRef = useRef();
   const { user } = useAuth();
 
   const {
@@ -134,8 +134,9 @@ export default function DeposPage({ mode }) {
   formData.append("date", date);
   formData.append("lifetime", lifetime);
 
-  files.forEach((file) => {
-    formData.append("images", file);
+  galleryImages.forEach((image) => {
+    formData.append("images", image.file);
+    formData.append("titles", image.title);
   });
 
   const response = await apiFetch("/depos", {
@@ -164,11 +165,7 @@ export default function DeposPage({ mode }) {
     setTitle("");
     setDescription("");
     setLifetime("");
-    setFiles([]);
-    setPreviewImages([]);
-    if (fileInputRef.current) {
-  fileInputRef.current.value = "";
-}
+    setGalleryImages([]);
     setDate(new Date().toISOString());
     setErrors({ title: "", description: "" });
 
@@ -276,9 +273,6 @@ export default function DeposPage({ mode }) {
               setIsCreateOpen(true);
               setType("");
               setCat("");
-              if (fileInputRef.current) {
-                fileInputRef.current.value = "";
-              }
               setDescription("");
               setDate(new Date().toISOString());
               setLifetime(getDefaultLifetime());
@@ -364,12 +358,7 @@ export default function DeposPage({ mode }) {
         open={isCreateOpen}
         onClose={() => {
           setIsCreateOpen(false);
-          setFiles([]);
-          setPreviewImages([]);
-
-          if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-          }
+          setGalleryImages([]);
         }}
       >
         <div className="space-y-4">
@@ -505,54 +494,14 @@ export default function DeposPage({ mode }) {
             <div className="space-y-1">
               <label className="text-xs text-green-900">Images</label>
 
-              <label className="block w-full cursor-pointer">
-                <div
-                  className="border border-green-300 rounded-2xl p-3 bg-white shadow
-                    hover:border-green-700 hover:ring-1 hover:ring-green-700
-                    transition text-sm text-green-900 text-center max-w-36 mx-auto"
-                >
-                  🖼 Add images
-                </div>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => {
-                    const selected = Array.from(e.target.files);
-
-                    setFiles(selected);
-
-                    const previews = selected.map((file) => ({
-                      file,
-                      url: URL.createObjectURL(file),
-                    }));
-
-                    setPreviewImages(previews);
-                  }}
-                  className="hidden"
-                />
-              </label>
-
               {/* Thumbnails */}
               <ImagePreviewGrid
-                images={previewImages}
+              mode="edit"
+                images={galleryImages}
                 getKey={(image) => image.url}
                 getSrc={(image) => image.url}
                 showAddButton={true}
-                onDelete={(index) => {
-                  const newFiles = files.filter((_, i) => i !== index);
-
-                  setFiles(newFiles);
-
-                  setPreviewImages(
-                    newFiles.map((file) => ({
-                      file,
-                      url: URL.createObjectURL(file),
-                    }))
-                  );
-                }}
+                addButtonAction={() => setGalleryOpen(true)}
               />
             </div>
           </div>
@@ -668,6 +617,14 @@ export default function DeposPage({ mode }) {
 
       )}
 
+      {/* -------------------- Images modal -----------------*/}
+      <ImageManagerModal
+        open={isGalleryOpen}
+        onClose={() => setGalleryOpen(false)}
+        mode="create"
+        images={galleryImages}
+        setImages={setGalleryImages}
+      />
 
       {/* -------------------- Delete modal -----------------*/}
       <ConfirmModal

@@ -388,7 +388,7 @@ Command to run at the root of the application:
 ```
 tree -I node_modules
 ```
-
+```
 .
 ├── Dockerfile
 ├── Presentation - Portfolio project Foundations v3.pdf
@@ -612,3 +612,4 @@ tree -I node_modules
 ├── package.json
 └── scripts
     └── dev.js
+```
