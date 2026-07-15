@@ -1,8 +1,7 @@
 import useClickOutside from "../hooks/useClickOutside";
 
-export default function Modal({ open, onClose, children }) {
+export default function Modal({ open, onClose, children, className = "" }) {
   if (!open) return null;
-
 
   return (
     <div
@@ -11,7 +10,7 @@ export default function Modal({ open, onClose, children }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="
+        className={`
           w-full
           max-w-md sm:max-w-lg
           max-h-[90vh]
@@ -21,7 +20,8 @@ export default function Modal({ open, onClose, children }) {
           bg-gradient-to-b
           from-white from-[0%] to-[#a5d6a7]
           p-6
-        "
+          ${className}
+        `}
       >
         {children}
       </div>

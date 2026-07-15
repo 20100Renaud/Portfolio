@@ -48,7 +48,7 @@ export default function Home() {
             Let your friends know that you have something to give.
           </p>
 
-          <div className=" z-20">
+          <div className="z-20">
             <Animated_logo size={120} />
           </div>
           <div

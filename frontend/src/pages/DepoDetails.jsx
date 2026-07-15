@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { ChevronsDown, ChevronsDownUp, ChevronsUp, Plus } from "lucide-react";
 import { apiFetch } from "../api";
 import Modal from "../components/Modal";
 import ConfirmModal from "../components/ConfirmModal";
@@ -8,6 +9,14 @@ import CustomButton from "../components/CustomButton";
 import CustomSelect from "../components/CustomSelect";
 import ImageManagerModal from "../components/ImageManagerModal";
 import ValidationCheck from "../components/ValidationCheck";
+import ImagePreviewGrid from "../components/ImagePreviewGrid";
+import {
+  getLifetimeMonths,
+  changeLifetimeMonths,
+  lifetimeMonthsToDate,
+  getLifetimeTextFromDate,
+  isLifetimeUrgent,
+} from "../utils/date";
 import { TYPES_DEPOS, getCategoryOptions } from "../config/deposConfig";
 import {
   VALIDATION,
@@ -40,7 +49,7 @@ export default function Depo() {
   const [isImagesModalOpen, setImagesModalOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [description, setDescription] = useState("");
-  const [lifetime, setLifetime] = useState("");
+  const [lifetimeMonths, setLifetimeMonths] = useState(1);
   const [depo, setDepo] = useState(null);
 
   const [loading, setLoading] = useState(true);
@@ -177,7 +186,7 @@ export default function Depo() {
           cat,
           title,
           description,
-          lifetime: lifetime || null,
+          lifetime: lifetimeMonthsToDate(lifetimeMonths),
         }),
       });
 
@@ -273,6 +282,25 @@ export default function Depo() {
   // Retrive the number of images uploaded
   const imageCount = depo.Images_Depos?.length ?? 0;
 
+  // Update lifetime on click btns
+  const updateLifetimeMonths = (amount) => {
+    const newMonths = changeLifetimeMonths(lifetimeMonths, amount);
+
+    setLifetimeMonths(newMonths);
+
+    setDepo((prev) => ({
+      ...prev,
+      Lifetime_Depo: lifetimeMonthsToDate(newMonths),
+    }));
+  };
+
+  // Lifetime btns design
+  const lifetimeButtonClass =
+    "w-12 border border-green-700 text-green-700 transition";
+
+  const lifetimeButtonDisabled =
+    "bg-gray-200 text-gray-600/50 border-green-700 cursor-not-allowed";
+
   return (
     <div className="relative text-center text-green-900 overflow-hidden my-10 mx-auto px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-green-100">
@@ -308,11 +336,7 @@ export default function Depo() {
                   setCat(depo.Cat_Depo);
                   setTitle(depo.Title_Depo);
                   setDescription(depo.Text_Depo);
-                  setLifetime(
-                    depo.Lifetime_Depo
-                      ? new Date(depo.Lifetime_Depo).toISOString().split("T")[0]
-                      : "",
-                  );
+                  setLifetimeMonths(getLifetimeMonths(depo.Lifetime_Depo));
                   setDepoModalOpen(true);
                 }}
               >
@@ -498,14 +522,20 @@ export default function Depo() {
                     title: validateMin(title, VALIDATION.depo.title),
                   }));
                 }}
-                className="border border-green-300 p-2 w-full rounded-2xl shadow outline-none focus:border-green-700 focus:ring-1 focus:ring-green-700"
+                className={`border p-2 w-full rounded-2xl shadow outline-none transition
+                ${
+                  errors.title
+                    ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    : "border-green-300 focus:border-green-700 focus:ring-1 focus:ring-green-700"
+                }
+              `}
               />
               {!errors.title && isValidLength(title, VALIDATION.depo.title) && (
                 <ValidationCheck />
               )}
 
-              {touched.title && errors.title && (
-                <p className="absolute text-xs text-red-600 mt-1">
+              {errors.title && (
+                <p className="absolute text-xs text-red-600 mt-1 ml-3">
                   {errors.title}
                 </p>
               )}
@@ -563,42 +593,90 @@ export default function Depo() {
           </div>
 
           {/* Expiration date */}
-          <div>
-            <label className="text-xs">Expiration date</label>
+          <div className="flex flex-col gap-3 items-center">
+            <label className="text-xs">Expiration</label>
 
-            <input
-              type="date"
-              value={lifetime}
-              onChange={(e) => setLifetime(e.target.value)}
-              className="border border-green-300 p-2 w-full rounded-2xl shadow outline-none focus:border-green-700 focus:ring-1 focus:ring-green-700"
-            />
-          </div>
+            {/* Sentence */}
+            <div className="w-full items-center  flex rounded-2xl border border-green-300 bg-white px-4 py-2">
+              <div
+                className={`flex-1 ${
+                  isLifetimeUrgent(depo.Lifetime_Depo)
+                    ? "text-red-500"
+                    : "text-green-900"
+                }`}
+              >
+                {getLifetimeTextFromDate(depo.Lifetime_Depo)}
+                left before auto-deleting
+              </div>
 
-          {/* Photo */}
-          <div className="flex flex-col">
-            <div className="space-y-1">
-              <label className="text-xs text-green-900">
-                {imageCount === 0
-                  ? "No photos yet"
-                  : `${imageCount} photo${imageCount > 1 ? "s" : ""}`}
-              </label>
+              {/* Btns */}
+              <div className="flex w-38">
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => updateLifetimeMonths(1)}
+                    className={`${lifetimeButtonClass} bg-green-50 hover:bg-green-700/20 rounded-t-lg`}
+                  >
+                    + 1
+                  </button>
 
-              <label className="block w-full cursor-pointer">
-                <CustomButton
-                  variant="big_white"
-                  onClick={() => setImagesModalOpen(true)}
-                  className="border border-green-300 rounded-2xl p-3 bg-white shadow
-                    hover:border-green-700 hover:ring-1 hover:ring-green-700
-                    transition text-sm text-green-900 text-center"
-                >
-                  🖼 Gallery
-                </CustomButton>
-              </label>
+                  <button
+                    disabled={lifetimeMonths - 1 < 1}
+                    onClick={() => updateLifetimeMonths(-1)}
+                    className={`${lifetimeButtonClass} rounded-b-lg ${
+                      lifetimeMonths - 1 < 1
+                        ? lifetimeButtonDisabled
+                        : "bg-white hover:bg-green-50 cursor-pointer shadow-xl"
+                    }`}
+                  >
+                    - 1
+                  </button>
+                </div>
+
+                <div className="flex flex-col items-center justify-center mx-2">
+                  <div className="">
+                    <ChevronsUp size={20} />
+                  </div>
+                  <p className="text-xs -my-1">months</p>
+                  <div>
+                    <ChevronsDown size={20} />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => updateLifetimeMonths(6)}
+                    className={`${lifetimeButtonClass} bg-green-50 hover:bg-green-700/20 rounded-t-lg -mb-`}
+                  >
+                    + 6
+                  </button>
+
+                  <button
+                    disabled={lifetimeMonths - 6 < 1}
+                    onClick={() => updateLifetimeMonths(-6)}
+                    className={`${lifetimeButtonClass} rounded-b-lg ${
+                      lifetimeMonths - 6 < 1
+                        ? lifetimeButtonDisabled
+                        : "bg-white hover:bg-green-50 cursor-pointer shadow-xl"
+                    }`}
+                  >
+                    - 6
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Images */}
+          <ImagePreviewGrid
+            images={depo.Images_Depos ?? []}
+            getKey={(image) => image.ID_Image}
+            getSrc={(image) => `http://localhost:5000${image.URL_Image}`}
+            showDelete={false}
+            showAddButton={true}
+            addButtonAction={() => setImagesModalOpen(true)}
+          />
           {/* Btns */}
-          <div className="flex justify-between">
+          <div className="flex justify-end gap-4">
             <CustomButton
               variant="big_white"
               onClick={() => setDepoModalOpen(false)}

@@ -1,5 +1,18 @@
 import CustomButton from "../CustomButton";
 import { getDepoStats } from "../../utils/depoStats";
+import {
+  getLifetimeMonths,
+  changeLifetimeMonths,
+  lifetimeMonthsToDate,
+  getLifetimeTextFromDate,
+  isLifetimeUrgent,
+} from "../../utils/date";
+import {
+  MessageCircleMore,
+  Camera,
+  CalendarDays,
+  ClockFading,
+} from "lucide-react";
 
 export default function DashboardDepoCard({
   depo,
@@ -70,17 +83,37 @@ export default function DashboardDepoCard({
         {/* ROW 2: Dates */}
         <div className="text-green-700 leading-tight">
           <div className="flex justify-between gap-2">
-            <span className="border border-green-100 rounded-xl py-1 bg-green-50">
-              📅 {formatDate(depo.Date_Depo)}
+            <span className="flex flex-col items-center border border-green-100 rounded-lg py-1 bg-green-50 px-1">
+              <CalendarDays
+                size={16}
+                strokeWidth={1.75}
+                className="text-green-900"
+              />
+              {formatDate(depo.Date_Depo)}
             </span>
-            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
-              ⏳ {formatDate(depo.Lifetime_Depo)}
+            <span className="flex flex-col items-center border border-green-100 rounded-lg py-1 bg-green-50 px-1">
+              <ClockFading
+                size={16}
+                strokeWidth={2}
+                className={` ${
+                  isLifetimeUrgent(depo.Lifetime_Depo)
+                    ? "text-red-500"
+                    : "text-green-700"
+                }`}
+              />
+              {getLifetimeTextFromDate(depo.Lifetime_Depo)}
             </span>
-            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
-              💬 {answersLabel}
+            <span className="flex flex-col items-center border border-green-100 rounded-lg py-1 bg-green-50 px-1">
+              <MessageCircleMore
+                size={16}
+                strokeWidth={1.75}
+                className="text-green-900"
+              />
+              {answersLabel}
             </span>
-            <span className="border border-green-100 rounded-2xl py-1 bg-green-50">
-              📷 {photosLabel}
+            <span className="flex flex-col items-center border border-green-100 rounded-lg py-1 bg-green-50 px-1">
+              <Camera size={16} strokeWidth={1.75} className="text-green-900" />
+              {photosLabel}
             </span>
           </div>
         </div>
@@ -103,15 +136,46 @@ export default function DashboardDepoCard({
 
         <div className="flex flex-1 justify-between items-center">
           {/* COL 2: Dates */}
-          <div className="text-green-700 whitespace-nowrap">
-            <div>📅 {formatDate(depo.Date_Depo)}</div>
-            <div>⏳ {formatDate(depo.Lifetime_Depo)}</div>
+          <div className="text-green-700 whitespace-nowrap text-left">
+            <div className="flex items-center gap-1">
+              <CalendarDays
+                size={16}
+                strokeWidth={1.75}
+                className="text-green-900"
+              />
+              {formatDate(depo.Date_Depo)}
+            </div>
+            <div
+              className={`flex items-center gap-1 ${
+                isLifetimeUrgent(depo.Lifetime_Depo)
+                  ? "text-red-500"
+                  : "text-green-700"
+              }`}
+            >
+              <ClockFading
+                size={16}
+                strokeWidth={2}
+                className="text-green-900"
+              />
+              {getLifetimeTextFromDate(depo.Lifetime_Depo)}
+            </div>
           </div>
 
           {/* COL 3 */}
           <div className="flex flex-col text-green-700 text-left w-24">
-            <span>💬 {answersLabel}</span>
-            <span>📷 {photosLabel}</span>
+            <span className="flex items-center gap-1">
+              <MessageCircleMore
+                size={16}
+                strokeWidth={1.75}
+                className="text-green-900"
+              />
+              {answersLabel}
+            </span>
+
+            <span className="flex items-center gap-1">
+              <Camera size={16} strokeWidth={1.75} className="text-green-900" />
+              {photosLabel}
+            </span>
           </div>
 
           {/* COL 4: Btns */}
