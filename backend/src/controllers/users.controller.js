@@ -97,9 +97,12 @@ export const updateUser = async (req, res) => {
 
       const emailHash = hmacEmail(normalizedEmail);
 
-      const existingUser = await prisma.T_Users.findUnique({
+      const existingUser = await prisma.T_Users.findFirst({
         where: {
           Email_Hash_User: emailHash,
+          NOT: {
+            ID_User: user.userId,
+          },
         },
       });
 

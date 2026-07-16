@@ -47,7 +47,7 @@ export default function SettingsModal({ open, onClose }) {
         method: "PUT",
         body: JSON.stringify({
           username,
-          email,
+          ...(email !== user.email && { email }),
           city_user: city,
         }),
       });
@@ -162,12 +162,12 @@ export default function SettingsModal({ open, onClose }) {
                 </div>
 
                 <div>
-                  <label className="text-sm">Email</label>
+                  <label className="text-sm hidden">Email</label>
                   <input
                     value={email}
                     disabled={!editProfile}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border rounded-xl p-2 bg-white"
+                    className="w-full border rounded-xl p-2 bg-white hidden"
                   />
                 </div>
 
