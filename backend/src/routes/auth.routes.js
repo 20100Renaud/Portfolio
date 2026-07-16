@@ -8,6 +8,7 @@ import {
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
 import { registerLimiter, LoginLimiter, UpdateLimiter } from "../middleware/auth.middleware.js";
+import { decryptEmail } from "../utils/emailCrypto.js";
 
 const router = Router();
 
@@ -21,22 +22,35 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", authMiddleware, async (req, res) => {
-  const user = await prisma.T_Users.findUnique({
-    where: {
-      ID_User: req.user.userId,
-    },
-  });
+  try {
+    const user = await prisma.T_Users.findUnique({
+      where: {
+        ID_User: req.user.userId,
+      },
+    });
 
-  res.json({
-    userId: user.ID_User,
-    username: user.Login_User,
-    role: user.Role_User,
-    Latitude_User: user.Latitude_User,
-    Longitude_User: user.Longitude_User,
-    City_User: user.City_User,
-    hashed_email: user.Email_Hash_User,
-    crypted_email: user.Email_Encrypted_User,
-  });
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+    res.json({
+      userId: user.ID_User,
+      username: user.Login_User,
+      role: user.Role_User,
+      Latitude_User: user.Latitude_User,
+      Longitude_User: user.Longitude_User,
+      City_User: user.City_User,
+      email: decryptEmail(user.Email_Encrypted_User),
+
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: err.message,
+    });
+  }
 });
 
 export default router;

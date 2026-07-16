@@ -9,10 +9,12 @@ import { useNavigate } from "react-router-dom";
 export default function SettingsModal({ open, onClose }) {
   const { user, login, logout } = useAuth();
   const [editProfile, setEditProfile] = useState(false);
-  const [username, setUsername] = useState("");
-  const [city, setCity] = useState("");
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [city, setCity] = useState("");
 
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
@@ -26,10 +28,11 @@ export default function SettingsModal({ open, onClose }) {
 
   const navigate = useNavigate();
 
-  // Initialize city and username
+  // Initialize city, username and email
   useEffect(() => {
     if (user) {
       setUsername(user.username || "");
+      setEmail(user.email || "");
       setCity(user.City_User || "");
     }
   }, [user]);
@@ -44,6 +47,7 @@ export default function SettingsModal({ open, onClose }) {
         method: "PUT",
         body: JSON.stringify({
           username,
+          email,
           city_user: city,
         }),
       });
@@ -104,7 +108,6 @@ export default function SettingsModal({ open, onClose }) {
     }
   };
 
-
   // Delete User account
   const handleDeleteAccount = async () => {
     try {
@@ -159,6 +162,16 @@ export default function SettingsModal({ open, onClose }) {
                 </div>
 
                 <div>
+                  <label className="text-sm">Email</label>
+                  <input
+                    value={email}
+                    disabled={!editProfile}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full border rounded-xl p-2 bg-white"
+                  />
+                </div>
+
+                <div>
                   <label className="text-sm">City</label>
                   <input
                     value={city}
@@ -184,6 +197,7 @@ export default function SettingsModal({ open, onClose }) {
                       onClick={() => {
                         setEditProfile(false);
                         setUsername(user.username);
+                        setEmail(user.email);
                         setCity(user.City_User);
                       }}
                     >
