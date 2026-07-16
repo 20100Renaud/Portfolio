@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import prisma from "../prismaClient.js";
 import cookieParser from "cookie-parser";
+import rateLimit from "express-rate-limit";
 
 export const authMiddleware = async (req, res, next) => {
   console.log("AUTH MIDDLEWARE HIT");
@@ -65,3 +66,30 @@ export const isOwnerOrAdmin = (getOwnerId) => {
     }
   };
 };
+
+// Function called at the creation of an user
+export const registerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    error: "Too many request ! Try later.",
+  },
+});
+
+// Function called at the login of an user
+export const LoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: {
+    error: "Too many request ! Try later.",
+  },
+});
+
+// Function called at the update of an user
+export const UpdateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    error: "Too many request ! Try later.",
+  },
+});

@@ -5,12 +5,13 @@ import { changePassword } from "../controllers/users.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import prisma from "../prismaClient.js";
 import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
+import { registerLimiter, LoginLimiter, UpdateLimiter } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-router.post("/register", register);
-router.post("/connect", connect);
-router.put("/update", authMiddleware, updateUser);
+router.post("/register", registerLimiter, register);
+router.post("/connect", LoginLimiter, connect);
+router.put("/update", UpdateLimiter, authMiddleware, updateUser);
 router.put("/changePassword", changePassword)
 router.delete("/delete", authMiddleware, deleteUser);
 router.post("/logout", (req, res) => {

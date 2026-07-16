@@ -6,6 +6,7 @@ ShareUp is a web Application created by the Lyonx team, composed of RENAUD Vince
 - [Team Formation Overview](#team-formation-overview)
 - [Ideas Explored](#ideas-explored)
 - [How does the application work ?](#how-does-the-application-work)
+- [Stack Choice](#stack-choice)
 - [System Architecture](#system-architecture)
 - [Database Diagram](#database-diagram)
 - [LOADING COMMANDS](#loading-commands)
@@ -58,17 +59,21 @@ Futher, there is the Forum. On this page, the user can communicate with other us
 
 Finally, the user can see all his infos in the dashboard page. It only appear at the top right of the page when he is connected. In the dashboard, the user can see all his depos easily, edit or delete them.
 
+## Stack Choice
+- [Return at the top](#welcome-on-shareup-application)  
+![Stack Choice](images/Stack.png)
+
 ## System Architecture
-- [Return at the top](#welcome-on-shareup-application)
+- [Return at the top](#welcome-on-shareup-application)  
 ![System Architecture](images/SA_diagram.png)
 
 ## Database Diagram
-- [Return at the top](#welcome-on-shareup-application)
+- [Return at the top](#welcome-on-shareup-application)  
 ![DataBase Diagram](images/BDD.png)
 
 
 ## LOADING COMMANDS
-- [Return at the top](#welcome-on-shareup-application)
+- [Return at the top](#welcome-on-shareup-application)  
 
 - Terminal 1: `~/portfolio/`
 
@@ -388,6 +393,7 @@ Command to run at the root of the application:
 ```
 tree -I node_modules
 ```
+
 ```
 .
 ├── Dockerfile

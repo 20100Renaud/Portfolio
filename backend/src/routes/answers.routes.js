@@ -9,6 +9,8 @@ import prisma from "../prismaClient.js";import {
     updateAnswer,
     deleteAnswer,
 } from "../controllers/answers.controller.js";
+import {UpdateLimiter} from "../middleware/answer.middleware.js";
+import { CreateLimiter } from "../middleware/depo.middleware.js";
 
 const router = express.Router();
 
@@ -35,6 +37,7 @@ const preloadAnswer = async (req, res, next) => {
 router.put(
   "/answers/:id",
   authMiddleware,
+  UpdateLimiter,
   preloadAnswer,
   isOwnerOrAdmin((req) => req.answer.ID_User),
   updateAnswer,
