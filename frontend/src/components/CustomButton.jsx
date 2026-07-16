@@ -13,6 +13,9 @@ export default function CustomButton({
     big_white:
       "bg-white border border-green-700 text-green-700 hover:bg-green-50 min-w-32 rounded-2xl",
 
+    big_white_Icon_Only:
+      "bg-white border border-green-700 text-green-700 hover:bg-green-50 px-4 rounded-2xl",
+
     big_red:
       "bg-white border border-red-300 text-red-600 hover:bg-red-50 min-w-32 py-2 rounded-2xl",
 

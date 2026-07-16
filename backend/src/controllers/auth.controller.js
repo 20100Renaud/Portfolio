@@ -1,11 +1,14 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../prismaClient.js";
+import { Prisma } from "@prisma/client";
 import { registerSchema } from "../validators/auth.schema.js";
+import { normalizeUsername } from "../utils/username.js";
 import { hmacEmail, encryptEmail, decryptEmail } from "../utils/emailCrypto.js";
 
 export const register = async (req, res) => {
-  try { 
+  try {
+    // Initialize data
     const result = registerSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({
@@ -14,12 +17,11 @@ export const register = async (req, res) => {
     }
     const data = result.data;
     const normalizedEmail = data.email.toLowerCase().trim();
-
     const emailHash = hmacEmail(normalizedEmail);
     const emailEncrypted = encryptEmail(normalizedEmail);
+    const normalizedUsername = normalizeUsername(data.username);
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-
+    // Check if email is already in the db
     const existingUser = await prisma.T_Users.findUnique({
       where: { Email_Hash_User: emailHash },
     });
@@ -28,9 +30,24 @@ export const register = async (req, res) => {
       return res.status(409).json({ error: "Email already used" });
     }
 
+    // Check if username is already in the db
+    const existingUsername = await prisma.T_Users.findUnique({
+      where: {
+        Login_User: normalizedUsername,
+      },
+    });
+
+    if (existingUsername) {
+      return res.status(409).json({
+        error: "Username already exists",
+      });
+    }
+
+    // Create the user
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = await prisma.T_Users.create({
       data: {
-        Login_User: data.username,
+        Login_User: normalizedUsername,
         Email_Hash_User: emailHash,
         Email_Encrypted_User: emailEncrypted,
         Password_User: hashedPassword,
@@ -40,6 +57,7 @@ export const register = async (req, res) => {
       },
     });
 
+    // Store date in token
     const token = jwt.sign(
       {
         userId: user.ID_User,
@@ -62,8 +80,31 @@ export const register = async (req, res) => {
         username: user.Login_User,
       });
   } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      const field = err.meta?.target?.[0];
+
+      if (field === "Login_User") {
+        return res.status(409).json({
+          field: "username",
+          error: "Username already exists",
+        });
+      }
+
+      if (field === "Email_Hash_User") {
+        return res.status(409).json({
+          field: "email",
+          error: "Email already used",
+        });
+      }
+    }
+
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: "Server error",
+    });
   }
 };
 

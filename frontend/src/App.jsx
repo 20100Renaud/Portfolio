@@ -11,9 +11,12 @@ import DepoDetail from "./pages/DepoDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AboutModal from "./components/Modals/AboutModal"
 import { useAbout } from "./context/AboutContext";
+import SettingsModal from "./components/Modals/SettingsModal";
+import { useSettings } from "./context/SettingsContext";
 
 function AppContent() {
   const { aboutOpen, closeAbout } = useAbout();
+  const { settingsOpen, closeSettings } = useSettings();
 
   return (
     <>
@@ -47,6 +50,7 @@ function AppContent() {
       </Routes>
 
       <AboutModal open={aboutOpen} onClose={closeAbout} />
+      <SettingsModal open={settingsOpen} onClose={closeSettings} />
     </>
   );
 }

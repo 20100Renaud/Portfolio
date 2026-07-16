@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Trash2, LogOut } from "lucide-react"
+import { Trash2, LogOut, Cog } from "lucide-react"
 import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import MarketLocationFilter from "../components/MarketLocationFilter";
@@ -13,6 +13,7 @@ import ConfirmModal from "../components/ConfirmModal";
 import { getDefaultLifetime } from "../utils/date";
 import DeposList from "../components/DeposList";
 import ImagePreviewGrid from "../components/ImagePreviewGrid";
+import { useSettings } from "../context/SettingsContext";
 import FilterBar from "../components/FilterBar";
 import { useLocation } from "react-router-dom";
 import useDepos from "../hooks/useDepos";
@@ -41,16 +42,16 @@ export default function DeposPage({ mode }) {
   const [lifetime, setLifetime] = useState("");
   const [galleryImages, setGalleryImages] = useState([]);
   const [isGalleryOpen, setGalleryOpen] = useState(false);
+  const { isAuthenticated, logout, user } = useAuth();
   const isDashboard = mode === "dashboard";
   const [title, setTitle] = useState("");
-  const { isAuthenticated } = useAuth();
+  const { openSettings } = useSettings();
   const [type, setType] = useState("");
   const [cat, setCat] = useState("");
   const config = deposConfig[mode];
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const { user } = useAuth();
+
 
   const {
     filtered,
@@ -284,7 +285,7 @@ export default function DeposPage({ mode }) {
           </CustomButton>
 
           {mode === "dashboard" && (
-            <div className="flex">
+            <div className="flex gap-3">
               <CustomButton
                 variant="big_white"
                 onClick={logout}
@@ -292,6 +293,14 @@ export default function DeposPage({ mode }) {
               >
                 <LogOut size={18} />
                 Logout
+              </CustomButton>
+
+              <CustomButton
+                variant="big_white_Icon_Only"
+                onClick={openSettings}
+                className="flex w-full justify-center items-center gap-2"
+              >
+                <Cog size={18} />
               </CustomButton>
             </div>
           )}

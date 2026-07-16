@@ -49,6 +49,14 @@ export default function SignUp() {
   const isValidCity_user = () =>
     city_user.length >= 2 && latitude_user !== null && longitude_user !== null;
 
+  // Normalize the username
+  const formatUsername = (value) =>
+    value
+      .trim()
+      .split(/\s+/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+
   // Disable the create btn until:
   const isFormValid =
     isValidUsername(username) &&
@@ -101,11 +109,35 @@ export default function SignUp() {
         await login();
         navigate("/dashboard");
       } else {
+        const message = data.error || data.message || "Sign up failed";
+
+        if (message === "Username already exists") {
+          setErrors((prev) => ({
+            ...prev,
+            username: message,
+          }));
+
+          setTouched((prev) => ({
+            ...prev,
+            username: true,
+          }));
+        }
+
+        if (message === "Email already used") {
+          setErrors((prev) => ({
+            ...prev,
+            email: message,
+          }));
+
+          setTouched((prev) => ({
+            ...prev,
+            email: true,
+          }));
+        }
+
         setToast(
           <div className="flex flex-col p-4">
-            <span className="text-white">
-              {data.message || "Sign up failed"}
-            </span>
+            <span className="text-white">{message}</span>
           </div>,
         );
       }
@@ -150,12 +182,13 @@ export default function SignUp() {
                   : "Username must be at least 4 characters",
               }));
             }}
-            onBlur={() =>
+            onBlur={() => {
+              setUsername((prev) => formatUsername(prev));
               setTouched((prev) => ({
                 ...prev,
                 username: true,
-              }))
-            }
+              }));
+            }}
             placeholder="Username"
             error={errors.username}
             touched={touched.username}

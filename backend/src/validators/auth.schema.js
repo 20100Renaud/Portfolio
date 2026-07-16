@@ -10,6 +10,9 @@ export const registerSchema = z.object({
 });
 
 export const UpdateSchema = z.object({
-    username: z.string().min(4).max(20),
-    email: z.email(),
+  username: z.string().min(4).max(20).optional(),
+  email: z.email().optional(),
+  city_user: z.string().optional(),
+  latitude_user: z.number().optional(),
+  longitude_user: z.number().optional(),
 });
