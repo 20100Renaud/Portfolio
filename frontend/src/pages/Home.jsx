@@ -183,28 +183,69 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] border-2 rounded-2xl p-4 bg-white/50">
+            <div className="grid grid-cols-1 sm:grid-cols-2 border-2 rounded-2xl px-4 py-6 bg-white/50">
               {/* Frontend */}
-              <div className="flex flex-col items-center">
+              <div className="relative flex flex-col items-center">
                 <img
                   src="/images/Vincent.png"
                   alt="Frontend developer"
                   className="w-40 h-40 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
                 />
-                <h3 className="mt-4 text-xl font-semibold text-green-900">
+                <h3 className="mt-2 text-xl font-semibold text-green-900">
                   Vincent
                 </h3>
-                <h3 className="mt-4 text-xl font-semibold text-green-900">
+
+                <h3 className="mt-2 text-xl font-semibold text-green-900">
                   FRONTEND
                 </h3>
 
                 <p className="text-sm text-green-700">
                   Designing and building the user interface.
                 </p>
+
+                {/* Icons links */}
+                <div className="flex gap-2 mt-4 border border-green-300 px-3 py-1 rounded-xl bg-green-50">
+                  <img width="20" height="30" src="/icons/Brave_32x32.png" alt="Brv"/>
+                  <img width="20" height="30" src="/icons/Linkedin_32x32.png" alt="Lkn"/>
+                  <img width="20" height="30" src="/icons/Github_32x32.png" alt="Ghb"/>
+                  <img width="20" height="30" src="/icons/Discord_32x32.png" alt="Dis"/>
+                  <img width="20" height="30" src="/icons/Ecosia_32x32.png" alt="Eco"/>
+                </div>
               </div>
 
+
+
+              {/* Backend */}
+              <div className="flex flex-col items-center">
+                <img
+                  src="/images/Enzo.png"
+                  alt="Backend developer"
+                  className="w-40 h-40 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
+                />
+                <h3 className="mt-2 text-xl font-semibold text-green-900">
+                  Enzo
+                </h3>
+
+                <h3 className="mt-2 text-xl font-semibold text-green-900">
+                  BACKEND
+                </h3>
+
+                <p className="text-sm text-green-700">
+                  Building the API, database and application logic.
+                </p>
+
+                {/* Icons links */}
+                <div className="flex gap-2 mt-4 border border-green-300 px-3 py-1 rounded-xl bg-green-50">
+                  <img width="20" height="30" src="/icons/Brave_32x32.png" alt="Brv"/>
+                  <img width="20" height="30" src="/icons/Linkedin_32x32.png" alt="Lkn"/>
+                  <img width="20" height="30" src="/icons/Github_32x32.png" alt="Ghb"/>
+                  <img width="20" height="30" src="/icons/Discord_32x32.png" alt="Dis"/>
+                  <img width="20" height="30" src="/icons/Ecosia_32x32.png" alt="Eco"/>
+                </div>
+
+              </div>
               {/* Team Name */}
-              <div className="">
+              <div className="absolute flex w-full justify-center -ml-4 -mt-4">
                 <button
                   onClick={() => {
                     setIsTeamModalOpen(false);
@@ -214,25 +255,6 @@ export default function Home() {
                 >
                   -Lyonx Team-
                 </button>
-              </div>
-
-              {/* Backend */}
-              <div className="flex flex-col items-center">
-                <img
-                  src="/images/Enzo.png"
-                  alt="Backend developer"
-                  className="w-40 h-40 rounded-full object-cover ring-1 ring-green-100 shadow-2xl"
-                />
-                <h3 className="mt-4 text-xl font-semibold text-green-900">
-                  Enzo
-                </h3>
-                <h3 className="mt-4 text-xl font-semibold text-green-900">
-                  BACKEND
-                </h3>
-
-                <p className="text-sm text-green-700">
-                  Building the API, database and application logic.
-                </p>
               </div>
             </div>
           </div>
