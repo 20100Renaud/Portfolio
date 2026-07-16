@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { deposConfig } from "../config/deposConfig";
-import { isWithinRadius } from "../utils/geo";
+import { getDistanceKm } from "../utils/geo";
 import useAuth from "../hooks/useAuth";
 import { apiFetch } from "../api";
 
@@ -45,7 +45,6 @@ export default function useDepos(mode) {
       setDepos(Array.isArray(data) ? data : []);
 
       console.log("[DATA]", data);
-
     } finally {
       setLoading(false);
     }
@@ -94,24 +93,31 @@ export default function useDepos(mode) {
 
   // Handle deposit loading and filtering
   const filtered = useMemo(() => {
-    return depos.filter((d) => {
-      if (!config.allowedTypes.includes(d.Type_Depo)) return false;
-      if (filterType && d.Type_Depo !== filterType) return false;
-      if (filterCat && d.Cat_Depo !== filterCat) return false;
-      if (filterUser && d.User_Depos?.Login_User !== filterUser) return false;
+    return depos
+      .map((d) => ({
+        ...d,
+        distanceKm: getDistanceKm(activeLocation, d),
+        isOwner: user?.userId === d.ID_User,
+      }))
+      .filter((d) => {
+        if (!config.allowedTypes.includes(d.Type_Depo)) return false;
+        if (filterType && d.Type_Depo !== filterType) return false;
+        if (filterCat && d.Cat_Depo !== filterCat) return false;
+        if (filterUser && d.User_Depos?.Login_User !== filterUser) return false;
 
-      if (
-        mode === "market" &&
-        displayMode === "local" &&
-        activeLocation?.lat != null &&
-        activeLocation?.lng != null
-      ) {
-        if (!isWithinRadius(activeLocation, d, radius)) {
-          return false;
+        if (
+          mode === "market" &&
+          displayMode === "local" &&
+          activeLocation?.lat != null &&
+          activeLocation?.lng != null
+        ) {
+          if (d.distanceKm == null || d.distanceKm > radius) {
+            return false;
+          }
         }
-      }
-      return true;
-    });
+
+        return true;
+      });
   }, [
     depos,
     config,

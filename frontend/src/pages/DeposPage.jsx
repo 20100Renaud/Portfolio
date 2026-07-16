@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Trash2 } from "lucide-react"
+import { Trash2, LogOut } from "lucide-react"
 import DashboardDepoCard from "../components/DepoCards/DashboardDepoCard";
 import PublicDepoCard from "../components/DepoCards/PublicDepoCard";
 import MarketLocationFilter from "../components/MarketLocationFilter";
@@ -49,6 +49,7 @@ export default function DeposPage({ mode }) {
   const config = deposConfig[mode];
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const { user } = useAuth();
 
   const {
@@ -261,7 +262,7 @@ export default function DeposPage({ mode }) {
 
         <p className="text-sm sm:text-lg">{pageSubtitle}</p>
 
-        <div className="flex justify-center gap-3 m-4">
+        <div className="flex w-full justify-center gap-3 my-4">
           {/* Create a depo btn */}
           <CustomButton
             onClick={() => {
@@ -281,6 +282,19 @@ export default function DeposPage({ mode }) {
           >
             {config.createButtonLabel}
           </CustomButton>
+
+          {mode === "dashboard" && (
+            <div className="flex">
+              <CustomButton
+                variant="big_white"
+                onClick={logout}
+                className="flex w-full justify-center items-center gap-2"
+              >
+                <LogOut size={18} />
+                Logout
+              </CustomButton>
+            </div>
+          )}
         </div>
 
         {/* FILTER BAR AND MODAL CONFIG */}
@@ -321,7 +335,7 @@ export default function DeposPage({ mode }) {
         }
       >
         <DeposList
-          layout={isDashboard ? "Dashboard_table" : "No_dashboard_list"}
+          layout={isDashboard ? "Dashboard:table" : "Not_dashboard:list"}
           deposits={filtered}
         >
           {(depo) => (

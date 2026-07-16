@@ -305,7 +305,7 @@ export default function Depo() {
 
   return (
     <div className="relative text-center text-green-900 overflow-hidden my-10 mx-auto px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-green-100">
+      <div className="relative max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-green-100 overflow-hidden">
         {/* Go back arrow*/}
         <div className="max-w-3xl mx-auto mb-4">
           <CustomButton variant="small_green" onClick={handleBack} className="">

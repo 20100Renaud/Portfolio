@@ -1,13 +1,13 @@
 export default function DeposList({ deposits = [], children, layout }) {
   const containerClass =
-    layout === "Dashboard_table"
-      ? "w-full divide-green-200 border bg-white"
+    layout === "Dashboard:table"
+      ? "w-full divide-green-200 border border-green-200 bg-white rounded-b-2xl"
       : "flex flex-col gap-3";
 
   const itemClass =
-    layout === "Dashboard_table"
+    layout === "Dashboard:table"
       ? "flex items-center justify-between hover:bg-green-50 bg-white rounded-2xl"
-      : "bg-white rounded-2xl border border-green-100 shadow px-4 hover:bg-green-50 transition w-full";
+      : "relative bg-white rounded-2xl border border-green-100 shadow px-4 hover:bg-green-50 transition w-full overflow-hidden";
 
   if (!deposits.length) {
     return (
