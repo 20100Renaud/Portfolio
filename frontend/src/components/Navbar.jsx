@@ -1,10 +1,9 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { User, LogOut } from "lucide-react";
 import AnimatedFlatLogo from "../components/AnimatedFlatLogo";
 import UserMenu from "../components/UserMenu";
 import { useAuth } from "../context/useAuth";
 import CustomButton from "../components/CustomButton";
-
+import { useAbout } from "../context/AboutContext";
 
 const NavItem = ({ to, end, children, className = "" }) => {
   return (
@@ -29,6 +28,7 @@ const NavItem = ({ to, end, children, className = "" }) => {
 export default function Navbar() {
   const { isAuthenticated, username, logout } = useAuth();
   const navigate = useNavigate();
+  const { openAbout } = useAbout();
 
   return (
     <>
@@ -55,15 +55,22 @@ export default function Navbar() {
                 Home
               </NavItem>
             </li>
+
             <li>
               <NavItem to="/market" end>
                 Explore
               </NavItem>
             </li>
+
             <li>
               <NavItem to="/faq" end>
                 Forum
               </NavItem>
+            </li>
+            <li>
+              <button onClick={openAbout} className="text-white">
+                About
+              </button>
             </li>
           </ul>
         </div>

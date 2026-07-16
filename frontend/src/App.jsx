@@ -9,10 +9,14 @@ import Faq from "./pages/Faq";
 import Market from "./pages/Market";
 import DepoDetail from "./pages/DepoDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AboutModal from "./components/Modals/AboutModal"
+import { useAbout } from "./context/AboutContext";
 
-export default function App() {
+function AppContent() {
+  const { aboutOpen, closeAbout } = useAbout();
+
   return (
-    <BrowserRouter>
+    <>
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
@@ -37,9 +41,20 @@ export default function App() {
             }
           />
         </Route>
+
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      <AboutModal open={aboutOpen} onClose={closeAbout} />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

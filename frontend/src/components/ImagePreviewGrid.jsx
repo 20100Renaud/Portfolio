@@ -4,17 +4,19 @@ import CustomButton from "./CustomButton";
 export default function ImagePreviewGrid({
   images,
   onDelete,
+  mode = "edit",
   getKey,
   getSrc,
   showDelete = true,
   showAddButton = false,
   addButtonAction,
 }) {
-
+  const isCreateMode = mode === "create";
+  const displayedImages = images;
 
   return (
     <div className="flex flex-wrap gap-2">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center">
         {showAddButton && (
           <button
             onClick={addButtonAction}
@@ -38,12 +40,12 @@ export default function ImagePreviewGrid({
           </button>
         )}
 
-        {images.length === 0 && (
+        {displayedImages.length === 0 && (
           <p className="text-sm text-green-700 italic">No images yet</p>
         )}
       </div>
 
-      {images.map((image, index) => (
+      {displayedImages.map((image, index) => (
         <div
           key={getKey(image, index)}
           className="

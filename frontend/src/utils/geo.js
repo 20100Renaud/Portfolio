@@ -1,18 +1,19 @@
 import { distance } from "@turf/turf";
 
-export const isWithinRadius = (user, depo, km) => {
+export const getDistanceKm = (from, depo) => {
   if (
+    from?.lat == null ||
+    from?.lng == null ||
     depo.User_Depos?.Latitude_User == null ||
     depo.User_Depos?.Longitude_User == null
   ) {
-    return false;
+    return null;
   }
 
-  const dist = distance(
-    [user.lng, user.lat],
+  return distance(
+    [from.lng, from.lat],
     [depo.User_Depos.Longitude_User, depo.User_Depos.Latitude_User],
     { units: "kilometers" },
   );
-
-  return dist <= km;
 };
+
