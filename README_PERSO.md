@@ -90,14 +90,14 @@ After clean, the db is empty, rebuild will run the seed.js file, then it is poss
 npm run seed:demo
 ```
 
-#### Full rabase routine
+#### Full rebase routine
 ```
-cd ~/Portfolio
+~/Portfolio
 
 npm run clean
 npm run rebuild
 
-cd backend
+~/Portfolio/backend
 
 npm run prisma:generate (if schema has changed, sync with Prisma Client )
 npm run seed:demo

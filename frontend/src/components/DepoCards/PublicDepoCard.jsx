@@ -10,7 +10,7 @@ export default function PublicDepoCard({
   enableGallery = false,
 }) {
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const { photos, answers, answersLabel, photosLabel } = getDepoStats(depo);
+  const { answersLabel, photosLabel } = getDepoStats(depo);
   const firstImage = depo.Images_Depos?.[0]?.URL_Image;
 
   const typeStyle =

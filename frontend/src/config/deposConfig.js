@@ -5,7 +5,7 @@ import { CATEGORIES_FAQ } from "../constants/categories_faq";
 export const TYPES_DEPOS = [
   { value: "OFFER", label: "Offer" },
   { value: "REQUEST", label: "Request" },
-  { value: "QUESTION", label: "Question" },
+  { value: "QUESTION", label: "Forum" },
 ];
 
 // Update Category options from Type
@@ -53,8 +53,8 @@ export const deposConfig = {
       user: true,
       radius: false,
     },
-    label: "question",
-    createButtonLabel: "Ask a question",
+    label: "subject",
+    createButtonLabel: "Buried a deposit",
   },
 
   dashboard: {

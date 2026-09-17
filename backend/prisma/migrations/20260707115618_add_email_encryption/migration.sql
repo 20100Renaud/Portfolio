@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `Email_User` on the `T_Users` table. All the data in the column will be lost.
-  - A unique constraint covering the columns `[Email_Hash_User]` on the table `T_Users` will be added. If there are existing duplicate values, this will fail.
-  - Added the required column `Email_Encrypted_User` to the `T_Users` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `Email_Hash_User` to the `T_Users` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- DropForeignKey
 ALTER TABLE "T_Images" DROP CONSTRAINT "T_Images_ID_Depo_fkey";
 

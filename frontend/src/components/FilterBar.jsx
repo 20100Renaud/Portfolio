@@ -1,30 +1,11 @@
 import { useEffect, useRef, useState, useMemo } from "react";
-import { ChevronUp, Shovel } from "lucide-react";
+import { Shovel } from "lucide-react";
 import { normalizeOptions } from "../utils/select";
 import CustomButton from "../components/CustomButton";
 
 export default function FilterBar({
-  mode,
-  filterType,
-  setFilterType,
-  filterCat,
-  setFilterCat,
-  filterUser,
-  setFilterUser,
-  typeOptions = [],
-  categoryOptions = [],
-  usersOptions = [],
-  resultCount,
   resetFilters,
-  setIsFilterModalOpen,
   config,
-  displayMode,
-  setDisplayMode,
-  activeLocation,
-  setActiveLocation,
-  radius,
-  setRadius,
-  onCollapse,
   toggleFilters,
   filtersText,
   summary,
